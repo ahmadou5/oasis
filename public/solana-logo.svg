@@ -1,0 +1,16 @@
+<svg width="397.7" height="311.7" viewBox="0 0 397.7 311.7" xmlns="http://www.w3.org/2000/svg">
+<linearGradient id="logosGradient" x1="360.879%" y1="351.455%" x2="-10.034%" y2="-75.294%">
+<stop offset="0%" style="stop-color:#00FFA3"/>
+<stop offset="100%" style="stop-color:#DC1FFF"/>
+</linearGradient>
+<defs>
+<linearGradient id="solanaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" style="stop-color:#9945FF"/>
+<stop offset="50%" style="stop-color:#14F195"/>
+<stop offset="100%" style="stop-color:#9945FF"/>
+</linearGradient>
+</defs>
+<path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 237.9z" fill="url(#solanaGradient)"/>
+<path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1L333.1 73.8c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z" fill="url(#solanaGradient)"/>
+<path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8H391.2c5.8 0 8.7-7 4.6-11.1L333.1 120.1z" fill="url(#solanaGradient)"/>
+</svg>
