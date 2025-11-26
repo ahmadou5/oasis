@@ -1,3 +1,5 @@
+import { AxiosRequestHeaders, AxiosHeaders } from "axios";
+
 // Environment configuration for Stakeit app
 export const ENV = {
   // Solana Network Configuration
@@ -33,7 +35,7 @@ export const ENV = {
 
     // API endpoints
     ENDPOINTS: {
-      VALIDATORS: "/validators",
+      VALIDATORS: "/validator-list",
       VALIDATOR_DETAIL: (address: string) => `/validator/${address}`,
       VALIDATOR_EPOCHS: (address: string, limit = 30) =>
         `/validator/${address}/epochs?limit=${limit}`,
@@ -73,18 +75,18 @@ export function getRPCEndpoint(network?: string): string {
 }
 
 // Helper function to get Solana Beach API headers
-export function getSolanaBeachHeaders(): HeadersInit {
-  const headers: HeadersInit = {
+export function getSolanaBeachHeaders(): AxiosRequestHeaders {
+  const headers = new AxiosHeaders({
     Accept: "application/json",
     "Content-Type": "application/json",
     "User-Agent": `${ENV.APP.NAME}/${ENV.APP.VERSION}`,
-  };
+  });
 
   if (ENV.SOLANA_BEACH.API_KEY) {
-    headers["Authorization"] = `Bearer ${ENV.SOLANA_BEACH.API_KEY}`;
+    headers.set("Authorization", `Bearer ${ENV.SOLANA_BEACH.API_KEY}`);
   }
 
-  return headers;
+  return headers as AxiosRequestHeaders;
 }
 
 // Helper function to build Solana Beach API URLs
