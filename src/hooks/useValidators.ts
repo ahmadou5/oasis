@@ -115,7 +115,7 @@ export function useValidators() {
       console.warn("⚠️ Failed to fetch Solana Beach metadata:", error);
       return new Map(); // Return empty map as fallback
     }
-  }, []);
+  }, [validators.length]);
 
   // Fetch validator performance data from Solana Beach
   const fetchValidatorPerformance = useCallback(
@@ -390,6 +390,7 @@ export function useValidators() {
     }
   }, [
     connection,
+    validators,
     fetchSolanaBeachMetadata,
     fetchValidatorPerformance,
     calculateAPYFromCredits,

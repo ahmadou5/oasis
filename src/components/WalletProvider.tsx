@@ -28,7 +28,7 @@ export const WalletProvider: FC<Props> = ({ children }) => {
       : WalletAdapterNetwork.Devnet;
 
   // Use custom RPC endpoint from environment
-  const endpoint = useMemo(() => getRPCEndpoint(), [network]);
+  const endpoint = useMemo(() => getRPCEndpoint(), []);
 
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 

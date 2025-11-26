@@ -1,28 +1,29 @@
-'use client'
+"use client";
 
-import { ValidatorInfo } from '@/store/slices/validatorSlice'
-import { formatNumber, formatPercent, formatSOL } from '@/utils/formatters'
-import { TrendingUp, Shield, Globe, ExternalLink } from 'lucide-react'
-import clsx from 'clsx'
+import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { formatNumber, formatPercent, formatSOL } from "@/utils/formatters";
+import { TrendingUp, Shield, Globe, ExternalLink } from "lucide-react";
+import clsx from "clsx";
+import Image from "next/image";
 
 interface ValidatorCardProps {
-  validator: ValidatorInfo
-  onSelect: () => void
+  validator: ValidatorInfo;
+  onSelect: () => void;
 }
 
 export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active':
-        return 'text-solana-green'
-      case 'delinquent':
-        return 'text-yellow-400'
-      case 'inactive':
-        return 'text-red-400'
+      case "active":
+        return "text-solana-green";
+      case "delinquent":
+        return "text-yellow-400";
+      case "inactive":
+        return "text-red-400";
       default:
-        return 'text-solana-gray-400'
+        return "text-solana-gray-400";
     }
-  }
+  };
 
   return (
     <div className="card group hover:border-solana-purple/50 transition-all duration-200 cursor-pointer">
@@ -31,10 +32,12 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             {validator.avatar ? (
-              <img
+              <Image
                 src={validator.avatar}
                 alt={validator.name}
                 className="w-12 h-12 rounded-full bg-solana-gray-800"
+                height={12}
+                width={12}
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-solana-purple to-solana-green flex items-center justify-center">
@@ -47,13 +50,18 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
               <h3 className="font-semibold text-lg group-hover:text-solana-purple transition-colors">
                 {validator.name}
               </h3>
-              <div className={clsx('text-sm capitalize', getStatusColor(validator.status))}>
+              <div
+                className={clsx(
+                  "text-sm capitalize",
+                  getStatusColor(validator.status)
+                )}
+              >
                 <span className="inline-block w-2 h-2 rounded-full bg-current mr-2"></span>
                 {validator.status}
               </div>
             </div>
           </div>
-          
+
           {validator.website && (
             <a
               href={validator.website}
@@ -85,7 +93,7 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
               {formatPercent(validator.apy)}
             </div>
           </div>
-          
+
           <div>
             <div className="flex items-center gap-1 text-solana-gray-400 text-xs mb-1">
               <Shield size={12} />
@@ -95,14 +103,14 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
               {formatPercent(validator.commission)}
             </div>
           </div>
-          
+
           <div>
             <div className="text-solana-gray-400 text-xs mb-1">Total Stake</div>
             <div className="text-sm font-medium">
               {formatSOL(validator.stake)}
             </div>
           </div>
-          
+
           <div>
             <div className="text-solana-gray-400 text-xs mb-1">Skip Rate</div>
             <div className="text-sm font-medium">
@@ -117,7 +125,7 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
           <span>{validator.dataCenter}</span>
         </div>
       </div>
-      
+
       {/* Action Button */}
       <div className="mt-4 pt-4 border-t border-solana-gray-800 flex gap-2">
         <button
@@ -134,5 +142,5 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
         </a>
       </div>
     </div>
-  )
+  );
 }

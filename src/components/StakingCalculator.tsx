@@ -1,74 +1,94 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/store'
-import { useWalletBalance } from '@/hooks/useWalletBalance'
-import { calculateRewards, formatSOL, formatPercent, validateSOLAmount } from '@/utils/formatters'
-import { Calculator, TrendingUp, Clock, Info } from 'lucide-react'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store";
+import { useWalletBalance } from "@/hooks/useWalletBalance";
+import {
+  calculateRewards,
+  formatSOL,
+  formatPercent,
+  validateSOLAmount,
+} from "@/utils/formatters";
+import { Calculator, TrendingUp, Clock, Info } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface CalculationResult {
-  stakingAmount: number
-  apy: number
-  dailyRewards: number
-  weeklyRewards: number
-  monthlyRewards: number
-  yearlyRewards: number
-  projectedValue: number
+  stakingAmount: number;
+  apy: number;
+  dailyRewards: number;
+  weeklyRewards: number;
+  monthlyRewards: number;
+  yearlyRewards: number;
+  projectedValue: number;
 }
 
 export function StakingCalculator() {
-  const { validators } = useSelector((state: RootState) => state.validators)
-  const { balance, connected } = useWalletBalance()
-  
-  const [stakingAmount, setStakingAmount] = useState('')
-  const [selectedValidatorAddress, setSelectedValidatorAddress] = useState('')
-  const [timeframe, setTimeframe] = useState('1') // years
-  const [calculation, setCalculation] = useState<CalculationResult | null>(null)
-  const [error, setError] = useState('')
+  const { validators } = useSelector((state: RootState) => state.validators);
+  const { balance, connected } = useWalletBalance();
 
-  const selectedValidator = validators.find(v => v.address === selectedValidatorAddress)
+  const [stakingAmount, setStakingAmount] = useState("");
+  const [selectedValidatorAddress, setSelectedValidatorAddress] = useState("");
+  const [timeframe, setTimeframe] = useState("1"); // years
+  const [calculation, setCalculation] = useState<CalculationResult | null>(
+    null
+  );
+  const [error, setError] = useState("");
+
+  const selectedValidator = validators.find(
+    (v) => v.address === selectedValidatorAddress
+  );
   const topValidators = validators
-    .filter(v => v.status === 'active')
+    .filter((v) => v.status === "active")
     .sort((a, b) => b.apy - a.apy)
-    .slice(0, 10)
+    .slice(0, 10);
 
   useEffect(() => {
     if (topValidators.length > 0 && !selectedValidatorAddress) {
-      setSelectedValidatorAddress(topValidators[0].address)
+      setSelectedValidatorAddress(topValidators[0].address);
     }
-  }, [topValidators, selectedValidatorAddress])
+  }, [topValidators, selectedValidatorAddress]);
 
   useEffect(() => {
-    calculateStakingRewards()
-  }, [stakingAmount, selectedValidator, timeframe])
+    calculateStakingRewards();
+  }, [stakingAmount, selectedValidator, timeframe, calculateRewards]);
 
   const calculateStakingRewards = () => {
     if (!stakingAmount || !selectedValidator) {
-      setCalculation(null)
-      setError('')
-      return
+      setCalculation(null);
+      setError("");
+      return;
     }
 
-    const validation = validateSOLAmount(stakingAmount, connected ? balance : undefined)
+    const validation = validateSOLAmount(
+      stakingAmount,
+      connected ? balance : undefined
+    );
     if (!validation.isValid) {
-      setError(validation.error || '')
-      setCalculation(null)
-      return
+      setError(validation.error || "");
+      setCalculation(null);
+      return;
     }
 
-    setError('')
-    const amount = validation.amount!
-    const apy = selectedValidator.apy
-    
-    // Calculate rewards for different timeframes
-    const yearlyRewards = (amount * apy) / 100
-    const monthlyRewards = yearlyRewards / 12
-    const weeklyRewards = yearlyRewards / 52
-    const dailyRewards = yearlyRewards / 365
+    setError("");
+    const amount = validation.amount!;
+    const apy = selectedValidator.apy;
 
-    const projectedValue = amount + (yearlyRewards * parseFloat(timeframe))
+    // Calculate rewards for different timeframes
+    const yearlyRewards = (amount * apy) / 100;
+    const monthlyRewards = yearlyRewards / 12;
+    const weeklyRewards = yearlyRewards / 52;
+    const dailyRewards = yearlyRewards / 365;
+
+    const projectedValue = amount + yearlyRewards * parseFloat(timeframe);
 
     setCalculation({
       stakingAmount: amount,
@@ -78,37 +98,37 @@ export function StakingCalculator() {
       monthlyRewards,
       yearlyRewards,
       projectedValue,
-    })
-  }
+    });
+  };
 
   const generateChartData = () => {
-    if (!calculation) return []
-    
-    const periods = parseInt(timeframe) * 12 // months
-    const monthlyReturn = calculation.monthlyRewards
-    const data = []
-    
+    if (!calculation) return [];
+
+    const periods = parseInt(timeframe) * 12; // months
+    const monthlyReturn = calculation.monthlyRewards;
+    const data = [];
+
     for (let i = 0; i <= periods; i++) {
-      const totalRewards = monthlyReturn * i
+      const totalRewards = monthlyReturn * i;
       data.push({
         month: i,
         value: calculation.stakingAmount + totalRewards,
         rewards: totalRewards,
-      })
+      });
     }
-    
-    return data
-  }
 
-  const chartData = generateChartData()
+    return data;
+  };
+
+  const chartData = generateChartData();
 
   const handleMaxAmount = () => {
     if (connected && balance > 0) {
       // Keep some SOL for transaction fees
-      const maxStake = Math.max(0, balance - 0.01)
-      setStakingAmount(maxStake.toString())
+      const maxStake = Math.max(0, balance - 0.01);
+      setStakingAmount(maxStake.toString());
     }
-  }
+  };
 
   return (
     <div className="space-y-8">
@@ -132,7 +152,9 @@ export function StakingCalculator() {
                 placeholder="Enter amount to stake"
                 value={stakingAmount}
                 onChange={(e) => setStakingAmount(e.target.value)}
-                className={`input-primary w-full pr-16 ${error ? 'border-red-400' : ''}`}
+                className={`input-primary w-full pr-16 ${
+                  error ? "border-red-400" : ""
+                }`}
                 step="0.001"
                 min="0"
               />
@@ -172,7 +194,7 @@ export function StakingCalculator() {
             </select>
             {selectedValidator && (
               <div className="mt-2 text-sm text-solana-gray-400">
-                Commission: {formatPercent(selectedValidator.commission)} | 
+                Commission: {formatPercent(selectedValidator.commission)} |
                 Total Stake: {formatSOL(selectedValidator.stake)}
               </div>
             )}
@@ -224,16 +246,20 @@ export function StakingCalculator() {
                     <div className="text-2xl font-bold gradient-text mb-1">
                       {formatPercent(calculation.apy)}
                     </div>
-                    <div className="text-sm text-solana-gray-400">Annual APY</div>
+                    <div className="text-sm text-solana-gray-400">
+                      Annual APY
+                    </div>
                   </div>
                 </div>
-                
+
                 <div className="card bg-gradient-to-br from-solana-purple/20 to-solana-purple/10 border-solana-purple/20">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white mb-1">
                       {formatSOL(calculation.projectedValue)}
                     </div>
-                    <div className="text-sm text-solana-gray-400">Total Value</div>
+                    <div className="text-sm text-solana-gray-400">
+                      Total Value
+                    </div>
                   </div>
                 </div>
               </div>
@@ -247,19 +273,27 @@ export function StakingCalculator() {
                 <div className="space-y-3">
                   <div className="flex justify-between items-center py-2 border-b border-solana-gray-800">
                     <span className="text-solana-gray-400">Daily</span>
-                    <span className="font-semibold">{formatSOL(calculation.dailyRewards)}</span>
+                    <span className="font-semibold">
+                      {formatSOL(calculation.dailyRewards)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-solana-gray-800">
                     <span className="text-solana-gray-400">Weekly</span>
-                    <span className="font-semibold">{formatSOL(calculation.weeklyRewards)}</span>
+                    <span className="font-semibold">
+                      {formatSOL(calculation.weeklyRewards)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-solana-gray-800">
                     <span className="text-solana-gray-400">Monthly</span>
-                    <span className="font-semibold">{formatSOL(calculation.monthlyRewards)}</span>
+                    <span className="font-semibold">
+                      {formatSOL(calculation.monthlyRewards)}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-solana-gray-400">Yearly</span>
-                    <span className="font-semibold text-solana-green">{formatSOL(calculation.yearlyRewards)}</span>
+                    <span className="font-semibold text-solana-green">
+                      {formatSOL(calculation.yearlyRewards)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -267,9 +301,12 @@ export function StakingCalculator() {
           ) : (
             <div className="card text-center py-12">
               <Clock className="text-solana-gray-600 mx-auto mb-4" size={48} />
-              <h3 className="text-lg font-semibold mb-2">Enter Details to Calculate</h3>
+              <h3 className="text-lg font-semibold mb-2">
+                Enter Details to Calculate
+              </h3>
               <p className="text-solana-gray-400">
-                Fill in the staking amount and select a validator to see your potential rewards.
+                Fill in the staking amount and select a validator to see your
+                potential rewards.
               </p>
             </div>
           )}
@@ -279,30 +316,36 @@ export function StakingCalculator() {
       {/* Growth Chart */}
       {calculation && chartData.length > 0 && (
         <div className="card">
-          <h3 className="text-lg font-semibold mb-6">Projected Growth Over Time</h3>
+          <h3 className="text-lg font-semibold mb-6">
+            Projected Growth Over Time
+          </h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="month" 
+                <XAxis
+                  dataKey="month"
                   stroke="#9CA3AF"
-                  label={{ value: 'Months', position: 'insideBottom', offset: -10 }}
+                  label={{
+                    value: "Months",
+                    position: "insideBottom",
+                    offset: -10,
+                  }}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#9CA3AF"
                   tickFormatter={(value) => `${(value / 1000).toFixed(1)}K`}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1F2937',
-                    border: '1px solid #374151',
-                    borderRadius: '8px',
-                    color: '#fff'
+                    backgroundColor: "#1F2937",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                    color: "#fff",
                   }}
                   formatter={(value, name) => [
                     formatSOL(value as number),
-                    name === 'value' ? 'Total Value' : 'Rewards'
+                    name === "value" ? "Total Value" : "Rewards",
                   ]}
                 />
                 <Line
@@ -311,7 +354,7 @@ export function StakingCalculator() {
                   stroke="#9945FF"
                   strokeWidth={3}
                   dot={false}
-                  activeDot={{ r: 6, fill: '#9945FF' }}
+                  activeDot={{ r: 6, fill: "#9945FF" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -319,5 +362,5 @@ export function StakingCalculator() {
         </div>
       )}
     </div>
-  )
+  );
 }

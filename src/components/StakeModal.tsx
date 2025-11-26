@@ -1,92 +1,109 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { useWallet, useConnection } from '@solana/wallet-adapter-react'
-import { 
-  PublicKey, 
-  Transaction, 
-  StakeProgram, 
-  Authorized, 
+import { useState, useEffect } from "react";
+import { useWallet, useConnection } from "@solana/wallet-adapter-react";
+import {
+  PublicKey,
+  Transaction,
+  StakeProgram,
+  Authorized,
   Lockup,
-  LAMPORTS_PER_SOL
-} from '@solana/web3.js'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from '@/store'
-import { addTransaction } from '@/store/slices/stakingSlice'
-import { ValidatorInfo } from '@/store/slices/validatorSlice'
-import { useWalletBalance } from '@/hooks/useWalletBalance'
-import { formatSOL, validateSOLAmount, calculateRewards } from '@/utils/formatters'
-import { X, AlertCircle, CheckCircle, Loader, Info, Calculator } from 'lucide-react'
-import clsx from 'clsx'
+  LAMPORTS_PER_SOL,
+} from "@solana/web3.js";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { addTransaction } from "@/store/slices/stakingSlice";
+import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { useWalletBalance } from "@/hooks/useWalletBalance";
+import {
+  formatSOL,
+  validateSOLAmount,
+  calculateRewards,
+} from "@/utils/formatters";
+import {
+  X,
+  AlertCircle,
+  CheckCircle,
+  Loader,
+  Info,
+  Calculator,
+} from "lucide-react";
+import clsx from "clsx";
+import Image from "next/image";
 
 interface StakeModalProps {
-  validator: ValidatorInfo
-  onClose: () => void
+  validator: ValidatorInfo;
+  onClose: () => void;
 }
 
 export function StakeModal({ validator, onClose }: StakeModalProps) {
-  const { publicKey, signTransaction } = useWallet()
-  const { connection } = useConnection()
-  const dispatch = useDispatch<AppDispatch>()
-  
-  const [stakeAmount, setStakeAmount] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [success, setSuccess] = useState(false)
-  const [txSignature, setTxSignature] = useState('')
-  const [estimatedRewards, setEstimatedRewards] = useState(0)
-  
+  const { publicKey, signTransaction } = useWallet();
+  const { connection } = useConnection();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [stakeAmount, setStakeAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [txSignature, setTxSignature] = useState("");
+  const [estimatedRewards, setEstimatedRewards] = useState(0);
+
   // Use the wallet balance hook
-  const { balance, refreshBalance } = useWalletBalance()
+  const { balance, refreshBalance } = useWalletBalance();
 
   useEffect(() => {
     if (stakeAmount) {
-      const validation = validateSOLAmount(stakeAmount, balance)
+      const validation = validateSOLAmount(stakeAmount, balance);
       if (validation.isValid && validation.amount) {
-        setEstimatedRewards(calculateRewards(validation.amount, validator.apy, 365)) // Annual rewards
+        setEstimatedRewards(
+          calculateRewards(validation.amount, validator.apy, 365)
+        ); // Annual rewards
       } else {
-        setEstimatedRewards(0)
+        setEstimatedRewards(0);
       }
     }
-  }, [stakeAmount, balance, validator.apy])
-
+  }, [stakeAmount, balance, validator.apy]);
 
   const handleStake = async () => {
     if (!publicKey || !signTransaction) {
-      setError('Please connect your wallet')
-      return
+      setError("Please connect your wallet");
+      return;
     }
 
-    const validation = validateSOLAmount(stakeAmount, balance)
+    const validation = validateSOLAmount(stakeAmount, balance);
     if (!validation.isValid) {
-      setError(validation.error || 'Invalid amount')
-      return
+      setError(validation.error || "Invalid amount");
+      return;
     }
 
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
 
     try {
-      const stakeAmountLamports = validation.amount! * LAMPORTS_PER_SOL
-      
+      const stakeAmountLamports = validation.amount! * LAMPORTS_PER_SOL;
+
       // Create stake account keypair (you might want to derive this deterministically)
-      const stakeAccount = PublicKey.unique()
-      
+      const stakeAccount = PublicKey.unique();
+
       // Get minimum rent exemption for stake account
       const rentExemption = await connection.getMinimumBalanceForRentExemption(
         StakeProgram.space
-      )
-      
+      );
+
       // Total amount needed (stake + rent exemption)
-      const totalAmountLamports = stakeAmountLamports + rentExemption
-      
+      const totalAmountLamports = stakeAmountLamports + rentExemption;
+
       if (totalAmountLamports > balance * LAMPORTS_PER_SOL) {
-        throw new Error(`Insufficient funds. Need ${formatSOL(totalAmountLamports / LAMPORTS_PER_SOL)} including rent exemption.`)
+        throw new Error(
+          `Insufficient funds. Need ${formatSOL(
+            totalAmountLamports / LAMPORTS_PER_SOL
+          )} including rent exemption.`
+        );
       }
-      
+
       // Create validator vote account public key
-      const voteAccount = new PublicKey(validator.votingPubkey)
-      
+      const voteAccount = new PublicKey(validator.votingPubkey);
+
       // Create stake account creation instruction
       const createStakeAccountIx = StakeProgram.createAccount({
         fromPubkey: publicKey,
@@ -94,72 +111,74 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
         authorized: new Authorized(publicKey, publicKey),
         lockup: new Lockup(0, 0, publicKey),
         lamports: totalAmountLamports,
-      })
-      
+      });
+
       // Create delegate instruction
       const delegateIx = StakeProgram.delegate({
         stakePubkey: stakeAccount,
         authorizedPubkey: publicKey,
         votePubkey: voteAccount,
-      })
-      
+      });
+
       // Create transaction
-      const transaction = new Transaction()
-      transaction.add(createStakeAccountIx)
-      transaction.add(delegateIx)
-      
+      const transaction = new Transaction();
+      transaction.add(createStakeAccountIx);
+      transaction.add(delegateIx);
+
       // Get recent blockhash
-      const { blockhash } = await connection.getLatestBlockhash()
-      transaction.recentBlockhash = blockhash
-      transaction.feePayer = publicKey
-      
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = publicKey;
+
       // Sign transaction
-      const signedTransaction = await signTransaction(transaction)
-      
+      const signedTransaction = await signTransaction(transaction);
+
       // Send transaction
       const signature = await connection.sendRawTransaction(
         signedTransaction.serialize(),
         {
           skipPreflight: false,
-          preflightCommitment: 'confirmed',
+          preflightCommitment: "confirmed",
         }
-      )
-      
+      );
+
       // Wait for confirmation
-      await connection.confirmTransaction(signature, 'confirmed')
-      
-      setTxSignature(signature)
-      setSuccess(true)
-      
+      await connection.confirmTransaction(signature, "confirmed");
+
+      setTxSignature(signature);
+      setSuccess(true);
+
       // Add transaction to Redux store
-      dispatch(addTransaction({
-        signature,
-        type: 'delegate',
-        amount: validation.amount!,
-        validatorAddress: validator.address,
-        validatorName: validator.name,
-        status: 'confirmed',
-        timestamp: Date.now(),
-      }))
-      
+      dispatch(
+        addTransaction({
+          signature,
+          type: "delegate",
+          amount: validation.amount!,
+          validatorAddress: validator.address,
+          validatorName: validator.name,
+          status: "confirmed",
+          timestamp: Date.now(),
+        })
+      );
+
       // Refresh balance
-      refreshBalance()
-      
+      refreshBalance();
     } catch (error) {
-      console.error('Staking error:', error)
-      setError(error instanceof Error ? error.message : 'Failed to stake SOL')
+      console.error("Staking error:", error);
+      setError(error instanceof Error ? error.message : "Failed to stake SOL");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleMaxAmount = () => {
-    if (balance > 0.01) { // Keep some SOL for fees
-      setStakeAmount((balance - 0.01).toFixed(3))
+    if (balance > 0.01) {
+      // Keep some SOL for fees
+      setStakeAmount((balance - 0.01).toFixed(3));
     }
-  }
+  };
 
-  const validation = validateSOLAmount(stakeAmount, balance)
+  const validation = validateSOLAmount(stakeAmount, balance);
 
   if (success) {
     return (
@@ -169,9 +188,10 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
             <CheckCircle className="text-solana-green mx-auto mb-4" size={64} />
             <h2 className="text-2xl font-bold mb-4">Staking Successful!</h2>
             <p className="text-solana-gray-400 mb-6">
-              You've successfully staked {formatSOL(parseFloat(stakeAmount))} with {validator.name}
+              You've successfully staked {formatSOL(parseFloat(stakeAmount))}{" "}
+              with {validator.name}
             </p>
-            
+
             <div className="bg-solana-gray-800/50 rounded-lg p-4 mb-6">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-solana-gray-400">Transaction:</span>
@@ -185,20 +205,22 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
                 </a>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-solana-gray-400">Estimated Annual Rewards:</span>
+                <span className="text-solana-gray-400">
+                  Estimated Annual Rewards:
+                </span>
                 <span className="text-solana-green font-semibold">
                   {formatSOL(estimatedRewards)}
                 </span>
               </div>
             </div>
-            
+
             <button onClick={onClose} className="btn-primary w-full">
               Close
             </button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -219,10 +241,12 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
         <div className="card bg-solana-gray-800/50 p-4 mb-6">
           <div className="flex items-center gap-3">
             {validator.avatar ? (
-              <img
+              <Image
                 src={validator.avatar}
                 alt={validator.name}
                 className="w-12 h-12 rounded-full"
+                height={12}
+                width={12}
               />
             ) : (
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-solana-purple to-solana-green flex items-center justify-center font-bold">
@@ -232,8 +256,16 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
             <div>
               <h3 className="font-semibold">{validator.name}</h3>
               <div className="flex items-center gap-4 text-sm text-solana-gray-400">
-                <span>APY: <span className="text-solana-green font-medium">{(validator.apy).toFixed(2)}%</span></span>
-                <span>Commission: <span className="font-medium">{validator.commission}%</span></span>
+                <span>
+                  APY:{" "}
+                  <span className="text-solana-green font-medium">
+                    {validator.apy.toFixed(2)}%
+                  </span>
+                </span>
+                <span>
+                  Commission:{" "}
+                  <span className="font-medium">{validator.commission}%</span>
+                </span>
               </div>
             </div>
           </div>
@@ -252,8 +284,8 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
                 onChange={(e) => setStakeAmount(e.target.value)}
                 placeholder="0.0"
                 className={clsx(
-                  'input-primary w-full pr-16',
-                  !validation.isValid && stakeAmount && 'border-red-400'
+                  "input-primary w-full pr-16",
+                  !validation.isValid && stakeAmount && "border-red-400"
                 )}
                 step="0.001"
                 min="0"
@@ -265,7 +297,7 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
                 MAX
               </button>
             </div>
-            
+
             {publicKey && (
               <div className="flex justify-between text-sm mt-2">
                 <span className="text-solana-gray-400">
@@ -313,7 +345,10 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
                 <ul className="text-solana-gray-400 space-y-1">
                   <li>• Stakes take 1-2 epochs to become active (~2-4 days)</li>
                   <li>• Unstaking also takes 1-2 epochs to complete</li>
-                  <li>• A small amount of SOL is required for the stake account rent</li>
+                  <li>
+                    • A small amount of SOL is required for the stake account
+                    rent
+                  </li>
                   <li>• Rewards are automatically added to your stake</li>
                 </ul>
               </div>
@@ -349,12 +384,12 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
                   Staking...
                 </>
               ) : (
-                'Stake SOL'
+                "Stake SOL"
               )}
             </button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
