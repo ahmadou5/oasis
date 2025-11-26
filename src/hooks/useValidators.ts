@@ -369,7 +369,7 @@ export function useValidators() {
         averageApy,
         averageCommission,
       };
-
+      console.log("Processed validator stats:", validators);
       setValidators(processedValidators);
       setStats(validatorStats);
       setLastUpdated(Date.now());
