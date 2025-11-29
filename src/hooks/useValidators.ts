@@ -142,8 +142,7 @@ export function useValidators() {
     setError(null);
 
     try {
-      console.log("🔄 Starting comprehensive validator data fetch...");
-      const response = await axios.get("http://localhost:3000/api/validators", {
+      const response = await axios.get(`${ENV.BASE_URL}/api/validators`, {
         headers: {
           "Content-Type": "application/json",
           "User-Agent": `${ENV.APP.NAME}/${ENV.APP.VERSION}`,

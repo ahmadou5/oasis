@@ -486,58 +486,6 @@ async function fetchValidatorPerformance2(validatorAddress: string): Promise<{
     return { performanceHistory: [], uptime: 0, averageApy: 0 };
   }
 }
-// Fetch additional performance data from Solana Beach
-async function fetchValidatorPerformance(validatorAddress: string): Promise<{
-  performanceHistory: Array<{
-    epoch: number;
-    apy: number;
-    skipRate: number;
-    credits: number;
-  }>;
-  uptime: number;
-  averageApy: number;
-}> {
-  try {
-    const response = await fetch(
-      buildSolanaBeachURL(
-        ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_EPOCHS(validatorAddress, 30)
-      ),
-      {
-        headers: getSolanaBeachHeaders(),
-      }
-    );
-
-    if (!response.ok) {
-      return { performanceHistory: [], uptime: 0, averageApy: 0 };
-    }
-
-    const epochData = await response.json();
-    const performanceHistory = epochData.map((epoch: any) => ({
-      epoch: epoch.epoch,
-      apy: epoch.apy || 0,
-      skipRate: epoch.skipRate || 0,
-      credits: epoch.credits || 0,
-    }));
-
-    const uptime =
-      epochData.length > 0
-        ? (epochData.filter((e: any) => e.credits > 0).length /
-            epochData.length) *
-          100
-        : 0;
-
-    const averageApy =
-      epochData.length > 0
-        ? epochData.reduce((sum: number, e: any) => sum + (e.apy || 0), 0) /
-          epochData.length
-        : 0;
-
-    return { performanceHistory, uptime, averageApy };
-  } catch (error) {
-    console.warn(`Error fetching performance for ${validatorAddress}:`, error);
-    return { performanceHistory: [], uptime: 0, averageApy: 0 };
-  }
-}
 
 export async function GET() {
   try {
@@ -545,12 +493,9 @@ export async function GET() {
 
     // Get RPC endpoint from environment configuration
     const rpcEndpoint = getRPCEndpoint();
-    console.log("Using RPC endpoint:", rpcEndpoint);
     const connection = new Connection(rpcEndpoint, "confirmed");
     // Fetch current epoch info
     const currentEpochInfo = await fetchCurrentEpochInfo();
-
-    console.log("Current Epoch Info:", currentEpochInfo);
 
     // Fetch validator metadata from Solana Beach in parallel
     const [voteAccounts, beachValidators] = await Promise.all([
@@ -578,7 +523,7 @@ export async function GET() {
         // NEW: Fetch epoch details for this validator
         // const epochHistory = await fetchEpochDetails(account.votePubkey, 10);
         const validatorResData = await axios.get<SolanaBeachValidatorResponse>(
-          "http://localhost:3000/api/validator/" + account.votePubkey
+          `${ENV.BASE_URL}/api/validator/` + account.votePubkey
         );
 
         const beachData = beachValidators.get(account.votePubkey);
