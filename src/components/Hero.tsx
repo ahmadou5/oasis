@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { TrendingUp, Shield, Zap } from "lucide-react";
+import { EpochConverter } from "@/lib/epochConverter";
+import { EpochTimer } from "./EpochCard";
+import { useValidators } from "@/hooks/useValidators";
 
 const features = [
   {
@@ -22,6 +25,15 @@ const features = [
 ];
 
 export function Hero() {
+  const { epochDetails } = useValidators();
+  console.log("Epoch Details in Hero:", epochDetails);
+  const epochInfo = EpochConverter.convertEpochToTime({
+    epoch: epochDetails?.epoch || 0,
+    absoluteSlot: epochDetails?.absoluteSlot || 0,
+    slotIndex: epochDetails?.slotIndex || 0,
+    slotsInEpoch: epochDetails?.slotsInEpoch || 1,
+  });
+
   return (
     <div className="text-center space-y-12 py-2 lg:py-20">
       {/* Hero Content */}
@@ -35,6 +47,11 @@ export function Hero() {
           high-performance blockchain. Secure, non-custodial, and optimized for
           maximum returns.
         </p>
+        <p>
+          {new Date().toLocaleDateString(
+            epochDetails?.epochStartTime.toString()
+          )}
+        </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link href="/validators" className="btn-primary">
@@ -47,22 +64,7 @@ export function Hero() {
       </div>
 
       {/* Features Grid */}
-      <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-        {features.map((feature, index) => (
-          <div
-            key={index}
-            className="card text-center group hover:scale-105 transition-transform duration-200"
-          >
-            <div className="w-16 h-16 bg-gradient-to-r from-solana-purple to-solana-green rounded-full flex items-center justify-center mx-auto mb-4 group-hover:shadow-lg group-hover:shadow-solana-purple/25 transition-shadow duration-200">
-              <feature.icon className="text-white" size={28} />
-            </div>
-            <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-            <p className="text-gray-500 dark:text-solana-gray-400">
-              {feature.description}
-            </p>
-          </div>
-        ))}
-      </div>
+      <EpochTimer epochInfo={epochInfo} />
 
       {/* Stats Banner */}
       <div className="bg-gradient-to-r from-solana-purple/10 to-solana-green/10 dark:from-solana-purple/20 dark:to-solana-green/20 rounded-2xl p-8 border border-solana-purple/20 dark:border-solana-purple/30">

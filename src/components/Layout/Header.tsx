@@ -3,9 +3,13 @@ import React, { useEffect, useState } from "react";
 import { ShoppingCart, Menu, X, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
-
+import { EpochTimer } from "../EpochCard";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { EpochConverter } from "@/lib/epochConverter";
+import { useValidators } from "@/hooks/useValidators";
+import { WalletBalanceDisplay } from "../WalletBalanceDisplay";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 interface NavigationItem {
   name: string;
@@ -16,6 +20,7 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [scrolled, setScrolled] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { epochDetails } = useValidators();
   const pathname = usePathname();
 
   const navigation: NavigationItem[] = [
@@ -23,6 +28,13 @@ const Header: React.FC = () => {
     { name: "Validators", href: "/validators" },
     { name: "Calculator", href: "/calculator" },
   ];
+
+  const epochInfo = EpochConverter.convertEpochToTime({
+    epoch: 887,
+    absoluteSlot: 383362707,
+    slotIndex: 178707,
+    slotsInEpoch: 432000,
+  });
 
   const isActive = (path: string): boolean => pathname === path;
   useEffect(() => {
@@ -75,6 +87,18 @@ const Header: React.FC = () => {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
+            <div className="hidden lg:block">
+              <WalletBalanceDisplay
+                size="sm"
+                showLabel={true}
+                showRefresh={true}
+                variant="inline"
+                className="min-w-[160px]"
+              />
+            </div>
+
+            <WalletMultiButton className="!bg-gradient-to-r !from-solana-purple !to-solana-blue hover:!from-solana-purple/90 hover:!to-solana-blue/90 !rounded-lg !font-semibold !transition-all !duration-200 !shadow-lg hover:!shadow-xl" />
+
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}

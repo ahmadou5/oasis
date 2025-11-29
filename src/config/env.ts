@@ -3,6 +3,7 @@ import { AxiosRequestHeaders, AxiosHeaders } from "axios";
 // Environment configuration for Stakeit app
 export const ENV = {
   // Solana Network Configuration
+  BASE_URL: process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000",
   SOLANA: {
     RPC_ENDPOINT:
       process.env.NEXT_PUBLIC_SOLANA_RPC_ENDPOINT ||
@@ -39,7 +40,16 @@ export const ENV = {
       VALIDATOR_DETAIL: (address: string) => `/validator/${address}`,
       VALIDATOR_EPOCHS: (address: string, limit = 30) =>
         `/validator/${address}/epochs?limit=${limit}`,
+      VALIDATOR_STAKE_HISTORY: (address: string, limit = 30) =>
+        `/validator/${address}/stake-history?limit=${limit}`,
+      VALIDATOR_SUCCESS_RATE_HISTORY: (address: string, limit = 30) =>
+        `/validator/${address}/success-rate-history?limit=${limit}`,
       NETWORK_STATS: "/latest-blockhash",
+      VALIDATOR_BLOCK_REWARDS_: (address: string, limit = 30) =>
+        `/validator/${address}/block-rewards-history?limit=${limit}`,
+      VALIDATOR_STAKE_ACCOUNTS_HISTORY: (votePubkey: string, limit: number) =>
+        `/validator/${votePubkey}/stake-accounts-history?limit=${limit}`,
+      EPOCH_INFO: (limit: number) => `/epoch-info?limit=${limit}`,
     },
   },
 
@@ -93,3 +103,5 @@ export function getSolanaBeachHeaders(): AxiosRequestHeaders {
 export function buildSolanaBeachURL(endpoint: string): string {
   return `${ENV.SOLANA_BEACH.BASE_URL}${endpoint}`;
 }
+
+///Ac1beBKixfNdrTAac7GRaTsJTxLyvgGvJjvy4qQfvyfc/block-rewards-history

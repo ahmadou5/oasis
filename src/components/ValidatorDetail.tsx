@@ -98,6 +98,24 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
     }
   };
 
+  // normalize validator to the shape expected by ValidatorPerformanceChart
+  const updatedValidator = {
+    ...validator,
+    performanceHistory:
+      validator.performanceHistory?.map((h) => ({
+        epoch: h.epoch,
+        activeStake:
+          // older ValidatorInfo entries may not have activeStake
+          (h as any).activeStake ?? 0,
+        activeStakeAccounts:
+          // older ValidatorInfo entries may not have activeStakeAccounts
+          (h as any).activeStakeAccounts ?? 0,
+        skipRate: h.skipRate,
+        credits: h.credits,
+        apy: h.apy,
+      })) ?? [],
+  };
+
   return (
     <div className="space-y-8">
       {/* Header */}

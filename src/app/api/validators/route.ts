@@ -8,6 +8,88 @@ import {
 } from "@/config/env";
 import axios from "axios";
 
+// 1. Define interfaces based on the Documentation provided
+interface ValidatorDetailsResponse {
+  votePubkey: string;
+  nodePubkey: string;
+  // ... other fields
+}
+
+interface SuccessRateItem {
+  epoch: number;
+  slots: number;
+  blocks: number;
+  successRate: number; // Likely a decimal 0.0 to 1.0 or percentage
+}
+
+interface BlockRewardItem {
+  epoch: number;
+  blocks: number;
+  fees: number;
+}
+
+interface ApiHistoryResponse<T> {
+  history: T[];
+  pagination: {
+    total: number;
+    offset: number;
+    limit: number;
+  };
+}
+
+// Add epoch details interface
+interface EpochDetails {
+  epoch: number;
+  startSlot: number;
+  endSlot: number;
+  totalTransactions: number;
+  leader?: {
+    votePubkey: string;
+    name: string;
+    blocksProduced: number;
+  };
+  blockRewards: {
+    totalBlocks: number;
+    totalFees: number;
+  };
+}
+
+// Enhanced validator interface with epoch data
+interface EnhancedValidator {
+  address: string;
+  name: string;
+  commission: number;
+  stake: number;
+  apy: number;
+  delegatedStake: number;
+  skipRate: number;
+  dataCenter: string;
+  website?: string;
+  description: string;
+  avatar: string;
+  status: "active" | "delinquent";
+  epochCredits: number[];
+  votingPubkey: string;
+  activatedStake: number;
+  lastVote: number;
+  rootSlot: number;
+  country?: string;
+  keybaseUsername?: string;
+  twitterUsername?: string;
+  uptime: number;
+  performanceHistory: Array<{
+    epoch: number;
+    activeStake: number;
+    activeStakeAccounts: number;
+    skipRate: number;
+    credits: number;
+    apy: number;
+  }>;
+  // NEW: Epoch details
+  currentEpoch?: EpochDetails;
+  epochHistory?: EpochDetails[];
+}
+
 interface CSolanaBeachValidator {
   votePubkey: string;
   name: string;
@@ -41,6 +123,27 @@ interface SolanaBeachValidatorsResponse {
     total: number;
     offset: number;
     limit: number;
+  };
+}
+
+interface SolanaBeachValidatorResponse {
+  response: {
+    votePubkey: string;
+    nodePubkey: string;
+    commission: number;
+    lastVote: number;
+    delinquent: boolean;
+    name: string;
+    iconUrl: string;
+    website: string;
+    details: string;
+    version: string;
+    continent: string;
+    country: string;
+    region: string;
+    city: string;
+    asn: number;
+    asnOrganization: string;
   };
 }
 
@@ -95,6 +198,66 @@ const VALIDATOR_NAMES: Record<
     description: "Liquid staking protocol for Solana",
   },
 };
+
+/**
+ * Fetch epoch details from Solana Beach API
+ */
+async function fetchEpochDetails(
+  votePubkey: string,
+  limit: number = 10
+): Promise<EpochDetails[]> {
+  try {
+    // Fetch block rewards history
+    const rewardsRes = await axios.get(
+      buildSolanaBeachURL(
+        ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_BLOCK_REWARDS_(votePubkey, limit)
+      ),
+      { headers: getSolanaBeachHeaders() }
+    );
+
+    if (!rewardsRes.data) return [];
+
+    const rewardsData = rewardsRes.data;
+
+    console.log(`Fetched epoch details for ${votePubkey}:`, rewardsData);
+
+    return rewardsData.history.map((item: any) => ({
+      epoch: item.epoch,
+      blockRewards: {
+        totalBlocks: item.blocks,
+        totalFees: item.fees,
+      },
+    }));
+  } catch (error) {
+    console.warn(`Error fetching epoch details for ${votePubkey}:`, error);
+    return [];
+  }
+}
+
+/**
+ * Fetch current epoch information from cluster
+ */
+async function fetchCurrentEpochInfo(): Promise<{
+  epoch: number;
+  absoluteSlot: number;
+  slotIndex: number;
+  slotsInEpoch: number;
+  transactionCount: number;
+} | null> {
+  try {
+    const response = await fetch(
+      buildSolanaBeachURL(ENV.SOLANA_BEACH.ENDPOINTS.EPOCH_INFO(30)),
+      { headers: getSolanaBeachHeaders() }
+    );
+
+    if (!response.ok) return null;
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching current epoch info:", error);
+    return null;
+  }
+}
 
 // Calculate APY based on epoch credits (simplified calculation)
 function calculateAPY(epochCredits: [number, number, number][]): number {
@@ -173,6 +336,156 @@ async function fetchSolanaBeachValidators(): Promise<
     return new Map();
   }
 }
+
+// Define interfaces for the new data types based on docs
+interface StakeHistoryItem {
+  epoch: number;
+  activatedStake: number;
+}
+
+interface StakeAccountsItem {
+  epoch: number;
+  stakeAccounts: number;
+}
+
+async function fetchValidatorPerformance2(validatorAddress: string): Promise<{
+  performanceHistory: Array<{
+    epoch: number;
+    activeStake: number; // NEW: Active stake in Lamports
+    activeStakeAccounts: number; // NEW: Number of delegators
+    skipRate: number;
+    credits: number;
+    apy: number; // Kept as 0 to prevent type errors in UI
+  }>;
+  uptime: number;
+  averageApy: number; // Kept as 0 to prevent type errors in UI
+}> {
+  try {
+    // STEP 1: Fetch Validator Details to get the Node Pubkey
+    // Required because Success Rate/Block Rewards use NodePubkey, while Stake uses VotePubkey
+    const detailsRes = await fetch(
+      buildSolanaBeachURL(
+        ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_DETAIL(validatorAddress)
+      ),
+      { headers: getSolanaBeachHeaders() }
+    );
+
+    if (!detailsRes.ok) throw new Error("Failed to fetch validator details");
+
+    const details: ValidatorDetailsResponse = await detailsRes.json();
+    const nodePubkey = details.nodePubkey;
+
+    // STEP 2: Fetch ALL History Data in parallel (4 endpoints)
+    const [successRes, rewardsRes, stakeRes, stakeAccountsRes] =
+      await Promise.all([
+        // 1. Success Rate (Uses Node Pubkey)
+        fetch(
+          buildSolanaBeachURL(
+            ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_SUCCESS_RATE_HISTORY(
+              nodePubkey,
+              30
+            )
+          ),
+          { headers: getSolanaBeachHeaders() }
+        ),
+        // 2. Block Rewards (Uses Node Pubkey)
+        fetch(
+          buildSolanaBeachURL(
+            ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_BLOCK_REWARDS_(nodePubkey, 30)
+          ),
+          { headers: getSolanaBeachHeaders() }
+        ),
+        // 3. Stake History (Uses Vote Pubkey / validatorAddress)
+        fetch(
+          buildSolanaBeachURL(
+            ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_STAKE_HISTORY(
+              validatorAddress,
+              30
+            )
+          ),
+          { headers: getSolanaBeachHeaders() }
+        ),
+        // 4. Stake Accounts History (Uses Vote Pubkey / validatorAddress)
+        fetch(
+          buildSolanaBeachURL(
+            ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_STAKE_ACCOUNTS_HISTORY(
+              validatorAddress,
+              30
+            )
+          ),
+          { headers: getSolanaBeachHeaders() }
+        ),
+      ]);
+
+    // Parse responses safely
+    const successData: ApiHistoryResponse<SuccessRateItem> = successRes.ok
+      ? await successRes.json()
+      : { history: [], pagination: { total: 0, offset: 0, limit: 0 } };
+
+    const rewardsData: ApiHistoryResponse<BlockRewardItem> = rewardsRes.ok
+      ? await rewardsRes.json()
+      : { history: [], pagination: { total: 0, offset: 0, limit: 0 } };
+
+    const stakeData: ApiHistoryResponse<StakeHistoryItem> = stakeRes.ok
+      ? await stakeRes.json()
+      : { history: [], pagination: { total: 0, offset: 0, limit: 0 } };
+
+    const stakeAccountsData: ApiHistoryResponse<StakeAccountsItem> =
+      stakeAccountsRes.ok
+        ? await stakeAccountsRes.json()
+        : { history: [], pagination: { total: 0, offset: 0, limit: 0 } };
+
+    // STEP 3: Merge and Format the Data
+    // We Map over success history as the base since it usually dictates the epochs we care about
+    const performanceHistory = successData.history.map((item) => {
+      // Find matching data from other arrays by epoch
+      const rewardItem = rewardsData.history.find(
+        (r) => r.epoch === item.epoch
+      );
+      const stakeItem = stakeData.history.find((s) => s.epoch === item.epoch);
+      const accountItem = stakeAccountsData.history.find(
+        (a) => a.epoch === item.epoch
+      );
+
+      // Calculate Skip Rate (1 - Success Rate)
+      const skipRate =
+        item.successRate !== undefined ? 1 - item.successRate : 0;
+
+      return {
+        epoch: item.epoch,
+        // New Data Points
+        activeStake: stakeItem ? stakeItem.activatedStake : 0,
+        activeStakeAccounts: accountItem ? accountItem.stakeAccounts : 0,
+        // Existing Data Points
+        skipRate: skipRate,
+        credits: rewardItem ? rewardItem.blocks : 0,
+        apy: 0, // Placeholder
+      };
+    });
+
+    // STEP 4: Calculate Aggregates
+    const totalSkipRate = performanceHistory.reduce(
+      (acc, curr) => acc + curr.skipRate,
+      0
+    );
+    const averageSkipRate =
+      performanceHistory.length > 0
+        ? totalSkipRate / performanceHistory.length
+        : 0;
+
+    const uptime =
+      performanceHistory.length > 0 ? (1 - averageSkipRate) * 100 : 0;
+
+    return {
+      performanceHistory,
+      uptime,
+      averageApy: 0, // Still returning 0 to satisfy interface
+    };
+  } catch (error) {
+    console.warn(`Error fetching performance for ${validatorAddress}:`, error);
+    return { performanceHistory: [], uptime: 0, averageApy: 0 };
+  }
+}
 // Fetch additional performance data from Solana Beach
 async function fetchValidatorPerformance(validatorAddress: string): Promise<{
   performanceHistory: Array<{
@@ -234,20 +547,16 @@ export async function GET() {
     const rpcEndpoint = getRPCEndpoint();
     console.log("Using RPC endpoint:", rpcEndpoint);
     const connection = new Connection(rpcEndpoint, "confirmed");
+    // Fetch current epoch info
+    const currentEpochInfo = await fetchCurrentEpochInfo();
+
+    console.log("Current Epoch Info:", currentEpochInfo);
 
     // Fetch validator metadata from Solana Beach in parallel
     const [voteAccounts, beachValidators] = await Promise.all([
       connection.getVoteAccounts(),
       fetchSolanaBeachValidators(),
     ]);
-
-    console.log(
-      `Fetched ${voteAccounts.current.length} current validators and ${voteAccounts.delinquent.length} delinquent validators`
-    );
-
-    console.log(
-      `Fetched ${beachValidators.size} validators from Solana Beach for metadata enhancement`
-    );
 
     // Combine current and delinquent validators
     const allValidators = [
@@ -263,23 +572,29 @@ export async function GET() {
 
     // Transform to our validator format with enhanced metadata
     const validators = await Promise.all(
-      allValidators.slice(0, 100).map(async (account) => {
+      allValidators.slice(0, 150).map(async (account) => {
         // Limit to 100 for performance
         // Get metadata from Solana Beach or fallback
+        // NEW: Fetch epoch details for this validator
+        // const epochHistory = await fetchEpochDetails(account.votePubkey, 10);
+        const validatorResData = await axios.get<SolanaBeachValidatorResponse>(
+          "http://localhost:3000/api/validator/" + account.votePubkey
+        );
+
         const beachData = beachValidators.get(account.votePubkey);
         const fallbackData = VALIDATOR_NAMES[account.votePubkey];
-
+        const remData = validatorResData.data.response;
         const validatorInfo = {
           name:
             beachData?.name ||
             fallbackData?.name ||
             `Validator ${account.votePubkey.slice(0, 8)}...`,
-          description: fallbackData?.description || "Solana validator node",
-          website: fallbackData?.website,
-          avatar: beachData?.iconUrl,
-          location: "Global",
-          country: "",
-          keybaseUsername: beachData?.name,
+          description: remData?.details || "Solana validator node",
+          website: remData?.website,
+          avatar: remData?.iconUrl,
+          location: remData.continent || "Unknown",
+          country: remData.country,
+          keybaseUsername: remData.website,
           twitterUsername: beachData?.name,
         };
 
@@ -287,6 +602,23 @@ export async function GET() {
         const skipRate = calculateSkipRate(account.epochCredits);
         const stakeAmount = account.activatedStake / 1000000000; // Convert lamports to SOL
 
+        // Build current epoch details
+        //let currentEpoch: EpochDetails | undefined;
+        //if (currentEpochInfo) {
+        //  currentEpoch = {
+        //    epoch: currentEpochInfo.epoch,
+        //    startSlot:
+        //      currentEpochInfo.absoluteSlot - currentEpochInfo.slotIndex,
+        //    endSlot:
+        //      currentEpochInfo.absoluteSlot +
+        //      (currentEpochInfo.slotsInEpoch - currentEpochInfo.slotIndex),
+        //    totalTransactions: currentEpochInfo.transactionCount,
+        //    blockRewards: {
+        //      totalBlocks: epochHistory[0]?.blockRewards.totalBlocks || 0,
+        //      totalFees: epochHistory[0]?.blockRewards.totalFees || 0,
+        //    },
+        //  };
+        //}
         // Get performance history for top validators
         let performanceData: {
           performanceHistory: Array<{
@@ -302,7 +634,7 @@ export async function GET() {
         if (stakeAmount > 1000000) {
           // Only fetch for validators with >1M SOL stake
           try {
-            performanceData = await fetchValidatorPerformance(
+            performanceData = await fetchValidatorPerformance2(
               account.votePubkey
             );
           } catch (error) {
@@ -339,6 +671,8 @@ export async function GET() {
           twitterUsername: validatorInfo.twitterUsername,
           uptime: performanceData.uptime,
           performanceHistory: performanceData.performanceHistory,
+          //currentEpoch: currentEpoch,
+          //epochHistory: epochHistory,
         };
       })
     );
@@ -346,11 +680,10 @@ export async function GET() {
     // Sort by stake amount (descending) by default
     validators.sort((a, b) => b.stake - a.stake);
 
-    console.log(
-      `Processed ${validators.length} validators with enhanced metadata`
-    );
-    console.log("Sample validator:", validators[0]);
-    return NextResponse.json(validators);
+    return NextResponse.json({
+      validators,
+      currentEpochInfo,
+    });
   } catch (error) {
     console.error("Error fetching validators:", error);
     return NextResponse.json(

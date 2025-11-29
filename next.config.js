@@ -1,5 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    unoptimized: true,
+    domains: [
+      "www.solanabeach.io",
+      "api.solanabeach.io",
+      "raw.githubusercontent.com",
+      "bit.ly",
+      "*",
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+    ],
+  },
+
   webpack: (config) => {
     config.resolve.fallback = {
       fs: false,
@@ -8,6 +25,6 @@ const nextConfig = {
     };
     return config;
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
