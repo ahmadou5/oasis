@@ -47,11 +47,6 @@ export function Hero() {
           high-performance blockchain. Secure, non-custodial, and optimized for
           maximum returns.
         </p>
-        <p>
-          {new Date().toLocaleDateString(
-            epochDetails?.epochStartTime.toString()
-          )}
-        </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link href="/validators" className="btn-primary">
