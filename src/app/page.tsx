@@ -1,6 +1,6 @@
-import { Hero } from '@/components/Hero'
-import { ValidatorList } from '@/components/ValidatorList'
-import { StakingStats } from '@/components/StakingStats'
+import { Hero } from "@/components/Home/Hero";
+import { ValidatorList } from "@/components/ValidatorList";
+import { StakingStats } from "@/components/StakingStats";
 
 export default function HomePage() {
   return (
@@ -9,5 +9,5 @@ export default function HomePage() {
       <StakingStats />
       <ValidatorList />
     </div>
-  )
+  );
 }

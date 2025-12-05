@@ -517,7 +517,7 @@ export async function GET() {
 
     // Transform to our validator format with enhanced metadata
     const validators = await Promise.all(
-      allValidators.slice(0, 150).map(async (account) => {
+      allValidators.slice(0, 90).map(async (account) => {
         // Limit to 100 for performance
         // Get metadata from Solana Beach or fallback
         // NEW: Fetch epoch details for this validator
@@ -576,7 +576,7 @@ export async function GET() {
           averageApy: number;
         } = { performanceHistory: [], uptime: 0, averageApy: apy };
 
-        if (stakeAmount > 1000000) {
+        if (stakeAmount > 100000) {
           // Only fetch for validators with >1M SOL stake
           try {
             performanceData = await fetchValidatorPerformance2(

@@ -5,6 +5,7 @@ import { TrendingUp, Shield, Zap } from "lucide-react";
 import { EpochConverter } from "@/lib/epochConverter";
 import { EpochTimer } from "./EpochCard";
 import { useValidators } from "@/hooks/useValidators";
+import { CacheStatus } from "./cacheStatus";
 
 const features = [
   {
@@ -25,7 +26,17 @@ const features = [
 ];
 
 export function Hero() {
-  const { epochDetails } = useValidators();
+  const {
+    validators,
+    epochDetails,
+    loading,
+    error,
+    lastUpdated,
+    refreshValidators,
+    clearCache,
+    isFromCache,
+    cacheInfo,
+  } = useValidators();
   console.log("Epoch Details in Hero:", epochDetails);
   const epochInfo = EpochConverter.convertEpochToTime({
     epoch: epochDetails?.epoch || 0,
@@ -57,6 +68,14 @@ export function Hero() {
           </Link>
         </div>
       </div>
+      <CacheStatus
+        isFromCache={isFromCache}
+        cacheInfo={cacheInfo}
+        lastUpdated={lastUpdated}
+        onRefresh={refreshValidators}
+        onClearCache={clearCache}
+        loading={loading}
+      />
 
       {/* Features Grid */}
       <EpochTimer epochInfo={epochInfo} />

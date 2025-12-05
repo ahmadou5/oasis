@@ -5,6 +5,8 @@ import { formatNumber, formatPercent, formatSOL } from "@/utils/formatters";
 import { TrendingUp, Shield, Globe, ExternalLink } from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface ValidatorCardProps {
   validator: ValidatorInfo;
@@ -24,6 +26,8 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
         return "text-solana-gray-400";
     }
   };
+
+  const router = useRouter();
 
   return (
     <div className="card group hover:border-solana-purple/50 transition-all duration-200 cursor-pointer">
@@ -134,12 +138,12 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
         >
           Stake SOL
         </button>
-        <a
+        <Link
           href={`/validator/${validator.address}`}
           className="btn-secondary text-sm py-2 px-4"
         >
           Details
-        </a>
+        </Link>
       </div>
     </div>
   );

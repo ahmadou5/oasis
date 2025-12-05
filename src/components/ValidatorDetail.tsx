@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "@/store";
-import { fetchValidators, ValidatorInfo } from "@/store/slices/validatorSlice";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { ValidatorInfo } from "@/store/slices/validatorSlice";
 import { ValidatorPerformanceChart } from "./ValidatorPerformanceChart";
 import { StakeModal } from "./StakeModal";
 import { LoadingSpinner } from "./LoadingSpinner";
@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
+import { useValidators } from "@/hooks/useValidators";
 
 interface ValidatorDetailProps {
   validatorAddress: string;
@@ -29,28 +30,31 @@ interface ValidatorDetailProps {
 
 export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
   const dispatch = useDispatch<AppDispatch>();
-  const { validators, loading } = useSelector(
-    (state: RootState) => state.validators
-  );
+  const [loading, setLoading] = useState<boolean>(true);
+  const { validators: valid, refreshValidators } = useValidators();
   const [validator, setValidator] = useState<ValidatorInfo | null>(null);
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (validators.length === 0) {
-      dispatch(fetchValidators());
-    } else {
-      const found = validators.find((v) => v.address === validatorAddress);
-      setValidator(found || null);
-    }
-  }, [dispatch, validators, validatorAddress]);
-
-  useEffect(() => {
-    if (validators.length > 0 && !validator) {
-      const found = validators.find((v) => v.address === validatorAddress);
-      setValidator(found || null);
-    }
-  }, [validators, validatorAddress, validator]);
+    const loadValidator = async () => {
+      try {
+        if (valid.length === 0) {
+          refreshValidators();
+          setLoading(false);
+        } else {
+          const found = valid.find((v) => v.address === validatorAddress);
+          setValidator(found || null);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error loading validator:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadValidator();
+  }, [dispatch, valid, validatorAddress]);
 
   const handleCopyAddress = async () => {
     try {
@@ -64,15 +68,15 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
 
   if (loading && !validator) {
     return (
-      <div className="flex justify-center py-12">
-        <LoadingSpinner size="lg" />
+      <div className="flex justify-center mt-20 py-12 space-y-8">
+        <LoadingSpinner size="lg" />l
       </div>
     );
   }
 
   if (!validator) {
     return (
-      <div className="card text-center py-12">
+      <div className="card text-center space-y-8 py-12">
         <div className="text-red-400 mb-4">
           <Award size={48} className="mx-auto mb-4" />
           <h3 className="text-xl font-semibold mb-2">Validator Not Found</h3>
@@ -117,7 +121,7 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 py-16">
       {/* Header */}
       <div className="card">
         <div className="flex flex-col lg:flex-row gap-6">

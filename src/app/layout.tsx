@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Raleway } from "next/font/google";
+import { Raleway, Comic_Neue } from "next/font/google";
 import "./globals.css";
 import { WalletProvider } from "@/components/WalletProvider";
 import { ReduxProvider } from "@/components/ReduxProvider";
@@ -8,10 +8,10 @@ import { Navigation } from "@/components/Navigation";
 import FluidBackground from "@/components/FluidBackground";
 import Layout from "@/components/Layout/Layout";
 
-const raleway = Raleway({
+const raleway = Comic_Neue({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
-  variable: "--font-raleway",
+  weight: ["400"],
+  variable: "--font-comic-neue",
   display: "swap",
 });
 
@@ -33,12 +33,28 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('theme') || 'dark';
+                document.documentElement.classList.add(theme);
+                console.log('Initial theme set:', theme);
+              } catch (e) {
+                document.documentElement.classList.add('dark');
+              }
+            `,
+          }}
+        />
+      </head>
       <body
-        className={`${raleway.variable} font-raleway bg-white dark:bg-solana-dark text-gray-900 dark:text-white min-h-screen relative overflow-x-hidden transition-colors duration-300`}
+        className={`${raleway.variable} font-comic-neue text-gray-900 dark:text-white min-h-screen relative overflow-x-hidden transition-colors duration-300`}
       >
         <ThemeProvider>
           <ReduxProvider>
             <WalletProvider>
+              <FluidBackground />
               <Layout>{children}</Layout>
             </WalletProvider>
           </ReduxProvider>
