@@ -73,7 +73,7 @@ export const SideBar: React.FC<SideBarProps> = ({
     <aside
       className={`
           fixed lg:relative h-screen z-50
-          bg-white/10 dark:bg-gray-900/80 backdrop-blur-3xl 
+          bg-white/10 dark:bg-black backdrop-blur-3xl 
           border-r border-gray-200/20 dark:border-gray-700/20
           transition-all duration-300 ease-in-out
           ${
@@ -89,9 +89,7 @@ export const SideBar: React.FC<SideBarProps> = ({
         <div className="p-4 ">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-solana-purple to-solana-green rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-              <span className="text-white font-bold text-xl">
-                O
-              </span>
+              <span className="text-white font-bold text-xl">O</span>
             </div>
             {mobileMenuOpen && (
               <button

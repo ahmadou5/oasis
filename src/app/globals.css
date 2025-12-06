@@ -10,7 +10,7 @@
   }
   
   body {
-    @apply antialiased bg-white dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-300;
+    @apply antialiased bg-white dark:bg-black text-gray-900 dark:text-white transition-colors duration-300;
   }
 }
 

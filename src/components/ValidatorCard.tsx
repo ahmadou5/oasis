@@ -27,8 +27,6 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
     }
   };
 
-  const router = useRouter();
-
   return (
     <div className="card group hover:border-solana-purple/50 transition-all duration-200 cursor-pointer">
       <div onClick={onSelect} className="space-y-4">

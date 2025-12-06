@@ -7,6 +7,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import { useTheme } from "@/context/ThemeContext";
 
 interface ValidatorCardProps {
   validator: ValidatorInfo;
@@ -29,9 +30,16 @@ export function ValidatorTrendCard({
         return "text-solana-gray-400";
     }
   };
+  const { theme } = useTheme();
 
   return (
-    <div className="w-auto h-8 flex flex-col text-white justify-between items-center px-2">
+    <div
+      className={`w-auto h-auto bg-gradient-to-r from-green-400/20 ${
+        theme === "dark" ? "to-black/15" : "to-white/5"
+      }  border border-green-700/50 py-3 px-4 flex mb-2 mt-2 flex-col ${
+        theme === "dark" ? "text-white" : "text-black"
+      } justify-between items-center rounded-3xl hover:scale-[1.02] transition-transform cursor-pointer `}
+    >
       <div className="flex items-center gap-3">
         {validator?.avatar ? (
           <Image
@@ -49,8 +57,10 @@ export function ValidatorTrendCard({
           </div>
         )}
         <div>
-          <h3 className="font-semibold text-sm py-1 transition-colors">
-            {validator?.name}
+          <h3 className="font-semibold text-sm mt-0 transition-colors">
+            {validator?.name.length > 12
+              ? validator?.name.slice(0, 13)
+              : validator?.name}
           </h3>
           <div
             className={clsx(
@@ -59,15 +69,15 @@ export function ValidatorTrendCard({
             )}
           >
             <span className="inline-block w-2 h-2 rounded-full bg-current mr-2"></span>
+            <p className="inline-block text-xs mr-2">{validator?.status}</p>
           </div>
         </div>
-      </div>
-
-      {/* Metrics */}
-      <div className="flex flex-row space-x-4">
-        <div>
-          <div className="text-lg font-semibold text-solana-green">
-            {formatPercent(validator?.apy)}
+        <div className="flex flex-row space-x-4">
+          <div className="flex flex-col items-end">
+            <p className="text-xs text-solana-green/70">APY</p>
+            <div className="text-sm font-semibold text-solana-green">
+              {formatPercent(validator?.apy)}
+            </div>
           </div>
         </div>
       </div>

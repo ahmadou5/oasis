@@ -3,6 +3,8 @@ import { useTheme } from "@/context/ThemeContext";
 import { useValidators } from "@/hooks/useValidators";
 import { EpochConverter } from "@/lib/epochConverter";
 import { ValidatorTrendCard } from "./ValidatorTrend";
+import LogoScroller from "./Scroller";
+import { NewValidatorCard } from "./NewValidatorCard";
 
 export function Hero() {
   const {
@@ -25,17 +27,44 @@ export function Hero() {
     slotsInEpoch: epochDetails?.slotsInEpoch || 1,
   });
 
+  // Prepare validators data for the scroller
+  const activeValidators =
+    validators?.filter((v) => v.status === "active") || [];
+
+  // Convert validators to logos format for the scroller
+  const validatorLogos = activeValidators.map((validator) => ({
+    id: validator.address ? validator.address : Math.random(),
+    component: (
+      <ValidatorTrendCard
+        key={validator.address}
+        validator={validator}
+        onSelect={() => alert(validator.name)}
+      />
+    ),
+  }));
+
+  // Duplicate the array to ensure smooth infinite scrolling
+  const duplicatedLogos = [...validatorLogos, ...validatorLogos];
+
   return (
-    <div className="flex flex-col space-y-12 bg-transparent">
-      <div>
+    <div className="flex flex-col space-y-2 bg-transparent">
+      <div className="lg:px-16 px-3">
         <p className="text-3xl text-gray-900 dark:text-gray-100 font-medium">
-          Home
+          Active Validators
         </p>
       </div>
-      <div className="w-[90%] py-3 px-4 flex ml-auto mr-auto bg-white/5 dark:bg-gray-800/50 rounded-2xl mt-2 backdrop-blur-sm border border-gray-200/20 dark:border-gray-700/20">
-        <ValidatorTrendCard
+
+      {validatorLogos.length > 0 ? (
+        <LogoScroller logos={duplicatedLogos} />
+      ) : (
+        <div className="w-[98%] h-auto py-3 px-4 flex ml-auto mr-auto rounded-2xl mt-0 bg-green-600/10 backdrop-blur-sm border border-green-700/50">
+          <p className="text-gray-500">No active validators found</p>
+        </div>
+      )}
+      <div>
+        <NewValidatorCard
           validator={validators[2]}
-          onSelect={() => alert(`selected is ${validators[1].name}`)}
+          onSelect={() => alert(validators[2].name)}
         />
       </div>
     </div>
