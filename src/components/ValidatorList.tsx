@@ -12,13 +12,20 @@ import clsx from "clsx";
 import { NewValidatorCard } from "./Home/NewValidatorCard";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
+import CustomDropdown from "./DropDown";
 
 interface ValidatorListProps {
   showFilters?: boolean;
 }
 
-export function ValidatorList({ showFilters = true }: ValidatorListProps) {
-  const searchString = useSelector<RootState>((state) => state.search.value);
+interface StringState {
+  value: string;
+}
+
+export function ValidatorList({ showFilters = false }: ValidatorListProps) {
+  const searchString = useSelector<RootState, string>(
+    (state) => state.search.value
+  );
   // Use the enhanced validator hook as single source of truth
   const { validators, loading, error, stats, lastUpdated, refreshValidators } =
     useValidators();
@@ -28,7 +35,7 @@ export function ValidatorList({ showFilters = true }: ValidatorListProps) {
     useState<ValidatorInfo | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
-  const [searchTerm, setSearchTerm] = useState("");
+
   const [sortBy, setSortBy] = useState<"apy" | "stake" | "commission" | "name">(
     "apy"
   );
@@ -40,7 +47,7 @@ export function ValidatorList({ showFilters = true }: ValidatorListProps) {
 
     // Search filter
     if (searchString) {
-      const searchLower = searchTerm.toLowerCase();
+      const searchLower = searchString.toLowerCase();
       filtered = filtered.filter(
         (v) =>
           v.name.toLowerCase().includes(searchLower) ||
@@ -142,18 +149,6 @@ export function ValidatorList({ showFilters = true }: ValidatorListProps) {
             {showFilters ? "Top Validators" : "All Validators"}
           </h2>
 
-          {/* Simple Search */}
-          {showFilters && (
-            <div className="mt-4 max-w-md">
-              <input
-                type="text"
-                placeholder="Search validators..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="input-primary w-full"
-              />
-            </div>
-          )}
           <p className="text-gray-500 dark:text-solana-gray-400">
             {filteredValidators.length} validators found
             {stats.activeValidators > 0 && (
@@ -175,37 +170,15 @@ export function ValidatorList({ showFilters = true }: ValidatorListProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* View Mode Toggle */}
-          <div className="flex bg-solana-gray-800 rounded-lg p-1">
-            <button
-              onClick={() => setViewMode("table")}
-              className={clsx(
-                "p-2 rounded-md transition-colors",
-                viewMode === "table"
-                  ? "bg-solana-purple text-white"
-                  : "text-solana-gray-400 hover:text-white"
-              )}
-            >
-              <List size={18} />
-            </button>
-            <button
-              onClick={() => setViewMode("grid")}
-              className={clsx(
-                "p-2 rounded-md transition-colors",
-                viewMode === "grid"
-                  ? "bg-solana-purple text-white"
-                  : "text-solana-gray-400 hover:text-white"
-              )}
-            >
-              <Grid size={18} />
-            </button>
-          </div>
-
           {/* Page Size Selector */}
+          <CustomDropdown
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.toFixed()))}
+          />
           <select
             value={pageSize}
             onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            className="input-primary text-sm"
+            className="text-sm py-1 bg-transparent px-4 border border-green-500/40 rounded-xl"
           >
             <option value={10}>10 per page</option>
             <option value={20}>20 per page</option>
