@@ -6,10 +6,14 @@ import { ArrowUpDown, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
+import { NewValidatorCard } from "./Home/NewValidatorCard";
 
 interface ValidatorTableProps {
   validators: ValidatorInfo[];
   onValidatorSelect: (validator: ValidatorInfo) => void;
+  totalPages: number;
+  currentPage: number;
+  handlePageChange: (page: number) => void;
 }
 
 type SortField = "name" | "apy" | "commission" | "stake" | "skipRate";
@@ -18,6 +22,9 @@ type SortDirection = "asc" | "desc";
 export function ValidatorTable({
   validators,
   onValidatorSelect,
+  totalPages,
+  currentPage,
+  handlePageChange,
 }: ValidatorTableProps) {
   const [sortField, setSortField] = useState<SortField>("apy");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
@@ -74,163 +81,118 @@ export function ValidatorTable({
   };
 
   return (
-    <div className="card p-0 overflow-hidden">
+    <div className="border border-green-600/40 rounded-xl p-0 overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-solana-gray-800/50">
-            <tr>
-              <th className="text-left p-4 font-semibold">
-                <button
-                  onClick={() => handleSort("name")}
-                  className="flex items-center gap-2 hover:text-solana-purple transition-colors"
-                >
-                  Validator
-                  {getSortIcon("name")}
-                </button>
-              </th>
-              <th className="text-left p-4 font-semibold">
-                <button
-                  onClick={() => handleSort("apy")}
-                  className="flex items-center gap-2 hover:text-solana-purple transition-colors"
-                >
-                  APY
-                  {getSortIcon("apy")}
-                </button>
-              </th>
-              <th className="text-left p-4 font-semibold">
-                <button
-                  onClick={() => handleSort("commission")}
-                  className="flex items-center gap-2 hover:text-solana-purple transition-colors"
-                >
-                  Commission
-                  {getSortIcon("commission")}
-                </button>
-              </th>
-              <th className="text-left p-4 font-semibold">
-                <button
-                  onClick={() => handleSort("stake")}
-                  className="flex items-center gap-2 hover:text-solana-purple transition-colors"
-                >
-                  Total Stake
-                  {getSortIcon("stake")}
-                </button>
-              </th>
-              <th className="text-left p-4 font-semibold">
-                <button
-                  onClick={() => handleSort("skipRate")}
-                  className="flex items-center gap-2 hover:text-solana-purple transition-colors"
-                >
-                  Skip Rate
-                  {getSortIcon("skipRate")}
-                </button>
-              </th>
-              <th className="text-left p-4 font-semibold">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedValidators.map((validator, index) => (
-              <tr
+        <div className="w-full">
+          {/**<div className="w-full py-4 px-0 flex  ">
+            <div className="flex justify-around items-center w-1/6 ">
+              Validator
+            </div>
+            <div className="flex justify-around items-center  w-1/6 ">
+              <p className="">APY</p>
+            </div>
+            <div className="flex justify-around items-center  w-1/6 ">
+              <p>Commision</p>
+            </div>
+            <div className="flex justify-around items-center  w-1/6 ">
+              <p>Amount Stake</p>
+            </div>
+            <div className="flex justify-around items-center  w-1/6  ">
+              <p className="text-center">Skip rate</p>
+            </div>
+            <div className="flex justify-around items-center  w-1/6  ">
+              <p>Action</p>
+            </div>
+          </div> **/}
+          <div className="w-full">
+            {sortedValidators.map((validator) => (
+              <NewValidatorCard
                 key={validator.address}
-                className={clsx(
-                  "border-t border-solana-gray-800 hover:bg-solana-gray-800/30 transition-colors",
-                  index % 2 === 0 && "bg-solana-gray-900/20"
-                )}
-              >
-                <td className="p-4">
-                  <div className="flex items-center gap-3">
-                    {validator.avatar ? (
-                      <Image
-                        src={validator.avatar}
-                        alt={validator.name}
-                        className="w-10 h-10 rounded-full bg-solana-gray-800"
-                        height={10}
-                        width={10}
-                      />
-                    ) : (
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-solana-purple to-solana-green flex items-center justify-center text-sm font-bold">
-                        {validator.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <div>
-                      <div className="font-semibold">{validator.name}</div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <span
-                          className={clsx(
-                            "w-2 h-2 rounded-full",
-                            getStatusColor(validator.status)
-                          )}
-                        ></span>
-                        <span className="text-solana-gray-400 capitalize">
-                          {validator.status}
-                        </span>
-                        {validator.website && (
-                          <a
-                            href={validator.website}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-solana-gray-400 hover:text-white transition-colors"
-                          >
-                            <ExternalLink size={12} />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="p-4">
-                  <span className="text-solana-green font-semibold text-lg">
-                    {formatPercent(validator.apy)}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <span className="font-medium">
-                    {formatPercent(validator.commission)}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <div>
-                    <div className="font-medium">
-                      {formatSOL(validator.stake)}
-                    </div>
-                    <div className="text-sm text-solana-gray-400">
-                      {formatNumber(validator.stake / 1000000)} M SOL
-                    </div>
-                  </div>
-                </td>
-                <td className="p-4">
-                  <span
-                    className={clsx(
-                      "font-medium",
-                      validator.skipRate > 5
-                        ? "text-red-400"
-                        : validator.skipRate > 2
-                        ? "text-yellow-400"
-                        : "text-solana-green"
-                    )}
-                  >
-                    {formatPercent(validator.skipRate)}
-                  </span>
-                </td>
-                <td className="p-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => onValidatorSelect(validator)}
-                      className="btn-primary text-sm px-3 py-2"
-                    >
-                      Stake
-                    </button>
-                    <a
-                      href={`/validator/${validator.address}`}
-                      className="btn-secondary text-sm px-3 py-2"
-                    >
-                      Details
-                    </a>
-                  </div>
-                </td>
-              </tr>
+                validator={validator}
+                onSelect={() => onValidatorSelect(validator)}
+              />
             ))}
-          </tbody>
-        </table>
+          </div>
+          <div className="flex items-end justify-end py-3 px-2">
+            {totalPages > 1 && (
+              <div className="flex items-end gap-2 mt-0 justify-end px-4">
+                {/* Previous Button */}
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="w-9 h-9 rounded-md bg-gray-800/0 hover:bg-green-700/20 border border-green-400/40 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-gray-300 transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Page Numbers */}
+                {(() => {
+                  const pages = [];
+                  const maxVisible = 3;
+                  let startPage = Math.max(1, currentPage - 1);
+                  let endPage = Math.min(
+                    totalPages,
+                    startPage + maxVisible - 1
+                  );
+
+                  if (endPage - startPage < maxVisible - 1) {
+                    startPage = Math.max(1, endPage - maxVisible + 1);
+                  }
+
+                  for (let i = startPage; i <= endPage; i++) {
+                    pages.push(
+                      <button
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm font-medium transition-colors ${
+                          currentPage === i
+                            ? "bg-green-400/60 text-gray-900"
+                            : "bg-gray-800/0 border border-green-400/40 text-gray-300 hover:bg-gray-700"
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    );
+                  }
+                  return pages;
+                })()}
+
+                {/* Next Button */}
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="w-9 h-9 rounded-md bg-gray-800/0 hover:bg-green-700/20 disabled:opacity-30 disabled:cursor-not-allowed border border-green-400/40 flex items-center justify-center text-gray-300 transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

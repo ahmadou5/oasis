@@ -48,25 +48,19 @@ export function Hero() {
 
   return (
     <div className="flex flex-col space-y-2 bg-transparent">
-      <div className="lg:px-16 px-3">
-        <p className="text-3xl text-gray-900 dark:text-gray-100 font-medium">
-          Active Validators
-        </p>
-      </div>
-
       {validatorLogos.length > 0 ? (
         <LogoScroller logos={duplicatedLogos} />
       ) : (
-        <div className="w-[98%] h-auto py-3 px-4 flex ml-auto mr-auto rounded-2xl mt-0 bg-green-600/10 backdrop-blur-sm border border-green-700/50">
-          <p className="text-gray-500">No active validators found</p>
+        <div className="w-[98%] h-auto py-3 px-4 flex ml-auto mr-auto rounded-2xl mt-0 bg-green-600/0 backdrop-blur-sm border border-green-700/0">
+          <p
+            className={`${
+              theme === "dark" ? "text-gray-500" : "text-black/70"
+            }  ml-auto mr-auto text-center`}
+          >
+            No active Solana validators found
+          </p>
         </div>
       )}
-      <div>
-        <NewValidatorCard
-          validator={validators[2]}
-          onSelect={() => alert(validators[2].name)}
-        />
-      </div>
     </div>
   );
 }

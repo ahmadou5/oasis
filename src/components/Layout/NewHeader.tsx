@@ -17,6 +17,10 @@ import { WalletBalanceDisplay } from "../WalletBalanceDisplay";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePathname } from "next/navigation";
 
+import { clearSearchString, setSearchString } from "@/store/slices/searchSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+
 interface NewHeaderProps {
   setMobileMenuOpen: (isOpen: boolean) => void;
 }
@@ -24,8 +28,11 @@ interface NewHeaderProps {
 export const NewHearder: React.FC<NewHeaderProps> = ({ setMobileMenuOpen }) => {
   //const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const { connected } = useWallet();
+  const searchString = useSelector<RootState>((state) => state.search.value);
+  const dispatch = useDispatch<AppDispatch>();
   const { theme, toggleTheme } = useTheme();
 
+  console.log(searchString);
   return (
     <>
       {/* Header - Fixed */}
@@ -65,6 +72,7 @@ export const NewHearder: React.FC<NewHeaderProps> = ({ setMobileMenuOpen }) => {
                   type="text"
                   placeholder="Search..."
                   className="bg-gray-100 dark:bg-black/30 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 w-48 lg:w-64 transition"
+                  onChange={(e) => dispatch(setSearchString(e.target.value))}
                 />
               </div>
 

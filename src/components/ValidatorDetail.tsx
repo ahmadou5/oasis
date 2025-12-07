@@ -38,15 +38,11 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
 
   useEffect(() => {
     const loadValidator = async () => {
+      setLoading(true);
       try {
-        if (valid.length === 0) {
-          refreshValidators();
-          setLoading(false);
-        } else {
-          const found = valid.find((v) => v.address === validatorAddress);
-          setValidator(found || null);
-          setLoading(false);
-        }
+        const found = valid.find((v) => v.address === validatorAddress);
+        setValidator(found || null);
+        setLoading(false);
       } catch (error) {
         console.error("Error loading validator:", error);
       } finally {
