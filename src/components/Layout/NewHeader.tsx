@@ -32,7 +32,7 @@ export const NewHearder: React.FC<NewHeaderProps> = ({ setMobileMenuOpen }) => {
   const dispatch = useDispatch<AppDispatch>();
   const { theme, toggleTheme } = useTheme();
 
-  console.log(searchString);
+  //console.log(searchString);
   return (
     <>
       {/* Header - Fixed */}

@@ -10,15 +10,35 @@ import { SideBar } from "./sideBar";
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  
+  // Close mobile menu when clicking outside
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) { // lg breakpoint
+        setMobileMenuOpen(false);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
-    <div className="h-screen bg-gray-50 dark:bg-black  text-gray-900 dark:text-gray-100 flex relative">
+    <div className="h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 flex relative">
       <SideBar
         setMobileMenuOpen={setMobileMenuOpen}
         mobileMenuOpen={mobileMenuOpen}
       />
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      {/* Mobile overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-[50] lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+      <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
         <NewHearder setMobileMenuOpen={setMobileMenuOpen} />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 overflow-y-auto">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 lg:p-8 overflow-y-auto">
           {children}
         </main>
       </div>

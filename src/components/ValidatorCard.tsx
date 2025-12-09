@@ -85,13 +85,13 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
         )}
 
         {/* Metrics */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <div>
             <div className="flex items-center gap-1 text-solana-gray-400 text-xs mb-1">
               <TrendingUp size={12} />
               APY
             </div>
-            <div className="text-lg font-semibold text-solana-green">
+            <div className="text-base sm:text-lg font-semibold text-solana-green">
               {formatPercent(validator.apy)}
             </div>
           </div>
@@ -101,21 +101,21 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
               <Shield size={12} />
               Commission
             </div>
-            <div className="text-lg font-semibold">
+            <div className="text-base sm:text-lg font-semibold">
               {formatPercent(validator.commission)}
             </div>
           </div>
 
           <div>
             <div className="text-solana-gray-400 text-xs mb-1">Total Stake</div>
-            <div className="text-sm font-medium">
+            <div className="text-xs sm:text-sm font-medium">
               {formatSOL(validator.stake)}
             </div>
           </div>
 
           <div>
             <div className="text-solana-gray-400 text-xs mb-1">Skip Rate</div>
-            <div className="text-sm font-medium">
+            <div className="text-xs sm:text-sm font-medium">
               {formatPercent(validator.skipRate)}
             </div>
           </div>
@@ -129,16 +129,16 @@ export function ValidatorCard({ validator, onSelect }: ValidatorCardProps) {
       </div>
 
       {/* Action Button */}
-      <div className="mt-4 pt-4 border-t border-solana-gray-800 flex gap-2">
+      <div className="mt-4 pt-4 border-t border-solana-gray-800 flex flex-col sm:flex-row gap-2">
         <button
           onClick={onSelect}
-          className="flex-1 btn-primary text-sm py-2 group-hover:shadow-lg group-hover:shadow-solana-purple/25 transition-shadow duration-200"
+          className="flex-1 btn-primary text-xs sm:text-sm py-2 group-hover:shadow-lg group-hover:shadow-solana-purple/25 transition-shadow duration-200"
         >
           Stake SOL
         </button>
         <Link
           href={`/validator/${validator.address}`}
-          className="btn-secondary text-sm py-2 px-4"
+          className="btn-secondary text-xs sm:text-sm py-2 px-4 text-center"
         >
           Details
         </Link>

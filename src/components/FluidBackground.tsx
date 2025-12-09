@@ -38,14 +38,14 @@ const FluidBackground: React.FC = () => {
 
     const initPoints = () => {
       const points = [];
-      const numPoints = 8; // Increased from 6 to 8
+      const numPoints = 8;
 
       for (let i = 0; i < numPoints; i++) {
         points.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 1.0, // Increased speed
-          vy: (Math.random() - 0.5) * 1.0, // Increased speed
+          vx: (Math.random() - 0.5) * 1.0,
+          vy: (Math.random() - 0.5) * 1.0,
           targetX: Math.random() * canvas.width,
           targetY: Math.random() * canvas.height,
         });
@@ -103,6 +103,7 @@ const FluidBackground: React.FC = () => {
         point.vx += (Math.random() - 0.5) * 0.01;
         point.vy += (Math.random() - 0.5) * 0.01;
 
+
         // Apply velocity
         point.x += point.vx;
         point.y += point.vy;
@@ -145,13 +146,13 @@ const FluidBackground: React.FC = () => {
             `rgba(139, 92, 246, ${
               0.6 + Math.sin(Date.now() * 0.002 + index) * 0.2
             })`
-          ); // primary purple - MUCH MORE VISIBLE
+          );
           gradient.addColorStop(
             0.5,
             `rgba(37, 99, 235, ${
               0.4 + Math.sin(Date.now() * 0.002 + index) * 0.1
             })`
-          ); // secondary blue - MUCH MORE VISIBLE
+          );
           gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
         } else {
           gradient.addColorStop(
@@ -159,13 +160,13 @@ const FluidBackground: React.FC = () => {
             `rgba(139, 92, 246, ${
               0.5 + Math.sin(Date.now() * 0.002 + index) * 0.15
             })`
-          ); // primary purple - MUCH MORE VISIBLE
+          );
           gradient.addColorStop(
             0.5,
             `rgba(37, 99, 235, ${
               0.3 + Math.sin(Date.now() * 0.002 + index) * 0.1
             })`
-          ); // secondary blue - MUCH MORE VISIBLE
+          );
           gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
         }
 
@@ -226,7 +227,7 @@ const FluidBackground: React.FC = () => {
       style={{
         background:
           theme === "dark"
-            ? "linear-gradient(135deg, #000000 0%, #000000 50%, #000000 100%)"
+            ? "linear-gradient(135deg, #000000 0%, #111827 50%, #1f2937 100%)"
             : "linear-gradient(135deg, #f9fafb 0%, #f3f4f6 50%, #e5e7eb 100%)",
       }}
     />

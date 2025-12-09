@@ -72,8 +72,8 @@ export const SideBar: React.FC<SideBarProps> = ({
   return (
     <aside
       className={`
-          fixed lg:relative h-screen z-50
-          bg-white/10 dark:bg-black backdrop-blur-3xl 
+          fixed lg:relative h-screen z-[60]
+          bg-white/95 dark:bg-black/95 backdrop-blur-3xl 
           border-r border-gray-200/20 dark:border-gray-700/20
           transition-all duration-300 ease-in-out
           ${
@@ -81,40 +81,40 @@ export const SideBar: React.FC<SideBarProps> = ({
               ? "translate-x-0"
               : "-translate-x-full lg:translate-x-0"
           }
-          ${sidebarExpanded ? "w-64" : "w-20"}
+          w-64
         `}
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full relative z-[70]">
         {/* Logo Section */}
-        <div className="p-4 ">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-solana-purple to-solana-green rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-              <span className="text-white font-bold text-xl">O</span>
-            </div>
-            {mobileMenuOpen && (
-              <button
-                className="text-gray-700 dark:text-gray-300 lg:hidden py-2 px-2 text-2xl hover:text-gray-900 dark:hover:text-white transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                &times; {/* Close/X icon */}
-              </button>
-            )}
-            {sidebarExpanded && (
+        <div className="p-4 border-b border-gray-200/10 dark:border-gray-700/20">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-solana-purple to-solana-green rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                <span className="text-white font-bold text-xl">O</span>
+              </div>
               <span className="font-bold text-gray-900 dark:text-gray-100 text-xl whitespace-nowrap">
                 Oasis
               </span>
-            )}
+            </div>
+            
+            {/* Mobile Close Button */}
+            <button
+              className="text-gray-700 dark:text-gray-300 lg:hidden p-1 hover:text-gray-900 dark:hover:text-white transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <X size={24} />
+            </button>
           </div>
         </div>
 
         {/* Navigation Items */}
-        <nav className="flex-1 py-3 px-3 space-y-2 ">
+        <nav className="flex-1 py-3 px-3 space-y-2 overflow-y-auto">
           {NavItems.map((item, index) => (
             <SidebarItem
               key={index}
               icon={item.icon}
               label={item.label}
-              expanded={sidebarExpanded}
+              expanded={true} // Always expanded on mobile
               badge={item.badge}
               active={isActive(item.url)}
               url={item.url}
@@ -122,12 +122,6 @@ export const SideBar: React.FC<SideBarProps> = ({
           ))}
         </nav>
       </div>
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black/70 z-40 lg:hidden backdrop-blur-sm"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
     </aside>
   );
 };

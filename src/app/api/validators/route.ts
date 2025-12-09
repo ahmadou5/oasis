@@ -517,7 +517,7 @@ export async function GET() {
 
     // Transform to our validator format with enhanced metadata
     const validators = await Promise.all(
-      allValidators.slice(0, 90).map(async (account) => {
+      allValidators.slice(0, 180).map(async (account) => {
         // Limit to 100 for performance
         // Get metadata from Solana Beach or fallback
         // NEW: Fetch epoch details for this validator

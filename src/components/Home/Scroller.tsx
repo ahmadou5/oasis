@@ -15,59 +15,67 @@ interface LogoScrollerProps {
 
 // --- Main Logo Scroller Component ---
 export const LogoScroller: React.FC<LogoScrollerProps> = ({ logos }) => {
-  // Each logo container has a fixed width.
+  // Responsive card sizing
   const mobileBreakpoint = 768;
   const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint}px)`);
-  const logoWidth = isMobile ? 210 : 250;
-  // Calculate the total width for the animation translate.
-  const scrollWidth = logoWidth * logos.length;
+  const cardWidth = isMobile ? 230 : 270;  // Match ValidatorTrendCard width
+  const cardGap = isMobile ? 12 : 16;       // Consistent gap between cards
+  
+  // Calculate total scroll width including gaps
+  const totalWidth = (cardWidth + cardGap) * logos.length;
 
   return (
     <>
-      {/* Injecting global styles for the animation.
-              This is a clean way to handle keyframe animations within a 
-              self-contained component.
-            */}
       <style>{`
-                .animate-scroll {
-                    animation: scroll ${logos.length * 6}s linear infinite;
-                }
-                
-                .scroller:hover .animate-scroll {
-                    animation-play-state: paused;
-                }
+        .animate-scroll {
+          animation: scroll ${logos.length * 8}s linear infinite;
+        }
+        
+        .scroller:hover .animate-scroll {
+          animation-play-state: paused;
+        }
 
-                @keyframes scroll {
-                    0% {
-                        transform: translateX(0);
-                    }
-                    100% {
-                        transform: translateX(calc(-${scrollWidth}px));
-                    }
-                }
-            `}</style>
+        @keyframes scroll {
+          0% {
+            transform: translateX(0);
+          }
+          100% {
+            transform: translateX(-${totalWidth}px);
+          }
+        }
+      `}</style>
 
-      <div className=" w-full ml-auto mr-auto flex flex-col items-center justify-center py-8 font-sans">
-        <div className="w-full max-w-5xl mx-auto px-4">
-          {/* The scroller container with a gradient mask to fade the edges.
-                      This creates a seamless visual effect.
-                    */}
+      <div className="w-full flex flex-col items-center justify-center py-4 sm:py-6 font-sans">
+        <div className="w-full max-w-[90vw] sm:max-w-[95vw] lg:max-w-[98vw] mx-auto px-3 sm:px-4">
+          {/* Header */}
+          <div className="text-center mb-4">
+            <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+              Top Validators
+            </h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Scroll through our highest performing validators
+            </p>
+          </div>
+
+          {/* Scroller Container */}
           <div
-            className="scroller w-full overflow-hidden"
+            className="scroller w-full overflow-hidden rounded-xl"
             style={{
               WebkitMaskImage:
-                "linear-gradient(to right, transparent, white 20%, white 80%, transparent)",
+                "linear-gradient(to right, transparent 0%, white 10%, white 90%, transparent 100%)",
               maskImage:
-                "linear-gradient(to right, transparent, white 20%, white 80%, transparent)",
+                "linear-gradient(to right, transparent 0%, white 10%, white 90%, transparent 100%)",
             }}
           >
-            <div className="animate-scroll flex w-max items-center">
-              {/* Render the duplicated logos for the infinite loop */}
+            <div 
+              className="animate-scroll flex items-center"
+              style={{ gap: `${cardGap}px` }}
+            >
               {logos.map((logo, index) => (
                 <div
                   key={index}
-                  className="flex items-center justify-center"
-                  style={{ width: `${logoWidth}px` }}
+                  className="flex-shrink-0"
+                  style={{ width: `${cardWidth}px` }}
                 >
                   {logo.component}
                 </div>

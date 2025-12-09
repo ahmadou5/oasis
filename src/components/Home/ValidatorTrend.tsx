@@ -34,50 +34,61 @@ export function ValidatorTrendCard({
 
   return (
     <div
-      className={`w-auto h-auto bg-gradient-to-r from-green-400/20 ${
+      className={`w-[220px] sm:w-[260px] lg:h-[80px] h-[60px] bg-gradient-to-r from-green-400/20 ${
         theme === "dark" ? "to-black/15" : "to-white/5"
-      }  border border-green-700/50 py-3 px-4 flex mb-2 mt-2 flex-col ${
+      } border border-green-700/50 p-3 flex flex-shrink-0 ${
         theme === "dark" ? "text-white" : "text-black"
-      } justify-between items-center rounded-3xl hover:scale-[1.02] transition-transform cursor-pointer `}
+      } items-center rounded-2xl hover:scale-[1.02] transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md`}
+      onClick={onSelect}
     >
-      <div className="flex items-center gap-3">
-        {validator?.avatar ? (
-          <Image
-            src={validator.avatar}
-            alt={validator.name}
-            className="w-8 h-8 rounded-full bg-solana-gray-800/0"
-            height={12}
-            width={12}
-          />
-        ) : (
-          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-solana-purple to-solana-green flex items-center justify-center">
-            <span className="text-white font-bold text-lg">
-              {validator?.name.charAt(0).toUpperCase()}
-            </span>
-          </div>
-        )}
-        <div>
-          <h3 className="font-semibold text-sm mt-0 transition-colors">
-            {validator?.name.length > 12
-              ? validator?.name.slice(0, 13)
-              : validator?.name}
+      <div className="flex items-center gap-2 w-full">
+        {/* Avatar */}
+        <div className="flex-shrink-0">
+          {validator?.avatar ? (
+            <Image
+              src={validator.avatar}
+              alt={validator.name}
+              className="w-10 h-10 rounded-full"
+              height={40}
+              width={40}
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-solana-purple to-solana-green flex items-center justify-center">
+              <span className="text-white font-bold text-sm">
+                {validator?.name.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-xs sm:text-sm truncate leading-tight">
+            {validator?.name}
           </h3>
-          <div
-            className={clsx(
-              "text-sm capitalize",
-              getStatusColor(validator?.status)
-            )}
-          >
-            <span className="inline-block w-2 h-2 rounded-full bg-current mr-2"></span>
-            <p className="inline-block text-xs mr-2">{validator?.status}</p>
+          <div className="flex bg-green-600/20 justify-center rounded-full px-2 items-center gap-1 w-[72px] mt-1">
+            <span
+              className={clsx(
+                "inline-block w-1.5 h-1.5 bg-green-600 rounded-full",
+                getStatusColor(validator?.status)
+              )}
+            ></span>
+            <p
+              className={clsx(
+                "text-xs capitalize",
+                getStatusColor(validator?.status)
+              )}
+            >
+              {validator?.status}
+            </p>
           </div>
         </div>
-        <div className="flex flex-row space-x-4">
-          <div className="flex flex-col items-end">
-            <p className="text-xs text-solana-green/70">APY</p>
-            <div className="text-sm font-semibold text-solana-green">
-              {formatPercent(validator?.apy)}
-            </div>
+
+        {/* APY */}
+        <div className="flex-shrink-0 text-right">
+          <p className="text-xs text-gray-500 dark:text-gray-400">APY</p>
+          <div className="text-sm font-semibold text-solana-green">
+            {formatPercent(validator?.apy)}
           </div>
         </div>
       </div>

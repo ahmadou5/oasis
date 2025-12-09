@@ -143,13 +143,13 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h2 className="text-2xl font-bold mb-1">
+          <h2 className="text-xl sm:text-2xl font-bold mb-1">
             {showFilters ? "Top Validators" : "All Validators"}
           </h2>
 
-          <p className="text-gray-500 dark:text-solana-gray-400">
+          <p className="text-sm sm:text-base text-gray-500 dark:text-solana-gray-400">
             {filteredValidators.length} validators found
             {stats.activeValidators > 0 && (
               <span className="ml-2 text-solana-green">
@@ -157,82 +157,82 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
               </span>
             )}
             {totalPages > 1 && (
-              <span className="ml-2">
+              <span className="hidden sm:inline ml-2">
                 • Page {currentPage} of {totalPages}
               </span>
             )}
             {lastUpdated && (
-              <span className="ml-2">
+              <span className="hidden md:inline ml-2">
                 • Updated {new Date(lastUpdated).toLocaleTimeString()}
               </span>
             )}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* Page Size Selector */}
-          <CustomDropdown
-            value={pageSize}
-            onChange={(e) => handlePageSizeChange(Number(e.toFixed()))}
-          />
-          <select
-            value={pageSize}
-            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-            className="text-sm py-1 bg-transparent px-4 border border-green-500/40 rounded-xl"
-          >
-            <option value={10}>10 per page</option>
-            <option value={20}>20 per page</option>
-            <option value={50}>50 per page</option>
-          </select>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          {/* Page info on mobile */}
+          <div className="sm:hidden text-sm text-gray-500 dark:text-solana-gray-400">
+            Page {currentPage} of {totalPages}
+          </div>
 
-          {/* Refresh Button */}
-          <button
-            onClick={handleRefresh}
-            disabled={loading}
-            className="btn-secondary flex items-center gap-2"
-          >
-            <RefreshCw size={16} className={clsx(loading && "animate-spin")} />
-            Refresh
-          </button>
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Page Size Selector */}
+            <CustomDropdown
+              value={pageSize}
+              onChange={(e) => handlePageSizeChange(Number(e.toFixed()))}
+            />
+
+            {/* Refresh Button */}
+            <button
+              onClick={handleRefresh}
+              disabled={loading}
+              className="btn-secondary flex items-center gap-2 px-3 sm:px-4 text-xs sm:text-sm"
+            >
+              <RefreshCw
+                size={14}
+                className={clsx(loading && "animate-spin")}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Enhanced Stats Display */}
       {validators.length > 0 && stats.totalValidators > 0 && (
         <div className="card mb-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 flex items-center gap-2">
             📊 Network Statistics
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             <div>
-              <div className="text-2xl font-bold text-solana-green">
+              <div className="text-lg sm:text-2xl font-bold text-solana-green">
                 {stats.activeValidators}
               </div>
-              <div className="text-sm text-gray-500 dark:text-solana-gray-400">
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-solana-gray-400">
                 Active Validators
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-solana-blue">
+              <div className="text-lg sm:text-2xl font-bold text-solana-blue">
                 {(stats.totalStake / 1_000_000).toFixed(1)}M
               </div>
-              <div className="text-sm text-gray-500 dark:text-solana-gray-400">
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-solana-gray-400">
                 Total Stake (SOL)
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-solana-purple">
+              <div className="text-lg sm:text-2xl font-bold text-solana-purple">
                 {stats.averageApy.toFixed(2)}%
               </div>
-              <div className="text-sm text-gray-500 dark:text-solana-gray-400">
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-solana-gray-400">
                 Avg APY
               </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-yellow-400">
+              <div className="text-lg sm:text-2xl font-bold text-yellow-400">
                 {stats.averageCommission.toFixed(1)}%
               </div>
-              <div className="text-sm text-gray-500 dark:text-solana-gray-400">
+              <div className="text-xs sm:text-sm text-gray-500 dark:text-solana-gray-400">
                 Avg Commission
               </div>
             </div>

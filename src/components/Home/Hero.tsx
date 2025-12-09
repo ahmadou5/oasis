@@ -47,18 +47,23 @@ export function Hero() {
   const duplicatedLogos = [...validatorLogos, ...validatorLogos];
 
   return (
-    <div className="flex flex-col space-y-2 bg-transparent">
+    <div className="flex flex-col bg-transparent">
       {validatorLogos.length > 0 ? (
         <LogoScroller logos={duplicatedLogos} />
       ) : (
-        <div className="w-[98%] h-auto py-3 px-4 flex ml-auto mr-auto rounded-2xl mt-0 bg-green-600/0 backdrop-blur-sm border border-green-700/0">
-          <p
-            className={`${
-              theme === "dark" ? "text-gray-500" : "text-black/70"
-            }  ml-auto mr-auto text-center`}
-          >
-            No active Solana validators found
-          </p>
+        <div className="w-full max-w-4xl mx-auto py-8 px-4">
+          <div className="text-center py-12 bg-gray-100/50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+              <span className="text-gray-400 text-2xl">⚡</span>
+            </div>
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+              No Active Validators
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              No active Solana validators found at the moment. Please try
+              refreshing the page.
+            </p>
+          </div>
         </div>
       )}
     </div>
