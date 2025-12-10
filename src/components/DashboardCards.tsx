@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import ValidatorWorldMap from './ValidatorWorldMap';
-import SolanaPriceCard from './SolanaPriceCard';
-import StakeCard from './StakeCard';
-import TransactionsCard from './TransactionsCard';
-import EpochCard from './EpochCard';
+import React from "react";
+import SolanaPriceCard from "./SolanaPriceCard";
+import StakeCard from "./StakeCard";
+import TransactionsCard from "./TransactionsCard";
+import EpochCard from "./EpochCard";
 
 export default function DashboardCards() {
   return (
@@ -24,9 +23,6 @@ export default function DashboardCards() {
         {/* Main Grid Layout */}
         <div className="space-y-8">
           {/* Top Section - World Map (Full Width) */}
-          <div className="w-full">
-            <ValidatorWorldMap />
-          </div>
 
           {/* Middle Section - 4 Cards Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
@@ -96,9 +92,7 @@ export default function DashboardCards() {
               <div className="space-y-2">
                 <div className="text-2xl font-bold">847K SOL</div>
                 <div className="text-sm text-red-500">-5.2% (24h)</div>
-                <div className="text-xs text-gray-500">
-                  12,847 transactions
-                </div>
+                <div className="text-xs text-gray-500">12,847 transactions</div>
               </div>
             </div>
           </div>

@@ -1,9 +1,7 @@
 "use client";
 import { ValidatorTrendCard } from "./ValidatorTrend";
 import LogoScroller from "./Scroller";
-import { NewValidatorCard } from "./NewValidatorCard";
-import ValidatorWorldMap from "../ValidatorWorldMap";
-import DashboardCards from "../DashboardCards";
+
 import EpochCard from "../EpochCard";
 import TransactionsCard from "../TransactionsCard";
 import SolanaPriceCard from "../SolanaPriceCard";
