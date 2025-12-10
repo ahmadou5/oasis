@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { MapPin, Crown, Clock, Users, Globe } from "lucide-react";
 
 import { useValidators } from "../hooks/useValidators";
-import { ValidatorInfo } from "../types";
+import { ValidatorInfo } from "../store/slices/validatorSlice";
 
 interface ValidatorLocation extends ValidatorInfo {
   latitude?: number;
