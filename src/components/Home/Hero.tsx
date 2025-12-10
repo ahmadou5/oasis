@@ -1,7 +1,4 @@
 "use client";
-import { useTheme } from "@/context/ThemeContext";
-import { useValidators } from "@/hooks/useValidators";
-import { EpochConverter } from "@/lib/epochConverter";
 import { ValidatorTrendCard } from "./ValidatorTrend";
 import LogoScroller from "./Scroller";
 import { NewValidatorCard } from "./NewValidatorCard";
@@ -10,6 +7,9 @@ import DashboardCards from "../DashboardCards";
 import EpochCard from "../EpochCard";
 import TransactionsCard from "../TransactionsCard";
 import SolanaPriceCard from "../SolanaPriceCard";
+import { useValidators } from "../../hooks/useValidators";
+import { useTheme } from "../../context/ThemeContext";
+import { EpochConverter } from "../../lib/epochConverter";
 
 export function Hero() {
   const {

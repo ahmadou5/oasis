@@ -1,12 +1,11 @@
 "use client";
 
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
-import { formatNumber, formatPercent, formatSOL } from "@/utils/formatters";
 import { ArrowUpDown, ArrowUp, ArrowDown, ExternalLink } from "lucide-react";
 import { useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import { NewValidatorCard } from "./Home/NewValidatorCard";
+import { ValidatorInfo } from "../store/slices/validatorSlice";
 
 interface ValidatorTableProps {
   validators: ValidatorInfo[];

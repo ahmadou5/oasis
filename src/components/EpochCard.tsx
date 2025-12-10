@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { Clock, Calendar, TrendingUp, Award, Zap } from "lucide-react";
-import { useValidators } from "@/hooks/useValidators";
-import { EpochConverter } from "@/lib/epochConverter";
+
 import { Connection, EpochInfo } from "@solana/web3.js";
-import { ENV } from "@/config/env";
+import { EpochConverter } from "../lib/epochConverter";
+import { ENV } from "../config/env";
 
 interface EpochTimeInfo {
   epoch: number;

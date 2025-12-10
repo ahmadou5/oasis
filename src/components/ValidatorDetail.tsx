@@ -2,12 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from "@/store";
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
+
 import { ValidatorPerformanceChart } from "./ValidatorPerformanceChart";
 import { StakeModal } from "./StakeModal";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { formatSOL, formatPercent, formatAddress } from "@/utils/formatters";
+
 import {
   Globe,
   ExternalLink,
@@ -22,7 +21,10 @@ import {
 } from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
-import { useValidators } from "@/hooks/useValidators";
+import { AppDispatch } from "../store";
+import { useValidators } from "../hooks/useValidators";
+import { ValidatorInfo } from "../store/slices/validatorSlice";
+import { formatAddress, formatPercent, formatSOL } from "../utils/formatters";
 
 interface ValidatorDetailProps {
   validatorAddress: string;

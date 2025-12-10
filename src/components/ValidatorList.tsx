@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
-import { useValidators } from "@/hooks/useValidators";
+
 import { ValidatorCard } from "./ValidatorCard";
 import { ValidatorTable } from "./ValidatorTable";
 import { LoadingSpinner } from "./LoadingSpinner";
@@ -11,8 +10,11 @@ import { Grid, List, RefreshCw } from "lucide-react";
 import clsx from "clsx";
 import { NewValidatorCard } from "./Home/NewValidatorCard";
 import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+
 import CustomDropdown from "./DropDown";
+import { RootState } from "../store";
+import { useValidators } from "../hooks/useValidators";
+import { ValidatorInfo } from "../store/slices/validatorSlice";
 
 interface ValidatorListProps {
   showFilters?: boolean;
