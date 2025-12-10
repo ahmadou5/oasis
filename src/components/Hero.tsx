@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { TrendingUp, Shield, Zap } from "lucide-react";
 import { EpochConverter } from "@/lib/epochConverter";
-import { EpochTimer } from "./EpochCard";
+import EpochCard from "./EpochCard";
 import { useValidators } from "@/hooks/useValidators";
 import { CacheStatus } from "./cacheStatus";
 
@@ -78,7 +78,7 @@ export function Hero() {
       />
 
       {/* Features Grid */}
-      <EpochTimer epochInfo={epochInfo} />
+      <EpochCard />
 
       {/* Stats Banner */}
       <div className="bg-gradient-to-r from-solana-purple/10 to-solana-green/10 dark:from-solana-purple/20 dark:to-solana-green/20 rounded-2xl p-8 border border-solana-purple/20 dark:border-solana-purple/30">

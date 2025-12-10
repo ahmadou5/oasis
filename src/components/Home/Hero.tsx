@@ -5,6 +5,11 @@ import { EpochConverter } from "@/lib/epochConverter";
 import { ValidatorTrendCard } from "./ValidatorTrend";
 import LogoScroller from "./Scroller";
 import { NewValidatorCard } from "./NewValidatorCard";
+import ValidatorWorldMap from "../ValidatorWorldMap";
+import DashboardCards from "../DashboardCards";
+import EpochCard from "../EpochCard";
+import TransactionsCard from "../TransactionsCard";
+import SolanaPriceCard from "../SolanaPriceCard";
 
 export function Hero() {
   const {
@@ -66,6 +71,15 @@ export function Hero() {
           </div>
         </div>
       )}
+      <div className="w-[100%] h-auto py-8 ml-auto mr-auto flex items-center justify-between">
+        <div className="w-[50%] px-3 py-2">
+          <SolanaPriceCard />
+          <EpochCard />
+        </div>
+        <div className="w-[50%] px-3 py-2">
+          <TransactionsCard />
+        </div>
+      </div>
     </div>
   );
 }

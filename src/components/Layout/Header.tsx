@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { ShoppingCart, Menu, X, Moon, Sun } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
-import { EpochTimer } from "../EpochCard";
+import EpochCard from "../EpochCard";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { EpochConverter } from "@/lib/epochConverter";

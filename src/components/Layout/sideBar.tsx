@@ -68,6 +68,12 @@ export const SideBar: React.FC<SideBarProps> = ({
       active: true,
       url: "/staking",
     },
+    {
+      icon: <LucideAppWindow className="text-gray-700 dark:text-gray-300" />,
+      label: "Learn",
+      active: true,
+      url: "/learn",
+    },
   ];
   return (
     <aside
