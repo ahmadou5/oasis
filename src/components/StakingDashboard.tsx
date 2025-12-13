@@ -13,7 +13,47 @@ import { Wallet, TrendingUp, Clock, AlertCircle } from "lucide-react";
 import { getUserStakeAccounts } from "../lib/utils";
 import { Connection, PublicKey } from "@solana/web3.js";
 import { ENV } from "../config/env";
-import { StakeAccountInfo } from "../lib/services/staking.service";
+
+interface IAuthorized {
+  staker: PublicKey;
+  withdrawer: PublicKey;
+}
+
+/**
+ * Defines the lockup conditions for a stake account.
+ */
+interface ILockup {
+  unixTimestamp: number;
+  epoch: number;
+  custodian: PublicKey;
+}
+
+interface IStakeAccountMeta {
+  authorized: IAuthorized;
+  lockup: ILockup;
+}
+
+// Types for staking operations
+export interface StakeAccountInfo {
+  address: PublicKey;
+  balance: number; // in SOL
+  status:
+    | "activating"
+    | "active"
+    | "deactivating"
+    | "inactive"
+    | "uninitialized"
+    | "unknown";
+  delegatedValidator?: PublicKey;
+
+  activationEpoch?: number;
+  deactivationEpoch?: number;
+  rentExemptReserve: number;
+  creditsObserved: number;
+  totalBalance: number;
+  meta: IStakeAccountMeta;
+  lastUpdateEpoch: number;
+}
 
 export function StakingDashboard() {
   const dispatch = useDispatch<AppDispatch>();
