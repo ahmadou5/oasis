@@ -11,7 +11,7 @@ import { StakeAccountCard } from "./StakeAccountCard";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Wallet, TrendingUp, Clock, AlertCircle } from "lucide-react";
 import { getUserStakeAccounts } from "../lib/utils";
-import { Connection } from "@solana/web3.js";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { ENV } from "../config/env";
 import { StakeAccountInfo } from "../lib/services/staking.service";
 
@@ -25,11 +25,15 @@ export function StakingDashboard() {
   const { totalStaked, totalRewards, loading, error } = useSelector(
     (state: RootState) => state.staking
   );
+
+  const fakeUser = new PublicKey(
+    "31ZBx7jVsdXgq4qFWYD8jqUau1vAp8rqP1wvPaahjXPv"
+  );
   const fetchStakes = async () => {
     try {
       if (connected && publicKey) {
         const stakingAccounts = await getUserStakeAccounts(
-          publicKey,
+          fakeUser,
           connection
         );
         console.log(stakingAccounts, "sune");
@@ -109,71 +113,18 @@ export function StakingDashboard() {
   return (
     <div className="space-y-8">
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-        {/* Enhanced Wallet Balance */}
-        <WalletBalance
-          size="md"
-          showLabel={true}
-          showRefresh={true}
-          className="hover:scale-105 transition-transform duration-200"
-        />
-
-        <div className="card bg-gradient-to-br from-solana-purple/20 to-solana-purple/10 border-solana-purple/20 hover:scale-105 transition-transform duration-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-solana-gray-400 text-sm font-medium mb-1">
-                Total Staked
-              </p>
-              <p className="text-2xl font-bold">{totalStaked.toFixed(2)} SOL</p>
-            </div>
-            <div className="p-3 rounded-lg bg-gradient-to-br from-white/10 to-white/5">
-              <TrendingUp className="text-solana-purple" size={24} />
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-gradient-to-br from-solana-green/20 to-solana-green/10 border-solana-green/20 hover:scale-105 transition-transform duration-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-solana-gray-400 text-sm font-medium mb-1">
-                Total Rewards
-              </p>
-              <p className="text-2xl font-bold text-solana-green">
-                {totalRewards.toFixed(4)} SOL
-              </p>
-            </div>
-            <div className="p-3 rounded-lg bg-gradient-to-br from-white/10 to-white/5">
-              <TrendingUp className="text-solana-green" size={24} />
-            </div>
-          </div>
-        </div>
-
-        <div className="card bg-gradient-to-br from-solana-blue/20 to-solana-blue/10 border-solana-blue/20 hover:scale-105 transition-transform duration-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-solana-gray-400 text-sm font-medium mb-1">
-                Active Stakes
-              </p>
-              <p className="text-2xl font-bold">
-                {stakeAccounts.filter((a) => a.status === "active").length}
-              </p>
-            </div>
-            <div className="p-3 rounded-lg bg-gradient-to-br from-white/10 to-white/5">
-              <Clock className="text-solana-blue" size={24} />
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Stake Accounts */}
       <div>
         <h2 className="text-2xl font-bold mb-6">Your Stake Accounts</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {stakeAccounts.map((account) => (
-            <StakeAccountCard
-              key={account.address.toBase58()}
-              stakeAccount={account}
-            />
+            <div key={account.address.toBase58()}>
+              <StakeAccountCard
+                //key={account.address.toBase58()}
+                stakeAccount={account}
+              />
+            </div>
           ))}
         </div>
       </div>

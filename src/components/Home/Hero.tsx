@@ -56,8 +56,8 @@ export function Hero() {
         <LogoScroller logos={duplicatedLogos} />
       ) : (
         <div className="w-full max-w-4xl mx-auto py-8 px-4">
-          <div className="text-center py-12 bg-green-400/10 rounded-xl border border-green-500/50">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
+          <div className="text-center py-12 bg-green-400/0 rounded-xl border border-green-500/50">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
               <span className="text-gray-400 text-2xl">⚡</span>
             </div>
             <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
@@ -70,12 +70,12 @@ export function Hero() {
           </div>
         </div>
       )}
-      <div className="w-[100%] h-auto py-8 ml-auto mr-auto flex items-center justify-between">
+      {/**  <div className="w-[100%] h-auto py-8 ml-auto mr-auto flex items-center justify-between">
         <div className="w-[20%] px-3 py-2"></div>
         <div className="w-[80%] px-3 py-2">
           <ValidatorMap />
         </div>
-      </div>
+      </div> */}
 
       <div className="w-[100%] h-auto py-2 ml-auto mr-auto flex items-center justify-between">
         <div className="w-[50%] px-3 py-2">

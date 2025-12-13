@@ -81,15 +81,15 @@ export default function SolanaPriceCard() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg animate-pulse">
-        <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      <div className="bg-green-500/10  rounded-2xl p-6 border border-green-500/50 h-[158px]  shadow-lg animate-pulse">
+        <div className="h-24  rounded"></div>
       </div>
     );
   }
 
   if (!priceData) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+      <div className="bg-green-500/10  rounded-2xl p-6 border border-green-500/50 h-[158px] shadow-lg">
         <div className="text-center text-gray-500">
           Failed to load price data
         </div>

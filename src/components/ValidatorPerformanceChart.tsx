@@ -129,8 +129,8 @@ export function ValidatorPerformanceChart({
   return (
     <div className="space-y-8">
       {/* Modern Performance Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* APY Card */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* APY Card 
         <div className="group relative overflow-hidden bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent border border-emerald-500/20 rounded-2xl p-6 hover:border-emerald-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/10">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
           <div className="relative z-10">
@@ -163,7 +163,7 @@ export function ValidatorPerformanceChart({
               </p>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* Uptime Card */}
         <div className="group relative overflow-hidden bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent border border-blue-500/20 rounded-2xl p-6 hover:border-blue-500/40 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10">
@@ -279,8 +279,8 @@ export function ValidatorPerformanceChart({
       </div>
 
       {/* Modern Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* APY Performance Chart */}
+      <div className="grid grid-cols-1 lg:flex gap-6">
+        {/* APY Performance Chart
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow duration-300">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
@@ -361,7 +361,7 @@ export function ValidatorPerformanceChart({
               </AreaChart>
             </ResponsiveContainer>
           </div>
-        </div>
+        </div> */}
 
         {/* Skip Rate Chart */}
         <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow duration-300">

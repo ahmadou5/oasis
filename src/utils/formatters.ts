@@ -103,7 +103,7 @@ export function formatAddress(address: string, chars: number = 4): string {
   if (!address) return "";
   if (address.length <= chars * 2) return address;
 
-  return `${address.slice(0, chars)}...${address.slice(-chars)}`;
+  return `${address?.slice(0, chars)}...${address?.slice(-chars)}`;
 }
 
 /**

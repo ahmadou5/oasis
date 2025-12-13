@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store";
+
 import { useWalletBalance } from "@/hooks/useWalletBalance";
 import {
   calculateRewards,
@@ -20,6 +19,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { ValidatorDropdown } from "./ValidatorSelect";
+import { useValidators } from "../hooks/useValidators";
+import { TimeDropdown } from "./TimeFrameSelect";
 
 interface CalculationResult {
   stakingAmount: number;
@@ -32,7 +34,7 @@ interface CalculationResult {
 }
 
 export function StakingCalculator() {
-  const { validators } = useSelector((state: RootState) => state.validators);
+  const { validators } = useValidators();
   const { balance, connected } = useWalletBalance();
 
   const [stakingAmount, setStakingAmount] = useState("");
@@ -135,7 +137,7 @@ export function StakingCalculator() {
       {/* Calculator Form */}
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Input Form */}
-        <div className="card space-y-6">
+        <div className="bg-green-500/10 rounded-xl py-5 px-6 border border-green-400/50 space-y-6">
           <div className="flex items-center gap-3 mb-6">
             <Calculator className="text-solana-purple" size={24} />
             <h2 className="text-xl font-bold">Calculate Your Rewards</h2>
@@ -152,16 +154,14 @@ export function StakingCalculator() {
                 placeholder="Enter amount to stake"
                 value={stakingAmount}
                 onChange={(e) => setStakingAmount(e.target.value)}
-                className={`input-primary w-full pr-16 ${
-                  error ? "border-red-400" : ""
-                }`}
+                className="bg-gray-100 dark:bg-black/30 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 w-48 lg:w-auto transition"
                 step="0.001"
                 min="0"
               />
               {connected && (
                 <button
                   onClick={handleMaxAmount}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-solana-purple hover:text-solana-purple/80 font-medium"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm font-medium"
                 >
                   MAX
                 </button>
@@ -175,51 +175,46 @@ export function StakingCalculator() {
             )}
           </div>
 
-          {/* Validator Selection */}
-          <div>
-            <label className="block text-sm font-medium text-solana-gray-300 mb-2">
-              Select Validator
-            </label>
-            <select
-              value={selectedValidatorAddress}
-              onChange={(e) => setSelectedValidatorAddress(e.target.value)}
-              className="input-primary w-full"
-            >
-              <option value="">Choose a validator...</option>
-              {topValidators.map((validator) => (
-                <option key={validator.address} value={validator.address}>
-                  {validator.name} - {formatPercent(validator.apy)} APY
-                </option>
-              ))}
-            </select>
-            {selectedValidator && (
-              <div className="mt-2 text-sm text-solana-gray-400">
-                Commission: {formatPercent(selectedValidator.commission)} |
-                Total Stake: {formatSOL(selectedValidator.stake)}
-              </div>
-            )}
-          </div>
+          <ValidatorDropdown
+            validators={validators}
+            value={selectedValidator}
+            onChange={(value) => setSelectedValidatorAddress(value)}
+          />
 
-          {/* Time Frame */}
-          <div>
-            <label className="block text-sm font-medium text-solana-gray-300 mb-2">
-              Time Frame
-            </label>
-            <select
-              value={timeframe}
-              onChange={(e) => setTimeframe(e.target.value)}
-              className="input-primary w-full"
-            >
-              <option value="0.25">3 Months</option>
-              <option value="0.5">6 Months</option>
-              <option value="1">1 Year</option>
-              <option value="2">2 Years</option>
-              <option value="5">5 Years</option>
-            </select>
-          </div>
+          <TimeDropdown
+            validators={[
+              {
+                id: 1,
+                name: "3 Month",
+                value: "0.25",
+              },
+              {
+                id: 2,
+                name: "6 Month",
+                value: "0.5",
+              },
+              {
+                id: 3,
+                name: "1 Year",
+                value: "1",
+              },
+              {
+                id: 4,
+                name: "2 Years",
+                value: "2",
+              },
+              {
+                id: 5,
+                name: "5 Years",
+                value: "5",
+              },
+            ]}
+            value={timeframe}
+            onChange={(time) => setTimeframe(time)}
+          />
 
           {/* Info Box */}
-          <div className="bg-solana-blue/10 border border-solana-blue/20 rounded-lg p-4">
+          <div className="bg-green-500/10 border border-solana-blue/20 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <Info className="text-solana-blue mt-0.5" size={16} />
               <div className="text-sm">
@@ -241,7 +236,7 @@ export function StakingCalculator() {
             <>
               {/* Summary Cards */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="card bg-gradient-to-br from-solana-green/20 to-solana-green/10 border-solana-green/20">
+                <div className="bg-green-500/10 py-3 px-5 rounded-xl  border-green-500/50">
                   <div className="text-center">
                     <div className="text-2xl font-bold gradient-text mb-1">
                       {formatPercent(calculation.apy)}
@@ -252,7 +247,7 @@ export function StakingCalculator() {
                   </div>
                 </div>
 
-                <div className="card bg-gradient-to-br from-solana-purple/20 to-solana-purple/10 border-solana-purple/20">
+                <div className="bg-green-500/10 py-3 px-5 rounded-xl  border-green-500/50">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white mb-1">
                       {formatSOL(calculation.projectedValue)}
@@ -265,7 +260,7 @@ export function StakingCalculator() {
               </div>
 
               {/* Rewards Breakdown */}
-              <div className="card">
+              <div className="bg-green-500/10 py-3 px-5 rounded-xl  border-green-500/50">
                 <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
                   <TrendingUp className="text-solana-green" size={20} />
                   Estimated Rewards
@@ -299,7 +294,7 @@ export function StakingCalculator() {
               </div>
             </>
           ) : (
-            <div className="card text-center py-12">
+            <div className="bg-green-500/10 px-5 rounded-xl  border-green-500/50 text-center py-12">
               <Clock className="text-solana-gray-600 mx-auto mb-4" size={48} />
               <h3 className="text-lg font-semibold mb-2">
                 Enter Details to Calculate
@@ -315,7 +310,7 @@ export function StakingCalculator() {
 
       {/* Growth Chart */}
       {calculation && chartData.length > 0 && (
-        <div className="card">
+        <div className="bg-green-500/10 py-3 px-5 rounded-xl  border-green-500/50">
           <h3 className="text-lg font-semibold mb-6">
             Projected Growth Over Time
           </h3>

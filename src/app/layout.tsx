@@ -17,14 +17,11 @@ const raleway = Comic_Neue({
 });
 
 export const metadata: Metadata = {
-  title: "Stakeit - Solana Staking Platform",
+  title: "Oasis - The Solana Staking Platform",
   description:
     "Decentralized Solana staking application for delegating SOL and earning rewards",
   keywords: "Solana, staking, SOL, validator, delegation, rewards, DeFi",
-  authors: [{ name: "Stakeit Team" }],
-  openGraph: {
-    title: "Stakeit - Solana Staking Platform",
-  },
+  authors: [{ name: "Oasis Team" }],
 };
 
 export default function RootLayout({

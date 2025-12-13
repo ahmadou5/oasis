@@ -25,6 +25,7 @@ import { AppDispatch } from "../store";
 import { useValidators } from "../hooks/useValidators";
 import { ValidatorInfo } from "../store/slices/validatorSlice";
 import { formatAddress, formatPercent, formatSOL } from "../utils/formatters";
+import { useTheme } from "../context/ThemeContext";
 
 interface ValidatorDetailProps {
   validatorAddress: string;
@@ -37,7 +38,7 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
   const [validator, setValidator] = useState<ValidatorInfo | null>(null);
   const [showStakeModal, setShowStakeModal] = useState(false);
   const [copied, setCopied] = useState(false);
-
+  const { theme } = useTheme();
   useEffect(() => {
     const loadValidator = async () => {
       setLoading(true);
@@ -74,7 +75,7 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
 
   if (!validator) {
     return (
-      <div className="card text-center space-y-8 py-12">
+      <div className="bg-green-500/20 border border-green-500/50 rounded-xl text-center space-y-8 py-12">
         <div className="text-red-400 mb-4">
           <Award size={48} className="mx-auto mb-4" />
           <h3 className="text-xl font-semibold mb-2">Validator Not Found</h3>
@@ -121,7 +122,7 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
   return (
     <div className="space-y-8 py-16">
       {/* Header */}
-      <div className="card">
+      <div className="bg-green-500/10 border border-green-500/50 rounded-xl py-4 px-6">
         <div className="flex flex-col lg:flex-row gap-6">
           {/* Validator Info */}
           <div className="flex-1">
@@ -236,7 +237,7 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
           <div className="flex flex-col justify-center">
             <button
               onClick={() => setShowStakeModal(true)}
-              className="btn-primary text-lg px-8 py-4 mb-4"
+              className="bg-green-500/80 rounded-xl text-sm font-bold px-6 py-3 mb-4"
             >
               Stake with {validator.name}
             </button>
@@ -245,7 +246,9 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
               href={`https://explorer.solana.com/address/${validator.address}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-secondary text-center flex items-center justify-center gap-2"
+              className={`bg-black/80 rounded-xl border border-green-500/50 py-3 px-4 text-center ${
+                theme === "dark" ? "text-white" : "text-black"
+              } text-black dark:text-white flex items-center justify-center gap-2`}
             >
               View on Explorer
               <ExternalLink size={16} />

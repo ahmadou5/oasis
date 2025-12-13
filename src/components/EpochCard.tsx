@@ -71,15 +71,15 @@ export default function EpochCard() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg animate-pulse">
-        <div className="h-32 bg-gray-200 dark:bg-gray-700 rounded"></div>
+      <div className="bg-green-500/10 rounded-2xl p-4 border h-[246px] border-green-500/50  shadow-lg animate-pulse">
+        <div className="h-32 bg-green-500/5 rounded"></div>
       </div>
     );
   }
 
   if (!epochInfo) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+      <div className="bbg-green-500/10 rounded-2xl p-4 border border-green-500/50 shadow-lg">
         <div className="text-center text-gray-500">
           Failed to load epoch data
         </div>
