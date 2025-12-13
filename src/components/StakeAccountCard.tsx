@@ -294,7 +294,7 @@ export const StakeAccountCard = ({
                 <button
                   onClick={() =>
                     handleViewExplorer(
-                      stakeAccount?.delegatedValidator.toBase58()
+                      stakeAccount?.delegatedValidator.toBase58() || ""
                     )
                   }
                   className="p-2 hover:bg-green-500/10 rounded-lg transition-colors flex-shrink-0"
