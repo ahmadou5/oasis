@@ -125,9 +125,9 @@ export const StakeAccountCard = ({
               <div className="flex-1 min-w-0">
                 <p
                   className="font-medium text-sm font-mono"
-                  title={stakeAccount.address.toBase58()}
+                  title={stakeAccount?.address.toBase58()}
                 >
-                  {formatAddress(stakeAccount.address.toBase58())}
+                  {formatAddress(stakeAccount?.address.toBase58())}
                 </p>
                 <div
                   className={`text-xs capitalize flex items-center ${statusInfo.color}`}
@@ -139,7 +139,7 @@ export const StakeAccountCard = ({
 
               <div className="text-right flex-shrink-0">
                 <div className="text-sm font-semibold text-green-500">
-                  {formatSOL(stakeAccount.balance)}
+                  {formatSOL(stakeAccount?.balance)}
                 </div>
                 <div className="text-xs text-gray-500">Balance</div>
               </div>
@@ -151,7 +151,7 @@ export const StakeAccountCard = ({
                   Total Balance:
                 </span>
                 <span className="font-semibold text-sm">
-                  {formatSOL(stakeAccount.totalBalance)}
+                  {formatSOL(stakeAccount?.totalBalance)}
                 </span>
               </div>
               <div>
@@ -159,7 +159,7 @@ export const StakeAccountCard = ({
                   Rent Reserve:
                 </span>
                 <span className="font-semibold text-sm text-green-500">
-                  {formatSOL(stakeAccount.rentExemptReserve)}
+                  {formatSOL(stakeAccount?.rentExemptReserve)}
                 </span>
               </div>
             </div>
@@ -188,9 +188,9 @@ export const StakeAccountCard = ({
             <div className="w-[30%] min-w-0">
               <p
                 className="font-medium text-sm font-mono truncate"
-                title={stakeAccount.address.toBase58()}
+                title={stakeAccount?.address.toBase58()}
               >
-                {stakeAccount.address.toBase58()}
+                {stakeAccount?.address.toBase58()}
               </p>
               <div
                 className={`inline-flex items-center ${statusInfo.bgColor} rounded-full py-0.5 px-2 mt-1`}
@@ -206,27 +206,27 @@ export const StakeAccountCard = ({
 
             <div className="w-[18%] text-center">
               <div className="text-sm lg:text-base font-semibold text-green-500">
-                {formatSOL(stakeAccount.balance)}
+                {formatSOL(stakeAccount?.balance)}
               </div>
               <div className="text-xs text-gray-500">Balance</div>
             </div>
 
             <div className="w-[17%] text-center">
               <div className="text-sm font-semibold">
-                {formatSOL(stakeAccount.totalBalance)}
+                {formatSOL(stakeAccount?.totalBalance)}
               </div>
               <div className="text-xs text-gray-500">Total</div>
             </div>
 
             <div className="w-[17%] text-center">
               <div className="text-sm font-semibold text-green-500">
-                {formatSOL(stakeAccount.rentExemptReserve)}
+                {formatSOL(stakeAccount?.rentExemptReserve)}
               </div>
               <div className="text-xs text-gray-500">Rent</div>
             </div>
 
             <div className="w-[18%] flex items-center justify-end gap-2">
-              {stakeAccount.status === "active" && (
+              {stakeAccount?.status === "active" && (
                 <button
                   onClick={onUnstake}
                   className="py-2 px-3 bg-orange-500/80 hover:bg-orange-500 text-white text-xs rounded-lg transition-all"
@@ -250,9 +250,9 @@ export const StakeAccountCard = ({
             <div className="flex-1 min-w-0">
               <h3
                 className="font-bold text-base font-mono truncate"
-                title={stakeAccount.address.toBase58()}
+                title={stakeAccount?.address.toBase58()}
               >
-                {stakeAccount.address.toBase58()}
+                {stakeAccount?.address.toBase58()}
               </h3>
               <div
                 className={`inline-flex items-center ${statusInfo.bgColor} rounded-full py-1 px-2 mt-1`}
@@ -276,7 +276,7 @@ export const StakeAccountCard = ({
             </button>
           </div>
 
-          {stakeAccount.delegatedValidator && (
+          {stakeAccount?.delegatedValidator && (
             <div
               className={`${
                 theme === "dark" ? "bg-gray-800/50" : "bg-white/50"
@@ -288,13 +288,13 @@ export const StakeAccountCard = ({
                     Delegated Validator
                   </p>
                   <p className="text-sm font-mono truncate">
-                    {stakeAccount.delegatedValidator.toBase58()}
+                    {stakeAccount?.delegatedValidator.toBase58()}
                   </p>
                 </div>
                 <button
                   onClick={() =>
                     handleViewExplorer(
-                      stakeAccount.delegatedValidator.toBase58()
+                      stakeAccount?.delegatedValidator.toBase58()
                     )
                   }
                   className="p-2 hover:bg-green-500/10 rounded-lg transition-colors flex-shrink-0"
@@ -313,7 +313,7 @@ export const StakeAccountCard = ({
             >
               <div className="text-xs text-gray-500 mb-1">Balance (Staked)</div>
               <div className="text-lg font-bold text-green-500">
-                {formatSOL(stakeAccount.balance)}
+                {formatSOL(stakeAccount?.balance)}
               </div>
             </div>
             <div
@@ -323,7 +323,7 @@ export const StakeAccountCard = ({
             >
               <div className="text-xs text-gray-500 mb-1">Total Balance</div>
               <div className="text-lg font-bold">
-                {formatSOL(stakeAccount.totalBalance)}
+                {formatSOL(stakeAccount?.totalBalance)}
               </div>
             </div>
             <div
@@ -333,7 +333,7 @@ export const StakeAccountCard = ({
             >
               <div className="text-xs text-gray-500 mb-1">Rent Reserve</div>
               <div className="text-lg font-bold">
-                {formatSOL(stakeAccount.rentExemptReserve)}
+                {formatSOL(stakeAccount?.rentExemptReserve)}
               </div>
             </div>
             <div
@@ -343,7 +343,7 @@ export const StakeAccountCard = ({
             >
               <div className="text-xs text-gray-500 mb-1">Credits Observed</div>
               <div className="text-lg font-bold">
-                {stakeAccount.creditsObserved.toLocaleString()}
+                {stakeAccount?.creditsObserved.toLocaleString()}
               </div>
             </div>
           </div>
@@ -356,27 +356,27 @@ export const StakeAccountCard = ({
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Activation Epoch:</span>
               <span className="font-medium">
-                {stakeAccount.activationEpoch || "N/A"}
+                {stakeAccount?.activationEpoch || "N/A"}
               </span>
             </div>
-            {stakeAccount.deactivationEpoch && (
+            {stakeAccount?.deactivationEpoch && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">Deactivation Epoch:</span>
                 <span className="font-medium">
-                  {stakeAccount.deactivationEpoch}
+                  {stakeAccount?.deactivationEpoch}
                 </span>
               </div>
             )}
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Last Update Epoch:</span>
               <span className="font-medium">
-                {stakeAccount.lastUpdateEpoch}
+                {stakeAccount?.lastUpdateEpoch}
               </span>
             </div>
           </div>
 
           <div className="flex gap-3 pt-2">
-            {stakeAccount.status === "active" && (
+            {stakeAccount?.status === "active" && (
               <button
                 onClick={onUnstake}
                 className="flex-1 py-3 px-4 bg-gradient-to-r from-orange-500 to-red-500 text-white font-medium rounded-xl hover:shadow-lg transition-all duration-200"
@@ -386,7 +386,7 @@ export const StakeAccountCard = ({
             )}
             <button
               onClick={() =>
-                handleViewExplorer(stakeAccount.address.toBase58())
+                handleViewExplorer(stakeAccount?.address.toBase58())
               }
               className="flex-1 py-3 px-4 border border-green-500/30 text-green-500 hover:bg-green-500/10 font-medium rounded-xl transition-all duration-200"
             >
