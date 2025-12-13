@@ -18,9 +18,9 @@ export const LogoScroller: React.FC<LogoScrollerProps> = ({ logos }) => {
   // Responsive card sizing
   const mobileBreakpoint = 768;
   const isMobile = useMediaQuery(`(max-width: ${mobileBreakpoint}px)`);
-  const cardWidth = isMobile ? 230 : 270;  // Match ValidatorTrendCard width
-  const cardGap = isMobile ? 12 : 16;       // Consistent gap between cards
-  
+  const cardWidth = isMobile ? 230 : 270; // Match ValidatorTrendCard width
+  const cardGap = isMobile ? 12 : 16; // Consistent gap between cards
+
   // Calculate total scroll width including gaps
   const totalWidth = (cardWidth + cardGap) * logos.length;
 
@@ -50,11 +50,8 @@ export const LogoScroller: React.FC<LogoScrollerProps> = ({ logos }) => {
           {/* Header */}
           <div className="text-center mb-4">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-              Top Validators
+              Most active validators
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Scroll through our highest performing validators
-            </p>
           </div>
 
           {/* Scroller Container */}
@@ -67,7 +64,7 @@ export const LogoScroller: React.FC<LogoScrollerProps> = ({ logos }) => {
                 "linear-gradient(to right, transparent 0%, white 10%, white 90%, transparent 100%)",
             }}
           >
-            <div 
+            <div
               className="animate-scroll flex items-center"
               style={{ gap: `${cardGap}px` }}
             >

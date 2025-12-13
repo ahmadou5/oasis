@@ -29,11 +29,9 @@ import {
   Info,
   Calculator,
 } from "lucide-react";
-
-import clsx from "clsx";
 import Image from "next/image";
 import { ENV } from "../config/env";
-import { SolanaStakingService } from "../lib/services/staking.service";
+
 import { useTheme } from "../context/ThemeContext";
 
 interface StakeModalProps {
@@ -399,10 +397,10 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
               {loading ? (
                 <>
                   <Loader className="animate-spin" size={16} />
-                  Staking...
+                  Delegating...
                 </>
               ) : (
-                "Stake SOL"
+                "Delegate SOL"
               )}
             </button>
           </div>

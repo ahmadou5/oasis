@@ -56,7 +56,7 @@ export function Hero() {
         <LogoScroller logos={duplicatedLogos} />
       ) : (
         <div className="w-full max-w-4xl mx-auto py-8 px-4">
-          <div className="text-center py-12 bg-gray-100/50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+          <div className="text-center py-12 bg-green-400/10 rounded-xl border border-green-500/50">
             <div className="w-16 h-16 mx-auto mb-4 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
               <span className="text-gray-400 text-2xl">⚡</span>
             </div>
