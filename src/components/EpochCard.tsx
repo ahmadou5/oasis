@@ -88,7 +88,7 @@ export default function EpochCard() {
   }
 
   return (
-    <div className="bg-green-500/20 rounded-2xl p-6 border border-green-500/50 shadow-lg">
+    <div className="bg-green-500/10 rounded-2xl p-4 border border-green-500/50 shadow-lg">
       {/* Header */}
 
       {/* Progress Ring */}
@@ -154,7 +154,7 @@ export default function EpochCard() {
           <div className="text-sm font-semibold text-green-500">
             {epochInfo.percentComplete.toFixed(1)}%
           </div>
-          <div className="text-xs text-gray-400">Complete</div>
+          <div className="text-xs text-gray-400">Completed ✅</div>
         </div>
       </div>
 

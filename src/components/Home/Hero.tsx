@@ -8,6 +8,7 @@ import SolanaPriceCard from "../SolanaPriceCard";
 import { useValidators } from "../../hooks/useValidators";
 import { useTheme } from "../../context/ThemeContext";
 import { EpochConverter } from "../../lib/epochConverter";
+import { ValidatorMap } from "../ValidatorWorldMap";
 
 export function Hero() {
   const {
@@ -70,6 +71,13 @@ export function Hero() {
         </div>
       )}
       <div className="w-[100%] h-auto py-8 ml-auto mr-auto flex items-center justify-between">
+        <div className="w-[20%] px-3 py-2"></div>
+        <div className="w-[80%] px-3 py-2">
+          <ValidatorMap />
+        </div>
+      </div>
+
+      <div className="w-[100%] h-auto py-2 ml-auto mr-auto flex items-center justify-between">
         <div className="w-[50%] px-3 py-2">
           <SolanaPriceCard />
           <EpochCard />

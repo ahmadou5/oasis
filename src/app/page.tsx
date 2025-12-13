@@ -4,7 +4,7 @@ import { StakingStats } from "@/components/StakingStats";
 
 export default function HomePage() {
   return (
-    <div className="space-y-12">
+    <div className="">
       <Hero />
       {/** <StakingStats />  */}
       <ValidatorList />

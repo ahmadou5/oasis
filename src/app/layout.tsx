@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import { Navigation } from "@/components/Navigation";
 import FluidBackground from "@/components/FluidBackground";
 import Layout from "@/components/Layout/Layout";
+import SplashScreen from "../components/Layout/SplashScreen";
 
 const raleway = Comic_Neue({
   subsets: ["latin"],
@@ -58,7 +59,10 @@ export default function RootLayout({
         <ThemeProvider>
           <ReduxProvider>
             <WalletProvider>
-              <Layout>{children}</Layout>
+              <Layout>
+                <SplashScreen />
+                {children}
+              </Layout>
             </WalletProvider>
           </ReduxProvider>
         </ThemeProvider>

@@ -107,7 +107,7 @@ export default function SolanaPriceCard() {
   const isPositive = priceData.change24h >= 0;
 
   return (
-    <div className="bg-green-500/20 rounded-2xl mb-2 py-3 px-6 border border-green-500/50 shadow-lg">
+    <div className="bg-green-500/10 rounded-2xl mb-2 py-3 px-6 border border-green-500/50 shadow-lg">
       <div className="text-start mb-0 py-1 px-1">
         <div className="flex py-2">
           <div className="rounded-full w-9 h-9 bg-black">

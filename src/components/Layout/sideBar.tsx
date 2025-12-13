@@ -45,16 +45,10 @@ export const SideBar: React.FC<SideBarProps> = ({
       url: "/",
     },
     {
-      icon: <LucideAward className="text-gray-700 dark:text-gray-300" />,
-      label: "Validator List",
+      icon: <LucideWalletCards className="text-gray-700 dark:text-gray-300" />,
+      label: "Portfolio",
       active: true,
-      url: "/validators",
-    },
-    {
-      icon: <Coins className="text-gray-700 dark:text-gray-300" />,
-      label: "USDC Staking",
-      active: true,
-      url: "/validators",
+      url: "/staking",
     },
     {
       icon: <Calculator className="text-gray-700 dark:text-gray-300" />,
@@ -62,12 +56,7 @@ export const SideBar: React.FC<SideBarProps> = ({
       active: true,
       url: "/calculator",
     },
-    {
-      icon: <LucideWalletCards className="text-gray-700 dark:text-gray-300" />,
-      label: "Portfolio",
-      active: true,
-      url: "/staking",
-    },
+
     {
       icon: <LucideAppWindow className="text-gray-700 dark:text-gray-300" />,
       label: "Learn",
@@ -94,15 +83,15 @@ export const SideBar: React.FC<SideBarProps> = ({
         {/* Logo Section */}
         <div className="p-4 border-b border-gray-200/10 dark:border-gray-700/20">
           <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-solana-purple to-solana-green rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                <span className="text-white font-bold text-xl">O</span>
+            <div className="flex items-center px-2 py-2 gap-3">
+              <div className="w-10 h-10 rounded-xl text-3xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                🌴
               </div>
-              <span className="font-bold text-gray-900 dark:text-gray-100 text-xl whitespace-nowrap">
+              <span className=" mt-1 text-gray-900 dark:text-gray-100 text-xl whitespace-nowrap">
                 Oasis
               </span>
             </div>
-            
+
             {/* Mobile Close Button */}
             <button
               className="text-gray-700 dark:text-gray-300 lg:hidden p-1 hover:text-gray-900 dark:hover:text-white transition-colors"

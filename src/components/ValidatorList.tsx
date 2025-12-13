@@ -6,9 +6,9 @@ import { ValidatorCard } from "./ValidatorCard";
 import { ValidatorTable } from "./ValidatorTable";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { StakeModal } from "./StakeModal";
-import { Grid, List, RefreshCw } from "lucide-react";
+import { Grid, List, LucideRefreshCcw, RefreshCw } from "lucide-react";
 import clsx from "clsx";
-import { NewValidatorCard } from "./Home/NewValidatorCard";
+import { GrRefresh } from "react-icons/gr";
 import { useSelector } from "react-redux";
 
 import CustomDropdown from "./DropDown";
@@ -115,7 +115,7 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
 
   if (error) {
     return (
-      <div className="card text-center py-12">
+      <div className="bg-green-400/5 border rounded-xl border-green-500/50 text-center py-12">
         <div className="text-red-400 mb-4">
           <svg
             className="w-16 h-16 mx-auto mb-4"
@@ -134,8 +134,12 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
             Failed to Load Validators
           </h3>
           <p className="text-solana-gray-400 mb-4">{error}</p>
-          <button onClick={handleRefresh} className="btn-primary">
+          <button onClick={handleRefresh} className="flex ml-auto mr-auto">
             Try Again
+            <GrRefresh
+              size={20}
+              className={clsx(loading && "animate-spin", "ml-2 mr-2")}
+            />
           </button>
         </div>
       </div>
@@ -147,10 +151,6 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
       {/* Header */}
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold mb-1">
-            {showFilters ? "Top Validators" : "All Validators"}
-          </h2>
-
           <p className="text-sm sm:text-base text-gray-500 dark:text-solana-gray-400">
             {filteredValidators.length} validators found
             {stats.activeValidators > 0 && (
@@ -188,10 +188,10 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="btn-secondary flex items-center gap-2 px-3 sm:px-4 text-xs sm:text-sm"
+              className=" flex items-center gap-2 px-3 sm:px-4 text-xs sm:text-sm"
             >
-              <RefreshCw
-                size={14}
+              <GrRefresh
+                size={20}
                 className={clsx(loading && "animate-spin")}
               />
             </button>

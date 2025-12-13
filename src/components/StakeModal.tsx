@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useWallet, useConnection } from "@solana/wallet-adapter-react";
 import {
   PublicKey,
@@ -9,6 +9,7 @@ import {
   Authorized,
   Lockup,
   LAMPORTS_PER_SOL,
+  Connection,
 } from "@solana/web3.js";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
@@ -28,8 +29,12 @@ import {
   Info,
   Calculator,
 } from "lucide-react";
+
 import clsx from "clsx";
 import Image from "next/image";
+import { ENV } from "../config/env";
+import { SolanaStakingService } from "../lib/services/staking.service";
+import { useTheme } from "../context/ThemeContext";
 
 interface StakeModalProps {
   validator: ValidatorInfo;
@@ -37,8 +42,11 @@ interface StakeModalProps {
 }
 
 export function StakeModal({ validator, onClose }: StakeModalProps) {
+  const { theme } = useTheme();
   const { publicKey, signTransaction } = useWallet();
-  const { connection } = useConnection();
+  const connection = new Connection(ENV.SOLANA.RPC_ENDPOINTS.MAINNET, {
+    commitment: "confirmed",
+  });
   const dispatch = useDispatch<AppDispatch>();
 
   const [stakeAmount, setStakeAmount] = useState("");
@@ -102,7 +110,7 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
       }
 
       // Create validator vote account public key
-      const voteAccount = new PublicKey(validator.votingPubkey);
+      const voteAccount = new PublicKey(validator?.address);
 
       // Create stake account creation instruction
       const createStakeAccountIx = StakeProgram.createAccount({
@@ -183,11 +191,17 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
   if (success) {
     return (
       <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div className="bg-solana-gray-900 rounded-xl p-6 max-w-md w-full border border-solana-gray-800">
+        <div
+          className={`justify-between bg-gradient-to-r from-green-600/20 ${
+            theme === "dark" ? "to-gray-950" : "to-gray-300"
+          }  rounded-xl p-6 max-w-lg w-full border border-green-500/50`}
+        >
           <div className="text-center">
             <CheckCircle className="text-solana-green mx-auto mb-4" size={64} />
-            <h2 className="text-2xl font-bold mb-4">Staking Successful!</h2>
-            <p className="text-solana-gray-400 mb-6">
+            <h2 className="text-2xl text-white/50 dark:text-gray-800/50 font-bold mb-4">
+              Staking Successful!
+            </h2>
+            <p className="text-white/50 dark:text-gray-800/50 mb-6">
               You've successfully staked {formatSOL(parseFloat(stakeAmount))}{" "}
               with {validator.name}
             </p>
@@ -199,7 +213,7 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
                   href={`https://explorer.solana.com/tx/${txSignature}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-solana-purple hover:text-solana-purple/80 font-mono text-sm"
+                  className="text-green-500/80 hover:text-green-500 font-mono text-sm"
                 >
                   {txSignature.slice(0, 8)}...{txSignature.slice(-8)}
                 </a>
@@ -214,7 +228,10 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
               </div>
             </div>
 
-            <button onClick={onClose} className="btn-primary w-full">
+            <button
+              onClick={onClose}
+              className="bg-red-400/50 py-2 rounded-lg w-full  flex-1"
+            >
               Close
             </button>
           </div>
@@ -224,21 +241,25 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-solana-gray-900 rounded-xl p-6 max-w-lg w-full border border-solana-gray-800">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-0">
+      <div
+        className={`justify-between bg-gradient-to-r from-green-600/20 ${
+          theme === "dark" ? "to-gray-950" : "to-gray-300"
+        }  rounded-xl p-6 max-w-lg w-full border border-green-500/50`}
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold">Stake SOL</h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-solana-gray-800 transition-colors"
+            className="p-2 rounded-lg hover:bg-green-800/40 transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
         {/* Validator Info */}
-        <div className="card bg-solana-gray-800/50 p-4 mb-6">
+        <div className=" rounded-xl border border-green-500/50 bg-green-500/10 p-4 mb-6">
           <div className="flex items-center gap-3">
             {validator.avatar ? (
               <Image
@@ -283,16 +304,13 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
                 value={stakeAmount}
                 onChange={(e) => setStakeAmount(e.target.value)}
                 placeholder="0.0"
-                className={clsx(
-                  "input-primary w-full pr-16",
-                  !validation.isValid && stakeAmount && "border-red-400"
-                )}
+                className="bg-gray-100 dark:bg-black/30 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 w-48 lg:w-auto transition"
                 step="0.001"
                 min="0"
               />
               <button
                 onClick={handleMaxAmount}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-solana-purple hover:text-solana-purple/80 font-medium"
+                className="absolute bg-green-600/10 rounded-xl py-2 px-8 right-3 top-1/2 transform  -translate-y-1/2 text-sm text-green-500/80 border border-green-500/50 hover:text-green-500/90 font-medium"
               >
                 MAX
               </button>
@@ -368,7 +386,7 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
           <div className="flex gap-3 pt-4">
             <button
               onClick={onClose}
-              className="btn-secondary flex-1"
+              className="bg-red-400/50 py-2 rounded-lg flex-1"
               disabled={loading}
             >
               Cancel
@@ -376,7 +394,7 @@ export function StakeModal({ validator, onClose }: StakeModalProps) {
             <button
               onClick={handleStake}
               disabled={!validation.isValid || loading || !publicKey}
-              className="btn-primary flex-1 flex items-center justify-center gap-2"
+              className="bg-green-600/60 rounded-lg flex-1 flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>

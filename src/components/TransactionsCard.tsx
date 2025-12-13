@@ -126,7 +126,7 @@ export default function TransactionsCard() {
   };
 
   return (
-    <div className="bg-green-500/20 rounded-2xl py-7 px-8 border border-green-500/50 shadow-lg">
+    <div className="bg-green-500/10 rounded-2xl py-7 px-8 border border-green-500/50 shadow-lg">
       {/* Header */}
       <div className="flex items-center gap-3 mb-3">
         <div>

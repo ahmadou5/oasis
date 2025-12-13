@@ -97,6 +97,18 @@
   animation: fadeIn 0.6s ease-out 1s both;
 }
 
+.animate-fade-in-delay-500 {
+  animation: fadeIn 0.6s ease-out 0.5s both;
+}
+
+.animate-fade-in-delay-700 {
+  animation: fadeIn 0.6s ease-out 0.7s both;
+}
+
+.animate-fade-in-delay-750 {
+  animation: fadeIn 0.6s ease-out 0.75s both;
+}
+
 /* Advanced animations for premium UI */
 @keyframes float {
   0%, 100% {
