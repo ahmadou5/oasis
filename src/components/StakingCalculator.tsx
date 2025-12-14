@@ -177,7 +177,7 @@ export function StakingCalculator() {
 
           <ValidatorDropdown
             validators={validators}
-            value={selectedValidator?.name}
+            value={selectedValidator?.name || "none"}
             onChange={(value) => setSelectedValidatorAddress(value)}
           />
 
