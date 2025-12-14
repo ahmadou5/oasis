@@ -1,6 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { StakeAccountInfo } from "./services/staking.service";
 import {
   ComputeBudgetProgram,
   Connection,
@@ -18,6 +17,50 @@ import {
 } from "@solana/web3.js";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+interface IAuthorized {
+  staker: PublicKey;
+  withdrawer: PublicKey;
+}
+
+/**
+ * Defines the lockup conditions for a stake account.
+ */
+interface ILockup {
+  unixTimestamp: number;
+  epoch: number;
+  custodian: PublicKey;
+}
+
+/**
+ * Represents the complete meta object for a stake account.
+ */
+interface IStakeAccountMeta {
+  authorized: IAuthorized;
+  lockup: ILockup;
+}
+
+// Types for staking operations
+export interface StakeAccountInfo {
+  address: PublicKey;
+  balance: number; // in SOL
+  status:
+    | "activating"
+    | "active"
+    | "deactivating"
+    | "inactive"
+    | "uninitialized"
+    | "unknown";
+  delegatedValidator?: PublicKey;
+
+  activationEpoch?: number;
+  deactivationEpoch?: number;
+  rentExemptReserve: number;
+  creditsObserved: number;
+  totalBalance: number;
+  meta: IStakeAccountMeta;
+  lastUpdateEpoch: number;
 }
 
 const parseEpoch = (epochValue: any): number | undefined => {
