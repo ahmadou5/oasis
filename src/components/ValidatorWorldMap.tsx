@@ -13,9 +13,6 @@ export const ValidatorMap = () => {
       <ComposableMap>
         <ZoomableGroup>
           <Geographies
-            projection="geoMercator"
-            projectionConfig={{ scale: 120, center: [0, 25] }}
-            style={{ width: "100%", height: "100%" }}
             geography={GEO_URL}
             fill="#16A34C"
             stroke="#FFFFFF"
