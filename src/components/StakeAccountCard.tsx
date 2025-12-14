@@ -276,6 +276,35 @@ export const StakeAccountCard = ({
             </button>
           </div>
 
+          {stakeAccount?.delegatedValidator && (
+            <div
+              className={`${
+                theme === "dark" ? "bg-gray-800/50" : "bg-white/50"
+              } rounded-lg p-3`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-gray-500 mb-1">
+                    Delegated Validator
+                  </p>
+                  <p className="text-sm font-mono truncate">
+                    {stakeAccount?.delegatedValidator.toBase58()}
+                  </p>
+                </div>
+                <button
+                  onClick={() =>
+                    handleViewExplorer(
+                      stakeAccount?.delegatedValidator.toBase58() || ""
+                    )
+                  }
+                  className="p-2 hover:bg-green-500/10 rounded-lg transition-colors flex-shrink-0"
+                >
+                  <ExternalLink size={16} className="text-gray-400" />
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <div
               className={`${
