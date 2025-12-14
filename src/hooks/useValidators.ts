@@ -130,7 +130,7 @@ export function useValidators() {
       console.warn("⚠️ Failed to fetch Solana Beach metadata:", error);
       return new Map();
     }
-  }, [validators.length]);
+  }, []);
 
   // Main function to fetch and combine all validator data
   const fetchValidators = useCallback(

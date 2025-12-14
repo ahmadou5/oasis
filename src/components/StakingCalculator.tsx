@@ -59,10 +59,6 @@ export function StakingCalculator() {
     }
   }, [topValidators, selectedValidatorAddress]);
 
-  useEffect(() => {
-    calculateStakingRewards();
-  }, [stakingAmount, selectedValidator, timeframe, calculateRewards]);
-
   const calculateStakingRewards = () => {
     if (!stakingAmount || !selectedValidator) {
       setCalculation(null);
@@ -102,6 +98,10 @@ export function StakingCalculator() {
       projectedValue,
     });
   };
+
+  useEffect(() => {
+    calculateStakingRewards();
+  }, [stakingAmount, selectedValidator, timeframe, balance, connected]);
 
   const generateChartData = () => {
     if (!calculation) return [];

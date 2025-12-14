@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
 import { fetchStakeAccounts } from "@/store/slices/stakingSlice";
@@ -59,17 +59,19 @@ export function StakingDashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const { connected, publicKey } = useWallet();
   const [stakeAccounts, setStakeAccounts] = useState<StakeAccountInfo[]>([]);
-  const connection = new Connection(ENV.SOLANA.RPC_ENDPOINTS.MAINNET, {
+  
+  const connection = useMemo(() => new Connection(ENV.SOLANA.RPC_ENDPOINTS.MAINNET, {
     commitment: "confirmed",
-  });
+  }), []);
+  
   const { totalStaked, totalRewards, loading, error } = useSelector(
     (state: RootState) => state.staking
   );
 
-  const fakeUser = new PublicKey(
+  const fakeUser = useMemo(() => new PublicKey(
     "31ZBx7jVsdXgq4qFWYD8jqUau1vAp8rqP1wvPaahjXPv"
-  );
-  const fetchStakes = async () => {
+  ), []);
+  const fetchStakes = useCallback(async () => {
     try {
       if (connected && publicKey) {
         const stakingAccounts = await getUserStakeAccounts(
@@ -80,10 +82,10 @@ export function StakingDashboard() {
         setStakeAccounts(stakingAccounts);
       }
     } catch (error) {}
-  };
+  }, [connected, publicKey, connection, fakeUser]);
   useEffect(() => {
     fetchStakes();
-  }, [connected, publicKey]);
+  }, [connected, publicKey, fetchStakes]);
 
   if (!connected) {
     return (
@@ -137,7 +139,7 @@ export function StakingDashboard() {
       <div className="bg-green-500/10 border border-green-500/50 rounded-xl text-center py-12">
         <TrendingUp className="text-solana-gray-600 mx-auto mb-4" size={48} />
         <h3 className="text-xl font-semibold mb-4">
-          No Active Stakes for {publicKey.toString().slice(0, 8)}
+          No Active Stakes for {publicKey?.toString().slice(0, 8)}
         </h3>
         <p className="text-solana-gray-400 mb-6">
           You don't have any active stake accounts. Start staking to earn
