@@ -23,7 +23,12 @@ export function formatPercent(value: number): string {
     maximumFractionDigits: 2,
   }).format(value / 100);
 }
-
+export const formatBytes = (bytes: number) => {
+  if (bytes >= 1e12) return `${(bytes / 1e12).toFixed(1)} TB`;
+  if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)} GB`;
+  if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(1)} MB`;
+  return `${(bytes / 1e3).toFixed(1)} KB`;
+};
 /**
  * Format a large number with appropriate suffixes
  */
@@ -140,6 +145,37 @@ export function calculateRewards(
   const epochsPerYear = 365 / 2.5;
   const rewardPerEpoch = (stakeAmount * apy) / 100 / epochsPerYear;
   return rewardPerEpoch * epochs;
+}
+
+/**
+ * Format storage size with appropriate units
+ */
+export function formatStorage(bytes: number): string {
+  if (bytes >= 1e12) return `${(bytes / 1e12).toFixed(1)} TB`;
+  if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)} GB`;
+  if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(1)} MB`;
+  if (bytes >= 1e3) return `${(bytes / 1e3).toFixed(1)} KB`;
+  return `${bytes} B`;
+}
+
+/**
+ * Format uptime duration
+ */
+export function formatUptime(seconds: number): string {
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  if (days > 0) return `${days}d ${hours}h`;
+  if (hours > 0) return `${hours}h ${minutes}m`;
+  return `${minutes}m`;
+}
+
+/**
+ * Format health score as percentage
+ */
+export function formatHealthScore(score: number): string {
+  return `${Math.round(score)}/100`;
 }
 
 /**

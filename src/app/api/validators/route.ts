@@ -529,9 +529,36 @@ export async function GET() {
         const beachData = beachValidators.get(account.votePubkey);
         const fallbackData = VALIDATOR_NAMES[account.votePubkey];
         const remData = validatorResData.data.response;
+        // Fetch location coordinates using the new validator geolocation service
+        let locationData: any = null;
+        try {
+          if (remData?.city && remData?.country) {
+            const geoResponse = await fetch(
+              `${
+                ENV.BASE_URL
+              }/api/validators/geolocate?city=${encodeURIComponent(
+                remData.city
+              )}&country=${encodeURIComponent(
+                remData.country
+              )}&continent=${encodeURIComponent(remData.continent || "")}`
+            );
+            if (geoResponse.ok) {
+              const geoResult = await geoResponse.json();
+              if (geoResult.success) {
+                locationData = geoResult.location;
+              }
+            }
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to fetch location for validator ${account.votePubkey}:`,
+            error
+          );
+        }
+
         const validatorInfo = {
           name:
-            beachData?.name ||
+            remData?.name ||
             fallbackData?.name ||
             `Validator ${account.votePubkey.slice(0, 8)}...`,
           description: remData?.details || "Solana validator node",
@@ -539,6 +566,10 @@ export async function GET() {
           avatar: remData?.iconUrl,
           location: remData.continent || "Unknown",
           country: remData.country,
+          city: remData?.city,
+          region: remData?.region,
+          continent: remData?.continent,
+          coordinates: locationData?.coordinates || null,
           keybaseUsername: remData.website,
           twitterUsername: beachData?.name,
         };
@@ -612,10 +643,22 @@ export async function GET() {
           rootSlot: 0,
           // Enhanced metadata
           country: validatorInfo.country,
+          city: validatorInfo.city,
+          region: validatorInfo.region,
+          continent: validatorInfo.continent,
           keybaseUsername: validatorInfo.keybaseUsername,
           twitterUsername: validatorInfo.twitterUsername,
           uptime: performanceData.uptime,
           performanceHistory: performanceData.performanceHistory,
+          // NEW: Location data with coordinates for mapping
+          location: validatorInfo.coordinates
+            ? {
+                coordinates: validatorInfo.coordinates,
+                city: validatorInfo.city || "Unknown",
+                country: validatorInfo.country || "Unknown",
+                countryCode: "XX", // Could be enhanced later
+              }
+            : null,
           //currentEpoch: currentEpoch,
           //epochHistory: epochHistory,
         };

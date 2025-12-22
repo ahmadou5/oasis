@@ -1,6 +1,6 @@
 "use client";
 
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { ValidatorInfo } from "@/types";
 import {
   LineChart,
   Line,

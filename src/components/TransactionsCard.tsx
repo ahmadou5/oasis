@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Activity, Zap, DollarSign, BarChart } from "lucide-react";
+import { MoreVertical, TrendingUp, Activity, Eye } from "lucide-react";
 import { Connection } from "@solana/web3.js";
 import { ENV } from "../config/env";
 
@@ -26,7 +26,6 @@ export default function TransactionsCard() {
 
     const fetchTransactionData = async () => {
       try {
-        // Fetch multiple samples for better data
         const performanceSamples = await connection.getRecentPerformanceSamples(
           20
         );
@@ -38,30 +37,26 @@ export default function TransactionsCard() {
           return;
         }
 
-        // Calculate TPS correctly by dividing by sample period
         const currentTPS =
           performanceSamples[0].numTransactions /
           performanceSamples[0].samplePeriodSecs;
 
-        // Average TPS across all samples
         const avgTPS =
           performanceSamples.reduce((sum, sample) => {
             return sum + sample.numTransactions / sample.samplePeriodSecs;
           }, 0) / performanceSamples.length;
 
-        // Peak TPS
         const peakTPS = Math.max(
           ...performanceSamples.map(
             (sample) => sample.numTransactions / sample.samplePeriodSecs
           )
         );
 
-        // TPS history for chart
         const tpsHistory = performanceSamples
           .map((sample) =>
             Math.floor(sample.numTransactions / sample.samplePeriodSecs)
           )
-          .reverse(); // Reverse to show oldest to newest
+          .reverse();
 
         const txData: TransactionData = {
           totalTransactions: count,
@@ -83,28 +78,22 @@ export default function TransactionsCard() {
       }
     };
 
-    // Initial fetch
     fetchTransactionData();
-
-    // Update every 10 seconds
     const interval = setInterval(fetchTransactionData, 1000);
-
     return () => clearInterval(interval);
   }, []);
 
-  console.log("data", txData?.currentTPS);
-
   if (loading) {
     return (
-      <div className="bg-green-500/10  rounded-2xl p-6 border border-green-500/50 h-[416px] shadow-lg animate-pulse">
-        <div className="h-40 bg-green-500/5 rounded"></div>
+      <div className="bg-green-500/5 rounded-2xl p-6 border border-gray-200 dark:border-slate-800 shadow-sm animate-pulse">
+        <div className="h-64 bg-gray-100 dark:bg-slate-800 rounded"></div>
       </div>
     );
   }
 
   if (!txData) {
     return (
-      <div className="bg-green-500/10  rounded-2xl p-6 border border-green-500/50 h-[416px] shadow-lg">
+      <div className="bg-green-500/5 rounded-2xl p-6 border border-gray-200 dark:border-slate-800 shadow-sm">
         <div className="text-center text-gray-500">
           Failed to load transaction data
         </div>
@@ -120,72 +109,89 @@ export default function TransactionsCard() {
     return num.toLocaleString();
   };
 
-  const formatValue = (lamports: number) => {
-    const sol = lamports / 1e9;
-    return `$${formatNumber(sol * 132)}`; // Assuming SOL price ~$132
-  };
+  // Calculate percentage change (simulated)
+  const tpsChange =
+    ((txData.currentTPS - txData.averageTPS) / txData.averageTPS) * 100;
+  const isPositive = tpsChange >= 0;
 
   return (
-    <div className="bg-green-500/10 rounded-2xl py-7 px-8 border border-green-500/50 shadow-lg">
+    <div className="bg-green-500/5 rounded-2xl p-6 border border-green-500/50 shadow-sm hover:shadow-md transition-shadow">
       {/* Header */}
-      <div className="flex items-center gap-3 mb-3">
-        <div>
-          <p className="text-sm text-gray-500">Transactions</p>
-        </div>
-        <div className="ml-auto text-xs text-gray-400">
-          Live • {new Date(txData.lastUpdated).toLocaleTimeString()}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Transactions
+          </h3>
         </div>
       </div>
 
-      {/* Current TPS - Main Metric */}
-      <div className="text-center mb-6 p-4 bg-gradient-to-br from-green-500/10 to-cyan-500/10 rounded-xl border border-green-500/30">
-        <div className="text-3xl font-bold text-green-500 mb-1">
-          {txData.currentTPS.toLocaleString()}
-        </div>
-        <div className="text-sm text-gray-500 mb-2">Current TPS</div>
-        <div className="flex items-center justify-center gap-2 text-sm">
-          <Zap size={14} className="text-yellow-500" />
-          <span className="text-gray-600 dark:text-gray-300">
-            {((txData.currentTPS / txData.peakTPS) * 100).toFixed(1)}% of peak
+      {/* Current TPS */}
+      <div className="mb-6">
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className="text-4xl font-bold text-gray-900 dark:text-white">
+            {txData.currentTPS.toLocaleString()}
           </span>
+          <span className="text-sm text-gray-500 dark:text-gray-400">{`TPU(Transactions Per Second)`}</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <div
+            className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg ${
+              isPositive
+                ? "bg-green-500/10 text-green-700 dark:text-green-400"
+                : "bg-red-500/10 text-red-700 dark:text-red-400"
+            }`}
+          >
+            <span className="text-sm font-semibold">
+              {isPositive ? "+" : "-"}
+              {Math.abs(tpsChange).toFixed(1)}%
+            </span>
+          </div>
         </div>
       </div>
 
       {/* TPS Chart */}
       <div className="mb-6">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-sm font-medium">TPS Last 20 Seconds</span>
-          <span className="text-xs text-gray-500">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+            TPS Over Time
+          </span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
             Peak: {txData.peakTPS.toLocaleString()}
           </span>
         </div>
 
-        <div className="h-16 flex items-end gap-0.5">
+        <div className="h-20 flex items-end gap-1">
           {txData.tpsHistory.map((tps, index) => {
-            // Calculate time ago (assuming each bar represents 1 second)
-            const secondsAgo = txData.tpsHistory.length - 1 - index;
-            const timeLabel = secondsAgo === 0 ? "Now" : `${secondsAgo}s ago`;
+            const maxTPS = Math.max(...txData.tpsHistory);
+            const height = Math.max(10, (tps / maxTPS) * 100);
+            const isRecent = index >= txData.tpsHistory.length - 3;
 
             return (
               <div
                 key={index}
-                className="flex-1 bg-gradient-to-t from-green-500 to-green-600 rounded-t-sm opacity-70 hover:opacity-100 transition-opacity cursor-pointer relative group"
-                style={{
-                  height: `${Math.max(
-                    2,
-                    (tps / Math.max(...txData.tpsHistory)) * 100
-                  )}%`,
-                }}
+                className="flex-1 group relative"
+                style={{ height: "100%" }}
               >
-                {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-green-600/70 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                  <div className="font-semibold">
-                    {tps.toLocaleString()} TPS
-                  </div>
-                  <div className="text-gray-200 text-[10px]">{timeLabel}</div>
-                  {/* Arrow */}
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
-                    <div className="border-4 border-transparent border-t-green-500"></div>
+                <div
+                  className={`w-full rounded-t-sm transition-all duration-300 ${
+                    isRecent
+                      ? "bg-gradient-to-t from-green-500 to-green-400"
+                      : "bg-gradient-to-t from-green-200 to-green-300"
+                  } hover:from-green-700 hover:to-green-600 cursor-pointer`}
+                  style={{
+                    height: `${height}%`,
+                    marginTop: `${100 - height}%`,
+                  }}
+                >
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1.5 bg-gray-900 dark:bg-slate-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 border border-gray-700">
+                    <div className="font-semibold">
+                      {tps.toLocaleString()} TPS
+                    </div>
+                    <div className="text-gray-300 text-[10px]">
+                      {txData.tpsHistory.length - 1 - index}s ago
+                    </div>
                   </div>
                 </div>
               </div>
@@ -195,13 +201,21 @@ export default function TransactionsCard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="flex items-center justify-center w-auto gap-4 mb-4">
-        <div className="text-center p-3 bg-transparent flex justify-between items-center rounded-lg">
-          <div className="text-semibold text-gray-500 mb-0 ml-2 mr-2">
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-slate-800">
+        <div className="ml-2 mr-auto">
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
             Total Transactions
           </div>
-          <div className="font-semibold">
-            {txData.totalTransactions.toLocaleString()}
+          <div className="text-sm font-semibold text-gray-900 dark:text-white">
+            {formatNumber(txData.totalTransactions)}
+          </div>
+        </div>
+        <div className="ml-auto mr-2">
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+            Avg TPS
+          </div>
+          <div className="text-sm font-semibold text-gray-900 dark:text-white">
+            {txData.averageTPS.toLocaleString()}
           </div>
         </div>
       </div>

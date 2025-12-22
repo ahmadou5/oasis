@@ -6,12 +6,13 @@ import { usePathname } from 'next/navigation'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { WalletBalanceDisplay } from '@/components/WalletBalanceDisplay'
 import { ThemeToggle } from './ThemeToggle'
-import { Menu, X, Home, Users, Calculator, History } from 'lucide-react'
+import { Menu, X, Home, Users, Calculator, History, Zap } from 'lucide-react'
 import clsx from 'clsx'
 
 const navigationItems = [
   { href: '/', label: 'Home', icon: Home },
   { href: '/validators', label: 'Validators', icon: Users },
+  { href: '/xandeum', label: 'Xandeum', icon: Zap },
   { href: '/calculator', label: 'Calculator', icon: Calculator },
   { href: '/staking', label: 'My Stakes', icon: History },
 ]

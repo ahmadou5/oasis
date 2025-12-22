@@ -1,6 +1,6 @@
 // utils/validatorCache.ts
 
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { ValidatorInfo } from "@/types";
 
 interface EpochDetails {
   absoluteSlot: number;

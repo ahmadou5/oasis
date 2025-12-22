@@ -17,9 +17,15 @@ import { WalletBalanceDisplay } from "../WalletBalanceDisplay";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { usePathname } from "next/navigation";
 
-import { clearSearchString, setSearchString } from "@/store/slices/searchSlice";
+import { 
+  clearValidatorSearchString, 
+  setValidatorSearchString, 
+  clearPnodesSearchString, 
+  setPnodesSearchString 
+} from "@/store/slices/searchSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/store";
+import { useAppModeSwitch } from "../../hooks/useAppModeStore";
 
 interface NewHeaderProps {
   setMobileMenuOpen: (isOpen: boolean) => void;
@@ -28,7 +34,9 @@ interface NewHeaderProps {
 export const NewHearder: React.FC<NewHeaderProps> = ({ setMobileMenuOpen }) => {
   //const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const { connected } = useWallet();
-  const searchString = useSelector<RootState>((state) => state.search.value);
+  const { currentMode } = useAppModeSwitch();
+  const validatorSearchString = useSelector<RootState, string>((state) => state.search.validators.value);
+  const pnodesSearchString = useSelector<RootState, string>((state) => state.search.pnodes.value);
   const dispatch = useDispatch<AppDispatch>();
   const { theme, toggleTheme } = useTheme();
 
@@ -70,9 +78,21 @@ export const NewHearder: React.FC<NewHeaderProps> = ({ setMobileMenuOpen }) => {
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Enter validator name, symbol or address"
+                  placeholder={`Enter ${
+                    currentMode === "xendium" ? "PNode" : "validator"
+                  } ${
+                    currentMode === "xendium"
+                      ? "address or PNode Pubkey"
+                      : "name, symbol or address"
+                  }
+                  `}
                   className="bg-gray-100 dark:bg-black/30 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 w-48 lg:w-[460px] transition"
-                  onChange={(e) => dispatch(setSearchString(e.target.value))}
+                  value={currentMode === "xendium" ? pnodesSearchString : validatorSearchString}
+                  onChange={(e) => dispatch(
+                    currentMode === "xendium" 
+                      ? setPnodesSearchString(e.target.value)
+                      : setValidatorSearchString(e.target.value)
+                  )}
                 />
               </div>
 

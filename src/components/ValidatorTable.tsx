@@ -5,7 +5,7 @@ import { useState } from "react";
 import clsx from "clsx";
 import Image from "next/image";
 import { NewValidatorCard } from "./Home/NewValidatorCard";
-import { ValidatorInfo } from "../store/slices/validatorSlice";
+import { ValidatorInfo } from "../types";
 
 interface ValidatorTableProps {
   validators: ValidatorInfo[];

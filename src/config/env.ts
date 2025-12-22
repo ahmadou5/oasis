@@ -60,11 +60,21 @@ export const ENV = {
     DESCRIPTION: "Decentralized Solana staking application",
   },
 
+  // Xendium Configuration
+  XENDIUM: {
+    PRPC_HOST: process.env.XENDIUM_PRPC_HOST || "192.190.136.36",
+    PRPC_PORT: parseInt(process.env.XENDIUM_PRPC_PORT || "50051"),
+    TIMEOUT_MS: parseInt(process.env.XENDIUM_TIMEOUT_MS || "30000"),
+    CACHE_TTL_SECONDS: parseInt(process.env.XENDIUM_CACHE_TTL || "300"), // 5 minutes
+    MAX_RETRIES: parseInt(process.env.XENDIUM_MAX_RETRIES || "3"),
+  },
+
   // Feature Flags
   FEATURES: {
     ENABLE_DEBUG: process.env.NODE_ENV === "development",
     ENABLE_ANALYTICS: !!process.env.NEXT_PUBLIC_GA_ID,
     ENABLE_SENTRY: !!process.env.SENTRY_DSN,
+    ENABLE_XENDIUM_CACHE: process.env.ENABLE_XENDIUM_CACHE !== "false",
   },
 } as const;
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useConnection } from "@solana/wallet-adapter-react";
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { ValidatorInfo } from "@/types";
 import { getSolanaBeachHeaders, buildSolanaBeachURL, ENV } from "@/config/env";
 import axios from "axios";
 import {
@@ -11,6 +11,7 @@ import {
   clearValidatorCache,
   getCacheInfo,
 } from "@/utils/validatorCache";
+import { enrichValidatorsWithLocation } from "@/utils/validatorLocation";
 
 interface EpochDetails {
   absoluteSlot: number;
@@ -174,9 +175,12 @@ export function useValidators() {
             (v: ValidatorInfo) => v.avatar && v.avatar.length > 0
           );
 
+        // Enrich validators with location data
+        const validatorsWithLocation = await enrichValidatorsWithLocation(validatorsWithImages);
+
         // Save to cache
         const cached = saveValidatorsToCache(
-          validatorsWithImages,
+          validatorsWithLocation,
           response.data.currentEpochInfo
         );
 
@@ -184,7 +188,7 @@ export function useValidators() {
           console.log("💾 Data saved to cache for future use");
         }
 
-        setValidators(validatorsWithImages);
+        setValidators(validatorsWithLocation);
         setEpochDetails(response.data.currentEpochInfo);
         setLastUpdated(Date.now());
         setError(null);

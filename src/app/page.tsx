@@ -1,13 +1,16 @@
+"use client";
 import { Hero } from "@/components/Home/Hero";
 import { ValidatorList } from "@/components/ValidatorList";
-import { StakingStats } from "@/components/StakingStats";
+import { PNodesList } from "../components/Xandeum/PNodesList";
+import { useAppModeSwitch } from "../hooks/useAppModeStore";
 
 export default function HomePage() {
+  const { isNormalMode, isXendiumMode } = useAppModeSwitch();
   return (
     <div className="">
       <Hero />
-      {/** <StakingStats />  */}
-      <ValidatorList />
+      {isNormalMode && <ValidatorList />}
+      {isXendiumMode && <PNodesList />}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { TrendingUp, TrendingDown, DollarSign, BarChart3 } from "lucide-react";
+import { TrendingUp, TrendingDown, MoreVertical, Eye } from "lucide-react";
 import Image from "next/image";
 
 interface PriceData {
@@ -21,7 +21,6 @@ export default function SolanaPriceCard() {
   useEffect(() => {
     const fetchPriceData = async () => {
       try {
-        // Try CoinGecko API first
         const response = await fetch(
           "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_vol=true&include_24hr_change=true&include_market_cap=true&include_24hr_high_low=true",
           {
@@ -53,7 +52,6 @@ export default function SolanaPriceCard() {
       } catch (error) {
         console.warn("CoinGecko failed, using fallback data:", error);
 
-        // Fallback to mock data with some realism
         const basePrice = 132.45;
         const volatility = (Math.random() - 0.5) * 2;
         const mockData: PriceData = {
@@ -72,24 +70,21 @@ export default function SolanaPriceCard() {
     };
 
     fetchPriceData();
-
-    // Update every 10 seconds
     const interval = setInterval(fetchPriceData, 10000);
-
     return () => clearInterval(interval);
   }, []);
 
   if (loading) {
     return (
-      <div className="bg-green-500/10  rounded-2xl p-6 border border-green-500/50 h-[158px]  shadow-lg animate-pulse">
-        <div className="h-24  rounded"></div>
+      <div className="bg-green-500/5 rounded-2xl p-6 border border-green-500 shadow-sm animate-pulse">
+        <div className="h-32 bg-gray-100/15 dark:bg-slate-800 rounded"></div>
       </div>
     );
   }
 
   if (!priceData) {
     return (
-      <div className="bg-green-500/10  rounded-2xl p-6 border border-green-500/50 h-[158px] shadow-lg">
+      <div className="bg-green-500/5 rounded-2xl p-6 border border-green-500 shadow-sm">
         <div className="text-center text-gray-500">
           Failed to load price data
         </div>
@@ -97,7 +92,6 @@ export default function SolanaPriceCard() {
     );
   }
 
-  const formatPrice = (price: number) => `$${price.toFixed(2)}`;
   const formatVolume = (volume: number) => {
     if (volume >= 1e9) return `$${(volume / 1e9).toFixed(2)}B`;
     if (volume >= 1e6) return `$${(volume / 1e6).toFixed(2)}M`;
@@ -107,47 +101,56 @@ export default function SolanaPriceCard() {
   const isPositive = priceData.change24h >= 0;
 
   return (
-    <div className="bg-green-500/10 rounded-2xl mb-2 py-3 px-6 border border-green-500/50 shadow-lg">
-      <div className="text-start mb-0 py-1 px-1">
-        <div className="flex py-2">
-          <div className="rounded-full w-9 h-9 bg-black">
-            <Image
-              src={"https://assets.infusewallet.xyz/assets/solana.png"}
-              alt="Solana"
-              className="w-auto rounded-full h-auto"
-              height={15}
-              width={15}
-            />
-          </div>
-
-          <div className="text-2xl font-bold mb-2">
-            {formatPrice(priceData.price)}
-          </div>
-        </div>
-        <div
-          className={`flex items-start w-[90px] py-0.5 px-8 ${
-            isPositive ? "bg-green-500/20" : "bg-red-500/20"
-          }  rounded-full justify-center gap-1 text-sm font-semibold ${
-            isPositive ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          {isPositive ? <TrendingUp size={20} /> : <TrendingDown size={20} />}
-          {isPositive ? "+" : ""}
-          {priceData.change24h.toFixed(2)}%
+    <div className="bg-green-500/5 rounded-2xl p-6 border border-green-500/50 shadow-sm hover:shadow-md transition-shadow">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            SOL Price
+          </h3>
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-1">
-        <div className="text-center flex py-2 px-3 rounded-lg">
-          <div className="text-sm text-gray-500 ml-2 mr-2 mb-1">24h Vol</div>
-          <div className="font-semibold text-sm">
+      {/* Main Price */}
+      <div className="mb-4">
+        <div className="flex items-baseline gap-2 mb-2">
+          <span className="text-4xl font-bold text-gray-900 dark:text-white">
+            ${priceData.price.toFixed(2)}
+          </span>
+        </div>
+
+        {/* Change Badge */}
+        <div className="flex items-center gap-2">
+          <div
+            className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg ${
+              isPositive
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-red-500/10 text-red-600 dark:text-red-400"
+            }`}
+          >
+            <span className="text-sm font-semibold">
+              {isPositive ? "+" : ""}
+              {priceData.change24h.toFixed(2)}%
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200 dark:border-slate-800">
+        <div className="ml-2 mr-auto">
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+            24h Volume
+          </div>
+          <div className="text-sm font-semibold text-gray-900 dark:text-white">
             {formatVolume(priceData.volume24h)}
           </div>
         </div>
-        <div className="text-center flex py-2 px-3">
-          <div className="text-sm text-gray-500 ml-2 mr-2 mb-1">Market Cap</div>
-          <div className="font-semibold text-sm">
+        <div className="ml-auto mr-2">
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+            Market Cap
+          </div>
+          <div className="text-sm font-semibold text-gray-900 dark:text-white">
             {formatVolume(priceData.marketCap)}
           </div>
         </div>

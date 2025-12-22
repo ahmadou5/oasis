@@ -23,7 +23,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { AppDispatch } from "../store";
 import { useValidators } from "../hooks/useValidators";
-import { ValidatorInfo } from "../store/slices/validatorSlice";
+import { ValidatorInfo } from "../types";
 import { formatAddress, formatPercent, formatSOL } from "../utils/formatters";
 import { useTheme } from "../context/ThemeContext";
 

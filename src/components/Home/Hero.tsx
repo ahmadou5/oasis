@@ -2,15 +2,21 @@
 import { ValidatorTrendCard } from "./ValidatorTrend";
 import LogoScroller from "./Scroller";
 
-import EpochCard from "../EpochCard";
-import TransactionsCard from "../TransactionsCard";
-import SolanaPriceCard from "../SolanaPriceCard";
 import { useValidators } from "../../hooks/useValidators";
 import { useTheme } from "../../context/ThemeContext";
 import { EpochConverter } from "../../lib/epochConverter";
-import { ValidatorMap } from "../ValidatorWorldMap";
+import { PNodeMap } from "../Xandeum/PNodeMap";
+import AppModeToggle from "../AppModeToggle";
+import { usePnodes } from "../../hooks/usePnodes";
+import { ValidatorMapExample } from "../ValidatorMapExample";
+import { DashboardStatsAlternative } from "./DashboardLayout";
+import { useAppModeSwitch } from "../../hooks/useAppModeStore";
+import { NetworkScrollersConditional } from "./NetworkScroller";
+import { NetworkStatsDashboard } from "../Xandeum/cards/DashMint";
 
 export function Hero() {
+  const { pnodes } = usePnodes();
+  const { isNormalMode, isXendiumMode } = useAppModeSwitch();
   const {
     validators,
     epochDetails,
@@ -23,7 +29,8 @@ export function Hero() {
     cacheInfo,
   } = useValidators();
   const { theme } = useTheme();
-  console.log("Epoch Details in Hero:", epochDetails);
+
+  console.log("Pnodes in Hero:", pnodes);
   const epochInfo = EpochConverter.convertEpochToTime({
     epoch: epochDetails?.epoch || 0,
     absoluteSlot: epochDetails?.absoluteSlot || 0,
@@ -52,38 +59,29 @@ export function Hero() {
 
   return (
     <div className="flex flex-col bg-transparent">
-      {validatorLogos.length > 0 ? (
-        <LogoScroller logos={duplicatedLogos} />
+      <AppModeToggle />
+      <NetworkScrollersConditional
+        validators={validators}
+        pnodes={pnodes}
+        appMode={isNormalMode ? "normal" : "xendium"}
+      />
+      {isNormalMode ? (
+        <DashboardStatsAlternative />
       ) : (
-        <div className="w-full max-w-4xl mx-auto py-8 px-4">
-          <div className="text-center py-12 bg-green-400/0 rounded-xl border border-green-500/50">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
-              <span className="text-gray-400 text-2xl">⚡</span>
-            </div>
-            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
-              No Active Validators
-            </h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              No active Solana validators found at the moment. Please try
-              refreshing the page.
-            </p>
-          </div>
-        </div>
+        <NetworkStatsDashboard
+          pnodes={pnodes}
+          refreshInterval={3000}
+          //onRefresh={() => alert("Refreshing")}
+        />
       )}
-      {/**  <div className="w-[100%] h-auto py-8 ml-auto mr-auto flex items-center justify-between">
-        <div className="w-[20%] px-3 py-2"></div>
-        <div className="w-[80%] px-3 py-2">
-          <ValidatorMap />
-        </div>
-      </div> */}
 
-      <div className="w-[100%] h-auto py-2 ml-auto mr-auto flex items-center justify-between">
-        <div className="w-[50%] px-3 py-2">
-          <SolanaPriceCard />
-          <EpochCard />
-        </div>
-        <div className="w-[50%] px-3 py-2">
-          <TransactionsCard />
+      <div className="w-[100%] h-auto py-8 ml-auto mr-auto flex items-center justify-between">
+        <div className="w-[100%] px-3 py-2">
+          {isXendiumMode ? (
+            <PNodeMap pnodes={pnodes} />
+          ) : (
+            <ValidatorMapExample />
+          )}
         </div>
       </div>
     </div>

@@ -1,36 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Clock, Calendar, TrendingUp, Award, Zap } from "lucide-react";
-
+import { MoreVertical, TrendingUp } from "lucide-react";
 import { Connection, EpochInfo } from "@solana/web3.js";
 import { EpochConverter } from "../lib/epochConverter";
 import { ENV } from "../config/env";
 
-interface EpochTimeInfo {
-  epoch: number;
-  absoluteSlot: number;
-  slotIndex: number;
-  slotsInEpoch: number;
-  percentComplete: number;
-  estimatedTimeRemaining: string;
-  estimatedEndTime: Date;
-  humanReadable: {
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-  };
-  startTime: Date;
-  averageSlotTime: number;
-  rewardsDistributed: number;
-  validatorsActive: number;
-}
-
 export default function EpochCard() {
-  //const { epochDetails } = useValidators();
   const [epochData, setEpochData] = useState<EpochInfo>();
   const [loading, setLoading] = useState(true);
+
   const epochInfo = EpochConverter.convertEpochToTime({
     epoch: epochData?.epoch || 0,
     slotIndex: epochData?.slotIndex || 0,
@@ -40,46 +19,33 @@ export default function EpochCard() {
 
   useEffect(() => {
     fetchEpochInfo();
-
-    const interval = setInterval(fetchEpochInfo, 100);
-
+    const interval = setInterval(fetchEpochInfo, 1000);
     return () => clearInterval(interval);
   }, []);
+
   const fetchEpochInfo = async () => {
     try {
-      // This would use @solana/web3.js in a real implementation
       const connection = new Connection(ENV.SOLANA.RPC_ENDPOINTS.MAINNET);
       const epochInfo = await connection.getEpochInfo();
-      console.log("Epoch info fetched", epochInfo);
       setEpochData(epochInfo);
       setLoading(false);
-      return {
-        epoch: epochInfo.epoch,
-        slotIndex: epochInfo.slotIndex,
-        slotsInEpoch: epochInfo.slotsInEpoch,
-        blockHeight: epochInfo.blockHeight,
-        absolutrSlot: epochInfo.absoluteSlot, // ~400ms per slot
-        transactionCount: epochInfo.transactionCount,
-      };
     } catch (error) {
       console.warn("Using fallback epoch info:", error);
-      throw error;
-    } finally {
       setLoading(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="bg-green-500/10 rounded-2xl p-4 border h-[246px] border-green-500/50  shadow-lg animate-pulse">
-        <div className="h-32 bg-green-500/5 rounded"></div>
+      <div className="bg-green-500/5 rounded-2xl p-6 border border-green-500 shadow-sm animate-pulse">
+        <div className="h-40 bg-gray-100/15 dark:bg-slate-800 rounded"></div>
       </div>
     );
   }
 
   if (!epochInfo) {
     return (
-      <div className="bbg-green-500/10 rounded-2xl p-4 border border-green-500/50 shadow-lg">
+      <div className="bg-green-500/5 rounded-2xl p-6 border border-green-500 shadow-sm">
         <div className="text-center text-gray-500">
           Failed to load epoch data
         </div>
@@ -88,90 +54,91 @@ export default function EpochCard() {
   }
 
   return (
-    <div className="bg-green-500/10 rounded-2xl p-4 border border-green-500/50 shadow-lg">
+    <div className="bg-green-500/5 rounded-2xl p-6 border border-green-500/50 shadow-sm hover:shadow-md transition-shadow">
       {/* Header */}
-
-      {/* Progress Ring */}
-      <div className="flex items-center justify-between">
-        <div className="flex justify-start mb-0">
-          <div className="relative w-24 h-24">
-            <svg
-              className="w-24 h-24 transform -rotate-90"
-              viewBox="0 0 100 100"
-            >
-              {/* Background circle */}
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                stroke="currentColor"
-                strokeWidth="8"
-                fill="none"
-                className="text-gray-100 dark:text-gray-700"
-              />
-              {/* Progress circle */}
-              <circle
-                cx="50"
-                cy="50"
-                r="40"
-                stroke="url(#epochGradient)"
-                strokeWidth="8"
-                fill="none"
-                strokeLinecap="round"
-                strokeDasharray={`${2 * Math.PI * 40}`}
-                strokeDashoffset={`${
-                  2 * Math.PI * 40 * (1 - epochInfo.percentComplete / 100)
-                }`}
-                className="transition-all duration-1000 ease-out"
-              />
-              <defs>
-                <linearGradient
-                  id="epochGradient"
-                  x1="0%"
-                  y1="0%"
-                  x2="100%"
-                  y2="100%"
-                >
-                  <stop offset="0%" stopColor="#16A34A" />
-                  <stop offset="100%" stopColor="#16A34C" />
-                </linearGradient>
-              </defs>
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <div className="text-sm font-bold">
-                {epochInfo.humanReadable.days === 0
-                  ? ""
-                  : `${epochInfo.humanReadable.days}d`}
-              </div>
-              <div className="text-xs text-gray-500">
-                {epochInfo.humanReadable.hours}h{" "}
-                {epochInfo.humanReadable.minutes}m
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="ml-auto text-right">
-          <div className="text-sm font-semibold text-green-500">
-            {epochInfo.percentComplete.toFixed(1)}%
-          </div>
-          <div className="text-xs text-gray-400">Completed ✅</div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Current Epoch
+          </h3>
         </div>
       </div>
 
-      {/* Timeline */}
-      <div className="space-y-2 mb-4 mt-4">
-        <div className="flex justify-between text-sm">
-          <h3 className="text-xl font-bold">Epoch {epochInfo.epoch}</h3>
+      {/* Epoch Number & Progress */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+            {epochInfo.epoch}
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
+              <span className="text-sm font-semibold">
+                {epochInfo.percentComplete.toFixed(1)}%
+              </span>
+            </div>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              complete
+            </span>
+          </div>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Estimated End</span>
-          <span className="font-medium">
+
+        {/* Progress Ring */}
+        <div className="relative w-24 h-24">
+          <svg className="w-full h-full transform -rotate-90">
+            {/* Background circle */}
+            <circle
+              cx="48"
+              cy="48"
+              r="40"
+              stroke="currentColor"
+              strokeWidth="6"
+              fill="none"
+              className="text-gray-100 dark:text-slate-800"
+            />
+            {/* Progress circle */}
+            <circle
+              cx="48"
+              cy="48"
+              r="40"
+              stroke="currentColor"
+              strokeWidth="6"
+              fill="none"
+              strokeDasharray={`${2 * Math.PI * 40}`}
+              strokeDashoffset={`${
+                2 * Math.PI * 40 * (1 - epochInfo.percentComplete / 100)
+              }`}
+              className="text-green-500 transition-all duration-500"
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="text-lg font-bold text-gray-900 dark:text-white">
+              {epochInfo.humanReadable.days > 0 &&
+                `${epochInfo.humanReadable.days}d`}
+            </div>
+            <div className="text-xs text-gray-500 dark:text-gray-400">
+              {epochInfo.humanReadable.hours}h {epochInfo.humanReadable.minutes}
+              m
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Time Info */}
+      <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-slate-800">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Estimated End
+          </span>
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
             {epochInfo.estimatedEndTime.toLocaleDateString()}
           </span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-500">Remaining</span>
-          <span className="font-medium text-green-500/80">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Time Remaining
+          </span>
+          <span className="text-sm font-medium text-green-600 dark:text-green-400">
             {epochInfo.estimatedTimeRemaining}
           </span>
         </div>

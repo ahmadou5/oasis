@@ -1,5 +1,5 @@
 import { useTheme } from "@/context/ThemeContext";
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { ValidatorInfo } from "@/types";
 import { formatPercent, formatSOL } from "@/utils/formatters";
 import clsx from "clsx";
 import {
@@ -45,9 +45,7 @@ export const NewValidatorCard: React.FC<ValidatorCardProps> = ({
       //onClick={() => setIsGridView(!isGridView)}
       className={`flex items-center ${
         isGridView ? "h-auto" : "h-auto"
-      } justify-between bg-gradient-to-r from-green-600/10 ${
-        theme === "dark" ? "to-black/15" : "to-white/5"
-      }  border-b  border-green-700/50  ${
+      } justify-between bg-green-500/5 border-b  border-green-700/50  ${
         theme === "dark" ? "text-white" : "text-black"
       } px-2  py-1`}
     >

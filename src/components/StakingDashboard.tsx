@@ -3,10 +3,8 @@
 import { useEffect, useMemo, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState, AppDispatch } from "@/store";
-import { fetchStakeAccounts } from "@/store/slices/stakingSlice";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { WalletBalance } from "@/components/WalletBalance";
 import { StakeAccountCard } from "./StakeAccountCard";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Wallet, TrendingUp, Clock, AlertCircle } from "lucide-react";
@@ -59,30 +57,31 @@ export function StakingDashboard() {
   const dispatch = useDispatch<AppDispatch>();
   const { connected, publicKey } = useWallet();
   const [stakeAccounts, setStakeAccounts] = useState<StakeAccountInfo[]>([]);
-  
-  const connection = useMemo(() => new Connection(ENV.SOLANA.RPC_ENDPOINTS.MAINNET, {
-    commitment: "confirmed",
-  }), []);
-  
+
+  const connection = useMemo(
+    () =>
+      new Connection(ENV.SOLANA.RPC_ENDPOINTS.MAINNET, {
+        commitment: "confirmed",
+      }),
+    []
+  );
+
   const { totalStaked, totalRewards, loading, error } = useSelector(
     (state: RootState) => state.staking
   );
 
-  const fakeUser = useMemo(() => new PublicKey(
-    "31ZBx7jVsdXgq4qFWYD8jqUau1vAp8rqP1wvPaahjXPv"
-  ), []);
   const fetchStakes = useCallback(async () => {
     try {
       if (connected && publicKey) {
         const stakingAccounts = await getUserStakeAccounts(
-          fakeUser,
+          publicKey,
           connection
         );
         console.log(stakingAccounts, "sune");
         setStakeAccounts(stakingAccounts);
       }
     } catch (error) {}
-  }, [connected, publicKey, connection, fakeUser]);
+  }, [connected, publicKey, connection, publicKey]);
   useEffect(() => {
     fetchStakes();
   }, [connected, publicKey, fetchStakes]);

@@ -14,7 +14,7 @@ import { useSelector } from "react-redux";
 import CustomDropdown from "./DropDown";
 import { RootState } from "../store";
 import { useValidators } from "../hooks/useValidators";
-import { ValidatorInfo } from "../store/slices/validatorSlice";
+import { ValidatorInfo } from "../types";
 
 interface ValidatorListProps {
   showFilters?: boolean;
@@ -26,7 +26,7 @@ interface StringState {
 
 export function ValidatorList({ showFilters = false }: ValidatorListProps) {
   const searchString = useSelector<RootState, string>(
-    (state) => state.search.value
+    (state) => state.search.validators.value
   );
   // Use the enhanced validator hook as single source of truth
   const { validators, loading, error, stats, lastUpdated, refreshValidators } =
@@ -36,7 +36,7 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
   const [selectedValidatorForStaking, setSelectedValidatorForStaking] =
     useState<ValidatorInfo | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
 
   const [sortBy, setSortBy] = useState<"apy" | "stake" | "commission" | "name">(
     "apy"
@@ -188,7 +188,7 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className=" flex items-center gap-2 px-3 sm:px-4 text-xs sm:text-sm"
+              className=" flex items-end gap-2 px-3 sm:px-4 text-xs sm:text-sm"
             >
               <GrRefresh
                 size={20}

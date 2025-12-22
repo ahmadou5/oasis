@@ -14,7 +14,7 @@ import {
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/store";
 import { addTransaction } from "@/store/slices/stakingSlice";
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { ValidatorInfo } from "@/types";
 import { useWalletBalance } from "@/hooks/useWalletBalance";
 import {
   formatSOL,

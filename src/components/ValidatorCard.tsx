@@ -1,6 +1,6 @@
 "use client";
 
-import { ValidatorInfo } from "@/store/slices/validatorSlice";
+import { ValidatorInfo } from "@/types";
 import { formatNumber, formatPercent, formatSOL } from "@/utils/formatters";
 import { TrendingUp, Shield, Globe, ExternalLink } from "lucide-react";
 import clsx from "clsx";
