@@ -67,10 +67,7 @@ export const ValidatorWorldMap: React.FC<ValidatorWorldMapProps> = ({
   // Find current leader validator
   const currentLeader = useMemo(() => {
     if (!currentLeaderKey) return null;
-    return validators.find(
-      (v) =>
-        v.address === currentLeaderKey || v.voteAccount === currentLeaderKey
-    );
+    return validators.find((v) => v.address === currentLeaderKey);
   }, [currentLeaderKey, validators]);
 
   // Handle leader transition animation
