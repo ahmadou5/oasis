@@ -20,6 +20,10 @@ export interface ValidatorInfo {
   activatedStake: number;
   lastVote: number;
   rootSlot: number;
+  // Additional properties used in ValidatorWorldMap
+  voteAccount?: string;
+  imageUrl?: string;
+  score?: number;
   // Enhanced metadata from Solana Beach
   country?: string;
   city?: string;
@@ -83,6 +87,31 @@ export interface XandeumNodeWithMetrics extends XandeumNode {
   versionDisplayName: string;
   healthScore: number; // 0-100 composite score
   location?: NodeLocation;
+  
+  // Additional fields for PNode functionality
+  name?: string;
+  commission?: number;
+  apy?: number;
+  stake?: number;
+  
+  // Xendium-specific properties for PNodeDetailView
+  xendiumApy?: number;
+  totalPnodeStake?: number;
+  xendiumCommission?: number;
+  pnodeRank?: number;
+  efficiency?: number;
+  reliability?: number;
+  networkContribution?: number;
+  minStakeAmount?: number;
+  maxStakeAmount?: number;
+  lockPeriod?: number;
+  earlyWithdrawPenalty?: number;
+  rewardStructure?: string;
+  lastPayout?: number;
+  nextPayoutEpoch?: number;
+  dataCenter?: string;
+  country?: string;
+  website?: string;
 }
 
 export interface XendiumPNodeInfo extends Omit<ValidatorInfo, 'commission' | 'apy'> {

@@ -153,10 +153,7 @@ export const ValidatorWorldMap: React.FC<ValidatorWorldMapProps> = ({
 
   // Check if a validator group contains the leader
   const groupContainsLeader = (validatorGroup: ValidatorInfo[]) => {
-    return validatorGroup.some(
-      (v) =>
-        v.address === currentLeaderKey || v.voteAccount === currentLeaderKey
-    );
+    return validatorGroup.some((v) => v.address === currentLeaderKey);
   };
 
   return (

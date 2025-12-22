@@ -99,7 +99,7 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {pnode.xendiumApy.toFixed(2)}%
+                {(pnode.xendiumApy || 0).toFixed(2)}%
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Annual APY</div>
             </div>
@@ -113,7 +113,7 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatStake(pnode.totalPnodeStake)}
+                {formatStake(pnode.totalPnodeStake || 0)}
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">Total Staked</div>
             </div>
@@ -202,13 +202,13 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
                   Network Contribution
                 </span>
                 <span className="text-lg font-bold text-gray-900 dark:text-white">
-                  {pnode.networkContribution.toFixed(1)}%
+                  {(pnode.networkContribution || 0).toFixed(1)}%
                 </span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3">
                 <div 
                   className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, pnode.networkContribution)}%` }}
+                  style={{ width: `${Math.min(100, pnode.networkContribution || 0)}%` }}
                 ></div>
               </div>
             </div>
@@ -226,14 +226,14 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             <div className="flex items-center justify-between py-3 border-b border-gray-200/50 dark:border-slate-700/50">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Min Stake Amount</span>
               <span className="font-semibold text-gray-900 dark:text-white">
-                {formatStake(pnode.minStakeAmount)}
+                {formatStake(pnode.minStakeAmount || 0)}
               </span>
             </div>
             
             <div className="flex items-center justify-between py-3 border-b border-gray-200/50 dark:border-slate-700/50">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Max Stake Amount</span>
               <span className="font-semibold text-gray-900 dark:text-white">
-                {formatStake(pnode.maxStakeAmount)}
+                {formatStake(pnode.maxStakeAmount || 0)}
               </span>
             </div>
             
@@ -275,7 +275,7 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
           <div>
             <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Last Payout</div>
             <div className="font-semibold text-gray-900 dark:text-white">
-              {formatDate(pnode.lastPayout)}
+              {formatDate(pnode.lastPayout || Date.now())}
             </div>
           </div>
           

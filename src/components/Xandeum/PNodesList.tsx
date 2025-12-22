@@ -70,8 +70,31 @@ export function PNodesList() {
 
     // Sort
     filtered.sort((a, b) => {
-      let aValue: string | number = a[sortBy];
-      let bValue: string | number = b[sortBy];
+      let aValue: string | number;
+      let bValue: string | number;
+      
+      // Type-safe property access
+      switch (sortBy) {
+        case "name":
+          aValue = a.name || a.address || "";
+          bValue = b.name || b.address || "";
+          break;
+        case "apy":
+          aValue = a.apy || 0;
+          bValue = b.apy || 0;
+          break;
+        case "commission":
+          aValue = a.commission || 0;
+          bValue = b.commission || 0;
+          break;
+        case "stake":
+          aValue = a.stake || 0;
+          bValue = b.stake || 0;
+          break;
+        default:
+          aValue = 0;
+          bValue = 0;
+      }
 
       if (typeof aValue === "string" && typeof bValue === "string") {
         return sortOrder === "asc"

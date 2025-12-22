@@ -29,8 +29,35 @@ export function PNodeTable({
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const sortedNodes = [...nodes].sort((a, b) => {
-    const aValue = a[sortField];
-    const bValue = b[sortField];
+    let aValue: any;
+    let bValue: any;
+    
+    // Type-safe property access
+    switch (sortField) {
+      case "name":
+        aValue = a.name || a.address;
+        bValue = b.name || b.address;
+        break;
+      case "apy":
+        aValue = a.apy || 0;
+        bValue = b.apy || 0;
+        break;
+      case "commission":
+        aValue = a.commission || 0;
+        bValue = b.commission || 0;
+        break;
+      case "stake":
+        aValue = a.stake || 0;
+        bValue = b.stake || 0;
+        break;
+      case "skipRate":
+        aValue = a.uptime || 0;
+        bValue = b.uptime || 0;
+        break;
+      default:
+        aValue = 0;
+        bValue = 0;
+    }
 
     if (typeof aValue === "string" && typeof bValue === "string") {
       return sortDirection === "asc"
