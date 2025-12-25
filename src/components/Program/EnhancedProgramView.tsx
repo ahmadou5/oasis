@@ -275,26 +275,26 @@ function HistoryTab({
             <tbody>
               {transactions.slice(0, 10).map((tx) => (
                 <tr
-                  key={tx.signature}
+                  key={tx?.signature}
                   className="border-b border-gray-800/50 hover:bg-[#0d0d0d] transition-colors"
                 >
                   <td className="py-3">
                     <span className="text-gray-300 text-sm">Transaction</span>
                   </td>
                   <td className="py-3 text-gray-400 text-sm">
-                    {formatRelativeTime(tx.blockTime)}
+                    {formatRelativeTime(tx?.blockTime)}
                   </td>
                   <td className="py-3">
                     <div className="flex items-center gap-2">
                       <a
-                        href={`/tx/${tx.signature}`}
+                        href={`/tx/${tx?.signature}`}
                         className="text-gray-400 hover:text-white font-mono text-sm"
                       >
-                        {formatAddress(tx.signature, 6, 6)}
+                        {formatAddress(tx?.signature, 6, 6)}
                       </a>
                       <button
                         onClick={() =>
-                          navigator.clipboard.writeText(tx.signature)
+                          navigator.clipboard.writeText(tx?.signature)
                         }
                         className="p-1 hover:bg-gray-700 rounded"
                       >
