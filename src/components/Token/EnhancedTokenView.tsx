@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { 
-  Copy, 
-  ExternalLink, 
+import {
+  Copy,
+  ExternalLink,
   Check,
   Star,
   Globe,
@@ -18,26 +18,26 @@ import {
   ArrowDownRight,
   ChevronDown,
   ChevronUp,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 import type { TokenMintDetails } from "@/lib/solana/tokenDetails";
 import type { TokenMetadata } from "@/lib/solana/tokenMetadata";
-import { 
-  fetchTokenMarketData, 
+import {
+  fetchTokenMarketData,
   fetchEnhancedTransactions,
   calculateHolderChange,
   type TokenMarketData,
-  type TokenTransaction
+  type TokenTransaction,
 } from "@/lib/solana/marketData";
-import { 
-  formatLargeNumber, 
-  formatCurrency, 
-  formatPercentage, 
+import {
+  formatLargeNumber,
+  formatCurrency,
+  formatPercentage,
   formatAddress,
   formatRelativeTime,
   formatFullTimestamp,
   getChangeColor,
-  getChangeBgColor
+  getChangeBgColor,
 } from "@/utils/tokenFormatters";
 
 interface CopyState {
@@ -65,7 +65,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
       await navigator.clipboard.writeText(text);
       setCopyStates({ ...copyStates, [key]: true });
       setTimeout(() => {
-        setCopyStates(prev => ({ ...prev, [key]: false }));
+        setCopyStates((prev) => ({ ...prev, [key]: false }));
       }, 2000);
     } catch (err) {
       console.error("Failed to copy:", err);
@@ -95,7 +95,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
         setLoadingMarket(true);
         const market = await fetchTokenMarketData({
           mint: data.address,
-          coingeckoId: displayMetadata?.coingeckoId,
+          coingeckoId: (displayMetadata as any)?.coingeckoId,
         });
         setMarketData(market);
       } catch (error) {
@@ -114,7 +114,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
   useEffect(() => {
     async function loadTransactions() {
       if (activeTab !== "history") return;
-      
+
       try {
         setLoadingTx(true);
         const txs = await fetchEnhancedTransactions({
@@ -151,9 +151,13 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
     return (
       <div className="bg-[#0d0d0d] border border-gray-800 rounded-xl p-6">
         <div className="text-center">
-          <div className="text-red-400 text-lg font-semibold">Token Not Found</div>
+          <div className="text-red-400 text-lg font-semibold">
+            Token Not Found
+          </div>
           <div className="text-gray-400 mt-2">
-            The token mint <span className="font-mono text-sm">{data.address}</span> does not exist.
+            The token mint{" "}
+            <span className="font-mono text-sm">{data.address}</span> does not
+            exist.
           </div>
         </div>
       </div>
@@ -170,18 +174,22 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
             {/* Token Logo */}
             <div className="relative">
               {displayMetadata?.logoURI ? (
-                <img 
-                  src={displayMetadata.logoURI} 
+                <img
+                  src={displayMetadata.logoURI}
                   alt={displayMetadata?.name || "Token"}
                   className="w-16 h-16 rounded-full"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                    target.nextElementSibling!.classList.remove('hidden');
+                    target.style.display = "none";
+                    target.nextElementSibling!.classList.remove("hidden");
                   }}
                 />
               ) : null}
-              <div className={`w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center ${displayMetadata?.logoURI ? 'hidden' : ''}`}>
+              <div
+                className={`w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center ${
+                  displayMetadata?.logoURI ? "hidden" : ""
+                }`}
+              >
                 <span className="text-white text-xl font-bold">
                   {displayMetadata?.symbol?.[0] || "?"}
                 </span>
@@ -203,9 +211,11 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
                   <Star className="w-4 h-4 text-gray-500" />
                 </button>
               </div>
-              
+
               <div className="flex items-center gap-3 text-sm">
-                <span className="text-gray-400">{displayMetadata?.name || "Unknown Token"}</span>
+                <span className="text-gray-400">
+                  {displayMetadata?.name || "Unknown Token"}
+                </span>
                 {data.isNft && (
                   <span className="px-2 py-0.5 bg-purple-900/30 text-purple-400 rounded text-xs font-medium">
                     NFT
@@ -251,10 +261,11 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
             <div>
               <div className="text-gray-500 text-xs uppercase">Supply</div>
               <div className="text-white font-semibold">
-                {data.supply && data.decimals !== undefined 
-                  ? formatLargeNumber(Number(data.supply) / Math.pow(10, data.decimals))
-                  : "-"
-                }
+                {data.supply && data.decimals !== undefined
+                  ? formatLargeNumber(
+                      Number(data.supply) / Math.pow(10, data.decimals)
+                    )
+                  : "-"}
               </div>
             </div>
             <div>
@@ -300,8 +311,16 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-500 text-xs uppercase">Price</span>
               {marketData?.priceChange24h !== undefined && (
-                <span className={`text-xs font-medium flex items-center gap-1 ${getChangeColor(marketData.priceChange24h)}`}>
-                  {marketData.priceChange24h > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                <span
+                  className={`text-xs font-medium flex items-center gap-1 ${getChangeColor(
+                    marketData.priceChange24h
+                  )}`}
+                >
+                  {marketData.priceChange24h > 0 ? (
+                    <TrendingUp className="w-3 h-3" />
+                  ) : (
+                    <TrendingDown className="w-3 h-3" />
+                  )}
                   {formatPercentage(marketData.priceChange24h)}
                 </span>
               )}
@@ -310,7 +329,10 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
               {loadingMarket ? (
                 <RefreshCw className="w-6 h-6 animate-spin" />
               ) : marketData?.price ? (
-                formatCurrency(marketData.price, marketData.price < 0.01 ? 6 : 2)
+                formatCurrency(
+                  marketData.price,
+                  marketData.price < 0.01 ? 6 : 2
+                )
               ) : (
                 <span className="text-gray-600">$-</span>
               )}
@@ -325,17 +347,28 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
             <div className="flex items-center justify-between mb-2">
               <span className="text-gray-500 text-xs uppercase">Holders</span>
               {holderChange !== 0 && (
-                <span className={`text-xs font-medium flex items-center gap-1 ${getChangeColor(holderChange)}`}>
-                  {holderChange > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                <span
+                  className={`text-xs font-medium flex items-center gap-1 ${getChangeColor(
+                    holderChange
+                  )}`}
+                >
+                  {holderChange > 0 ? (
+                    <ArrowUpRight className="w-3 h-3" />
+                  ) : (
+                    <ArrowDownRight className="w-3 h-3" />
+                  )}
                   {formatPercentage(holderChange)}
                 </span>
               )}
             </div>
             <div className="text-white text-2xl font-bold">
-              {marketData?.holders ? formatLargeNumber(marketData.holders, 1) : 
-               data.holders ? formatLargeNumber(data.holders, 1) : 
-               <span className="text-gray-600">-</span>
-              }
+              {marketData?.holders ? (
+                formatLargeNumber(marketData.holders, 1)
+              ) : data.holders ? (
+                formatLargeNumber(data.holders, 1)
+              ) : (
+                <span className="text-gray-600">-</span>
+              )}
             </div>
             <div className="text-gray-500 text-xs mt-1">24h</div>
           </div>
@@ -343,10 +376,20 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
           {/* Volume Card */}
           <div className="bg-[#0d0d0d] border border-gray-800 rounded-lg p-4">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-gray-500 text-xs uppercase">24H Volume</span>
+              <span className="text-gray-500 text-xs uppercase">
+                24H Volume
+              </span>
               {marketData?.volumeChange24h !== undefined && (
-                <span className={`text-xs font-medium flex items-center gap-1 ${getChangeColor(marketData.volumeChange24h)}`}>
-                  {marketData.volumeChange24h > 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                <span
+                  className={`text-xs font-medium flex items-center gap-1 ${getChangeColor(
+                    marketData.volumeChange24h
+                  )}`}
+                >
+                  {marketData.volumeChange24h > 0 ? (
+                    <ArrowUpRight className="w-3 h-3" />
+                  ) : (
+                    <ArrowDownRight className="w-3 h-3" />
+                  )}
                   {formatPercentage(marketData.volumeChange24h)}
                 </span>
               )}
@@ -369,7 +412,9 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
           <div className="text-center">
             <Activity className="w-12 h-12 text-gray-600 mx-auto mb-2" />
             <div className="text-gray-500 text-sm">Price chart coming soon</div>
-            <div className="text-gray-600 text-xs mt-1">Integration with price APIs pending</div>
+            <div className="text-gray-600 text-xs mt-1">
+              Integration with price APIs pending
+            </div>
           </div>
         </div>
       </div>
@@ -406,16 +451,16 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
         <div className="p-6">
           {activeTab === "markets" && <MarketsTab data={data} />}
           {activeTab === "history" && (
-            <HistoryTab 
-              data={data} 
-              transactions={transactions} 
-              loading={loadingTx} 
+            <HistoryTab
+              data={data}
+              transactions={transactions}
+              loading={loadingTx}
             />
           )}
           {activeTab === "holders" && <HoldersTab data={data} />}
           {activeTab === "metadata" && (
-            <MetadataTab 
-              data={data} 
+            <MetadataTab
+              data={data}
               metadata={displayMetadata}
               showJson={showJson}
               setShowJson={setShowJson}
@@ -444,11 +489,11 @@ function MarketsTab({ data }: { data: TokenMintDetails }) {
 }
 
 // History Tab Component (Transaction History)
-function HistoryTab({ 
-  data, 
-  transactions, 
-  loading 
-}: { 
+function HistoryTab({
+  data,
+  transactions,
+  loading,
+}: {
   data: TokenMintDetails;
   transactions: TokenTransaction[];
   loading: boolean;
@@ -468,7 +513,9 @@ function HistoryTab({
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-white text-lg font-semibold">Account Transactions</h3>
+        <h3 className="text-white text-lg font-semibold">
+          Account Transactions
+        </h3>
         {loading && (
           <RefreshCw className="w-4 h-4 text-gray-400 animate-spin" />
         )}
@@ -489,30 +536,52 @@ function HistoryTab({
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-800 text-left">
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Type</th>
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Info</th>
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Time</th>
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Program</th>
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Signature</th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Type
+                </th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Info
+                </th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Time
+                </th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Program
+                </th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Signature
+                </th>
               </tr>
             </thead>
             <tbody>
               {transactions.map((tx) => {
                 const typeDisplay = getTypeDisplay(tx.type);
                 return (
-                  <tr key={tx.signature} className="border-b border-gray-800/50 hover:bg-[#0d0d0d] transition-colors">
+                  <tr
+                    key={tx.signature}
+                    className="border-b border-gray-800/50 hover:bg-[#0d0d0d] transition-colors"
+                  >
                     <td className="py-3">
                       <div className="flex items-center gap-2">
                         <Activity className="w-4 h-4 text-gray-500" />
-                        <span className={`text-sm font-medium ${typeDisplay.color}`}>
+                        <span
+                          className={`text-sm font-medium ${typeDisplay.color}`}
+                        >
                           {typeDisplay.label}
                         </span>
                       </div>
                     </td>
                     <td className="py-3">
                       {tx.amountUi !== undefined && tx.amountUi !== 0 ? (
-                        <span className={`text-sm font-mono ${tx.amountUi > 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {tx.amountUi > 0 ? '+' : ''}{tx.amountUi.toLocaleString(undefined, { maximumFractionDigits: 6 })}
+                        <span
+                          className={`text-sm font-mono ${
+                            tx.amountUi > 0 ? "text-green-400" : "text-red-400"
+                          }`}
+                        >
+                          {tx.amountUi > 0 ? "+" : ""}
+                          {tx.amountUi.toLocaleString(undefined, {
+                            maximumFractionDigits: 6,
+                          })}
                         </span>
                       ) : (
                         <span className="text-gray-500 text-sm">-</span>
@@ -539,7 +608,9 @@ function HistoryTab({
                           {formatAddress(tx.signature, 6, 6)}
                         </a>
                         <button
-                          onClick={() => navigator.clipboard.writeText(tx.signature)}
+                          onClick={() =>
+                            navigator.clipboard.writeText(tx.signature)
+                          }
                           className="p-1 hover:bg-gray-700 rounded transition-colors"
                         >
                           <Copy className="w-3 h-3 text-gray-600 hover:text-gray-400" />
@@ -570,7 +641,9 @@ function HoldersTab({ data }: { data: TokenMintDetails }) {
     <div>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-white text-lg font-semibold">
-          Top Holders {holders.length > 0 && `(${formatLargeNumber(data.holders || 0)} total)`}
+          Top Holders{" "}
+          {holders.length > 0 &&
+            `(${formatLargeNumber(data.holders || 0)} total)`}
         </h3>
       </div>
 
@@ -584,15 +657,26 @@ function HoldersTab({ data }: { data: TokenMintDetails }) {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-800 text-left">
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">#</th>
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Account</th>
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Quantity</th>
-                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">Percentage</th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  #
+                </th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Account
+                </th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Quantity
+                </th>
+                <th className="pb-3 text-gray-500 text-xs uppercase font-medium">
+                  Percentage
+                </th>
               </tr>
             </thead>
             <tbody>
               {holders.map((holder, index) => (
-                <tr key={holder.address} className="border-b border-gray-800/50 hover:bg-[#0d0d0d] transition-colors">
+                <tr
+                  key={holder.address}
+                  className="border-b border-gray-800/50 hover:bg-[#0d0d0d] transition-colors"
+                >
                   <td className="py-3 text-gray-400 text-sm">{index + 1}</td>
                   <td className="py-3">
                     <div className="flex items-center gap-2">
@@ -622,13 +706,13 @@ function HoldersTab({ data }: { data: TokenMintDetails }) {
 }
 
 // Metadata Tab Component
-function MetadataTab({ 
-  data, 
-  metadata, 
-  showJson, 
-  setShowJson 
-}: { 
-  data: TokenMintDetails; 
+function MetadataTab({
+  data,
+  metadata,
+  showJson,
+  setShowJson,
+}: {
+  data: TokenMintDetails;
   metadata: any;
   showJson: boolean;
   setShowJson: (show: boolean) => void;
@@ -660,14 +744,18 @@ function MetadataTab({
 
       {/* Token Authorities */}
       <div>
-        <h3 className="text-white text-lg font-semibold mb-4">Token Authority</h3>
+        <h3 className="text-white text-lg font-semibold mb-4">
+          Token Authority
+        </h3>
         <div className="space-y-3">
           <div>
             <div className="text-gray-500 text-sm mb-1">Mint Authority</div>
             <div className="flex items-center gap-2 bg-[#0d0d0d] p-3 rounded-lg">
               {data.mintAuthority ? (
                 <>
-                  <span className="text-white font-mono text-sm">{formatAddress(data.mintAuthority)}</span>
+                  <span className="text-white font-mono text-sm">
+                    {formatAddress(data.mintAuthority)}
+                  </span>
                   <Copy className="w-3 h-3 text-gray-600 cursor-pointer hover:text-gray-400" />
                   <ExternalLink className="w-3 h-3 text-gray-600 cursor-pointer hover:text-gray-400" />
                 </>
@@ -682,7 +770,9 @@ function MetadataTab({
             <div className="flex items-center gap-2 bg-[#0d0d0d] p-3 rounded-lg">
               {data.freezeAuthority ? (
                 <>
-                  <span className="text-white font-mono text-sm">{formatAddress(data.freezeAuthority)}</span>
+                  <span className="text-white font-mono text-sm">
+                    {formatAddress(data.freezeAuthority)}
+                  </span>
                   <Copy className="w-3 h-3 text-gray-600 cursor-pointer hover:text-gray-400" />
                   <ExternalLink className="w-3 h-3 text-gray-600 cursor-pointer hover:text-gray-400" />
                 </>
@@ -696,10 +786,11 @@ function MetadataTab({
             <div className="text-gray-500 text-sm mb-1">Total Supply</div>
             <div className="bg-[#0d0d0d] p-3 rounded-lg">
               <span className="text-white text-lg font-bold">
-                {data.supply && data.decimals !== undefined 
-                  ? formatLargeNumber(Number(data.supply) / Math.pow(10, data.decimals))
-                  : "-"
-                }
+                {data.supply && data.decimals !== undefined
+                  ? formatLargeNumber(
+                      Number(data.supply) / Math.pow(10, data.decimals)
+                    )
+                  : "-"}
               </span>
             </div>
           </div>
@@ -713,10 +804,14 @@ function MetadataTab({
             onClick={() => setShowJson(!showJson)}
             className="flex items-center gap-2 text-red-500 hover:text-red-400 text-sm mb-3"
           >
-            {showJson ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showJson ? (
+              <ChevronUp className="w-4 h-4" />
+            ) : (
+              <ChevronDown className="w-4 h-4" />
+            )}
             {showJson ? "Hide" : "Show"} JSON Metadata
           </button>
-          
+
           {showJson && (
             <pre className="bg-[#0d0d0d] p-4 rounded-lg text-xs text-gray-300 overflow-x-auto border border-gray-800">
               {JSON.stringify(metadata, null, 2)}
