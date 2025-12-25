@@ -84,7 +84,7 @@ export function EnhancedProgramView({ data }: EnhancedProgramViewProps) {
   );
 
   // Determine if program is immutable (simplified check)
-  const isImmutable: boolean = !data.owner || data.executable;
+  const isImmutable: boolean | undefined = !data.owner || data.executable;
   const isVerified = false; // Would check verification registry
 
   return (
