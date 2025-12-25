@@ -39,6 +39,7 @@ import {
   getChangeColor,
   getChangeBgColor,
 } from "@/utils/tokenFormatters";
+import Image from "next/image";
 
 interface CopyState {
   [key: string]: boolean;
@@ -173,11 +174,13 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
           <div className="flex items-center gap-4">
             {/* Token Logo */}
             <div className="relative">
-              {displayMetadata?.logoURI ? (
-                <img
-                  src={displayMetadata.logoURI}
+              {displayMetadata?.image ? (
+                <Image
+                  src={displayMetadata.image}
                   alt={displayMetadata?.name || "Token"}
                   className="w-16 h-16 rounded-full"
+                  height={20}
+                  width={20}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
@@ -187,7 +190,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
               ) : null}
               <div
                 className={`w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center ${
-                  displayMetadata?.logoURI ? "hidden" : ""
+                  displayMetadata?.image ? "hidden" : ""
                 }`}
               >
                 <span className="text-white text-xl font-bold">
