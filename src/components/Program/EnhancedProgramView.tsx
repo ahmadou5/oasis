@@ -588,7 +588,7 @@ function AuthorityTab({
   toggleSection,
 }: {
   data: AccountOverview;
-  isImmutable: boolean;
+  isImmutable: boolean | undefined;
   expanded: Set<string>;
   toggleSection: (id: string) => void;
 }) {
