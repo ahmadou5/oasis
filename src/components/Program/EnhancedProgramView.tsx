@@ -282,7 +282,7 @@ function HistoryTab({
                     <span className="text-gray-300 text-sm">Transaction</span>
                   </td>
                   <td className="py-3 text-gray-400 text-sm">
-                    {formatRelativeTime(tx?.blockTime)}
+                    {formatRelativeTime(tx?.blockTime ?? undefined)}
                   </td>
                   <td className="py-3">
                     <div className="flex items-center gap-2">
