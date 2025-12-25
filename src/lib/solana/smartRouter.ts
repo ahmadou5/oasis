@@ -269,7 +269,7 @@ export function getSearchSuggestions(accountType: SolanaAccountType): {
 /**
  * Navigation helper for the UI
  */
-export function navigateToAccount(address: string, network?: string) {
+export function navigateToAccount(address: string, network?: "mainnet-beta" | "testnet" | "devnet") {
   return getEnhancedSmartRoute({ address, network });
 }
 

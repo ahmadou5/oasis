@@ -330,8 +330,9 @@ export async function fetchEnhancedTransactions(params: {
           const success = !tx.meta?.err;
           
           // Get program info from instructions
-          const instructions = tx.transaction.message.instructions || [];
-          const programIds = instructions.map(ix => ix.programId?.toBase58()).filter(Boolean);
+          const message = tx.transaction.message;
+          const instructions = 'instructions' in message ? message.instructions : message.compiledInstructions || [];
+          const programIds = instructions.map((ix: any) => ix.programId?.toBase58()).filter(Boolean);
           const firstProgramId = programIds[0] || "";
           
           // Parse SOL balance changes

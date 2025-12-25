@@ -143,10 +143,12 @@ export async function fetchTokenDetails(params: {
     // Get token accounts (for holder count and top holders)
     try {
       const tokenAccounts = await getTokenAccounts(connection, mintKey, decimals);
-      baseDetails.holders = tokenAccounts.length;
-      baseDetails.topHolders = tokenAccounts
-        .sort((a, b) => b.uiAmount - a.uiAmount)
-        .slice(0, 10);
+      if (tokenAccounts) {
+        baseDetails.holders = tokenAccounts.length;
+        baseDetails.topHolders = tokenAccounts
+          .sort((a, b) => b.uiAmount - a.uiAmount)
+          .slice(0, 10);
+      }
     } catch (error) {
       console.warn("Failed to fetch token accounts:", error);
     }

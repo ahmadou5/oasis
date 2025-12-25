@@ -187,7 +187,7 @@ function parseInstructions(tx: VersionedTransactionResponse): InstructionDetail[
           programId: innerProgramIdStr,
           programName: KNOWN_PROGRAMS[innerProgramIdStr] || "Unknown",
           instructionType: "inner",
-          accounts: innerIx.accountKeyIndexes.map(accountIndex => ({
+          accounts: (innerIx.accounts || (innerIx as any).accountKeyIndexes || []).map((accountIndex: number) => ({
             pubkey: accountKeys.staticAccountKeys[accountIndex]?.toBase58() || "",
             isSigner: message.isAccountSigner(accountIndex),
             isWritable: message.isAccountWritable(accountIndex),

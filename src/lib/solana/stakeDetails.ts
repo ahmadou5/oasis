@@ -263,7 +263,7 @@ async function getStakeRewards(
       amountSol: lamportsToSol(rewardInfo.amount),
       postBalance: rewardInfo.postBalance,
       postBalanceSol: lamportsToSol(rewardInfo.postBalance),
-      commission: rewardInfo.commission,
+      commission: rewardInfo.commission ?? undefined,
     }];
 
   } catch (error) {
@@ -293,7 +293,7 @@ async function getStakeTransactions(
         if (tx?.meta) {
           // Simplified transaction type detection
           const instructions = tx.transaction.message.compiledInstructions;
-          let type: StakeAccountDetails["recentTransactions"][0]["type"] = "create";
+          let type: "create" | "delegate" | "deactivate" | "withdraw" | "split" | "merge" = "create";
           
           // This is a simplified parser - would need more sophisticated logic
           if (instructions.some(ix => ix.data.length > 0)) {

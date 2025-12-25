@@ -88,6 +88,18 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
   );
 
   const displayMetadata = metadata || data.metadata || {};
+  
+  // Helper to get image URL from either metadata type
+  const getImageUrl = () => {
+    if (metadata?.logoURI) return metadata.logoURI;
+    if (data.metadata?.image) return data.metadata.image;
+    return null;
+  };
+  
+  // Helper to safely access metadata properties
+  const getMetadataProperty = <K extends keyof TokenMetadata>(key: K): TokenMetadata[K] | undefined => {
+    return metadata?.[key];
+  };
 
   // Fetch real market data
   useEffect(() => {
@@ -96,7 +108,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
         setLoadingMarket(true);
         const market = await fetchTokenMarketData({
           mint: data.address,
-          coingeckoId: (displayMetadata as any)?.coingeckoId,
+          coingeckoId: getMetadataProperty('coingeckoId'),
         });
         setMarketData(market);
       } catch (error) {
@@ -174,13 +186,13 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
           <div className="flex items-center gap-4">
             {/* Token Logo */}
             <div className="relative">
-              {displayMetadata?.image ? (
+              {getImageUrl() ? (
                 <Image
-                  src={displayMetadata.image}
+                  src={getImageUrl()!}
                   alt={displayMetadata?.name || "Token"}
                   className="w-16 h-16 rounded-full"
-                  height={20}
-                  width={20}
+                  height={64}
+                  width={64}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.style.display = "none";
@@ -190,7 +202,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
               ) : null}
               <div
                 className={`w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center ${
-                  displayMetadata?.image ? "hidden" : ""
+                  getImageUrl() ? "hidden" : ""
                 }`}
               >
                 <span className="text-white text-xl font-bold">
@@ -224,7 +236,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
                     NFT
                   </span>
                 )}
-                {displayMetadata?.coingeckoId && (
+                {getMetadataProperty('coingeckoId') && (
                   <span className="px-2 py-0.5 bg-gray-800 text-gray-400 rounded text-xs">
                     RANK #-
                   </span>
@@ -233,9 +245,9 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
 
               {/* Social Links */}
               <div className="flex items-center gap-2 mt-2">
-                {displayMetadata?.website && (
+                {getMetadataProperty('website') && (
                   <a
-                    href={displayMetadata.website}
+                    href={getMetadataProperty('website')!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-1.5 bg-gray-800 hover:bg-gray-700 rounded transition-colors"
@@ -244,9 +256,9 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
                     <Globe className="w-4 h-4 text-gray-400" />
                   </a>
                 )}
-                {displayMetadata?.twitter && (
+                {getMetadataProperty('twitter') && (
                   <a
-                    href={displayMetadata.twitter}
+                    href={getMetadataProperty('twitter')!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-1.5 bg-gray-800 hover:bg-gray-700 rounded transition-colors"

@@ -32,12 +32,23 @@ export type AccountClassificationResult = {
       decimals?: number;
       supply?: string;
       isNft?: boolean;
+      mint?: string;
+      owner?: string;
+      amount?: string;
     };
     validatorInfo?: {
       isActive?: boolean;
       commission?: number;
       activatedStake?: string;
     };
+    stakeInfo?: {
+      state?: string;
+      staker?: string;
+      withdrawer?: string;
+      voter?: string;
+    };
+    nftMetadata?: any;
+    error?: string;
   };
 };
 

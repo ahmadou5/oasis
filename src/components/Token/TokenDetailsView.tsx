@@ -60,6 +60,18 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
 
   // Merge metadata from props and fetched data
   const displayMetadata = enrichedMetadata || data.metadata || {};
+  
+  // Helper to get image URL from either metadata type
+  const getImageUrl = () => {
+    if (enrichedMetadata?.logoURI) return enrichedMetadata.logoURI;
+    if (data.metadata?.image) return data.metadata.image;
+    return null;
+  };
+  
+  // Helper to safely access metadata properties
+  const getMetadataProperty = <K extends keyof TokenMetadata>(key: K): TokenMetadata[K] | undefined => {
+    return enrichedMetadata?.[key];
+  };
 
   const handleCopy = async (text: string, key: string) => {
     try {
@@ -107,9 +119,9 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
         <div className="flex items-start gap-4">
           {/* Token Image/Icon */}
           <div className="w-20 h-20 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center text-2xl relative">
-            {displayMetadata?.logoURI ? (
+            {getImageUrl() ? (
               <img 
-                src={displayMetadata.logoURI} 
+                src={getImageUrl()!} 
                 alt={displayMetadata?.name || "Token"} 
                 className="w-full h-full rounded-xl object-cover"
                 onError={(e) => {
@@ -119,7 +131,7 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
                 }}
               />
             ) : null}
-            <Coins className={`w-10 h-10 text-white ${displayMetadata?.logoURI ? 'hidden' : ''}`} />
+            <Coins className={`w-10 h-10 text-white ${getImageUrl() ? 'hidden' : ''}`} />
             
             {/* Loading indicator */}
             {loadingMetadata && (
@@ -155,18 +167,18 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
               )}
             </div>
 
-            {displayMetadata?.description && (
+            {(getMetadataProperty('description') || data.metadata?.description) && (
               <p className="text-gray-300 text-sm mb-4 max-w-2xl">
-                {displayMetadata.description}
+                {getMetadataProperty('description') || data.metadata?.description}
               </p>
             )}
 
             {/* Social Links */}
-            {(displayMetadata?.website || displayMetadata?.twitter || displayMetadata?.telegram) && (
+            {(getMetadataProperty('website') || getMetadataProperty('twitter') || getMetadataProperty('telegram')) && (
               <div className="flex items-center gap-3 mb-4">
-                {displayMetadata.website && (
+                {getMetadataProperty('website') && (
                   <a
-                    href={displayMetadata.website}
+                    href={getMetadataProperty('website')!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-emerald-400 hover:text-emerald-300"
@@ -175,9 +187,9 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
                     Website
                   </a>
                 )}
-                {displayMetadata.twitter && (
+                {getMetadataProperty('twitter') && (
                   <a
-                    href={displayMetadata.twitter}
+                    href={getMetadataProperty('twitter')!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
@@ -186,9 +198,9 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
                     Twitter
                   </a>
                 )}
-                {displayMetadata.telegram && (
+                {getMetadataProperty('telegram') && (
                   <a
-                    href={displayMetadata.telegram}
+                    href={getMetadataProperty('telegram')!}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300"
@@ -197,9 +209,9 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
                     Telegram
                   </a>
                 )}
-                {displayMetadata.coingeckoId && (
+                {getMetadataProperty('coingeckoId') && (
                   <a
-                    href={`https://www.coingecko.com/en/coins/${displayMetadata.coingeckoId}`}
+                    href={`https://www.coingecko.com/en/coins/${getMetadataProperty('coingeckoId')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-1 text-sm text-yellow-400 hover:text-yellow-300"
@@ -332,31 +344,31 @@ export function TokenDetailsView({ data }: { data: TokenMintDetails }) {
         <div className="p-6">
           {activeTab === "overview" && (
             <div className="space-y-6">
-              {(displayMetadata?.metadataUri || data.metadata?.uri) && (
+              {(getMetadataProperty('metadataUri') || data.metadata?.uri) && (
                 <div>
                   <h4 className="text-white font-semibold mb-2">Metadata URI</h4>
                   <div className="flex items-center gap-2">
                     <Globe className="w-4 h-4 text-gray-400" />
                     <a
-                      href={displayMetadata?.metadataUri || data.metadata?.uri}
+                      href={getMetadataProperty('metadataUri') || data.metadata?.uri}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-emerald-400 hover:text-emerald-300 text-sm break-all"
                     >
-                      {displayMetadata?.metadataUri || data.metadata?.uri}
+                      {getMetadataProperty('metadataUri') || data.metadata?.uri}
                     </a>
                   </div>
                 </div>
               )}
 
-              {displayMetadata?.updateAuthority && (
+              {getMetadataProperty('updateAuthority') && (
                 <div>
                   <h4 className="text-white font-semibold mb-2">Update Authority</h4>
                   <div className="flex items-center gap-2">
                     <span className="text-gray-300 font-mono text-sm break-all">
-                      {displayMetadata.updateAuthority}
+                      {getMetadataProperty('updateAuthority')}
                     </span>
-                    <CopyButton text={displayMetadata.updateAuthority} copyKey="updateAuth" />
+                    <CopyButton text={getMetadataProperty('updateAuthority')!} copyKey="updateAuth" />
                   </div>
                 </div>
               )}
