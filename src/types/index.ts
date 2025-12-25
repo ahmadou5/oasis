@@ -20,6 +20,18 @@ export interface ValidatorInfo {
   activatedStake: number;
   lastVote: number;
   rootSlot: number;
+
+  // StakeWiz extensions (optional, for richer UI without breaking existing components)
+  identity?: string;
+  voteIdentity?: string;
+  rank?: number;
+  version?: string;
+  isJito?: boolean;
+  asn?: string;
+  asnOrganization?: string;
+  totalApy?: number;
+  stakingApy?: number;
+  jitoApy?: number;
   // Additional properties used in ValidatorWorldMap
   voteAccount?: string;
   imageUrl?: string;
@@ -45,7 +57,7 @@ export interface ValidatorInfo {
 }
 
 // App Mode Types
-export type AppMode = 'normal' | 'xendium';
+export type AppMode = 'normal' | 'xandeum';
 
 // Raw Xandeum Node interface (from API response)
 export interface XandeumNode {
@@ -75,6 +87,24 @@ export interface NodeLocation {
 }
 
 // Enhanced Xandeum Node with computed metrics
+export interface XandeumPNodeStatsResult {
+  metadata: {
+    total_bytes: number;
+    total_pages: number;
+    last_updated: number; // unix seconds
+  };
+  stats: {
+    cpu_percent: number;
+    ram_used: number;
+    ram_total: number;
+    uptime: number;
+    packets_received: number;
+    packets_sent: number;
+    active_streams: number;
+  };
+  file_size: number;
+}
+
 export interface XandeumNodeWithMetrics extends XandeumNode {
   // Computed fields for UI
   isOnline: boolean;
@@ -87,17 +117,24 @@ export interface XandeumNodeWithMetrics extends XandeumNode {
   versionDisplayName: string;
   healthScore: number; // 0-100 composite score
   location?: NodeLocation;
-  
+
+  // Enriched per-PNode stats (from JSON-RPC method: get-stats)
+  // Optional because nodes may be offline/unreachable.
+  pnodeStats?: XandeumPNodeStatsResult;
+
+  // Convenience mirrors for UI usage (derived from pnodeStats)
+  fileSizeBytes?: number;
+
   // Additional fields for PNode functionality
   name?: string;
   commission?: number;
   apy?: number;
   stake?: number;
-  
-  // Xendium-specific properties for PNodeDetailView
-  xendiumApy?: number;
+
+  // Xandeum-specific properties for PNodeDetailView
+  xandeumApy?: number;
   totalPnodeStake?: number;
-  xendiumCommission?: number;
+  xandeumCommission?: number;
   pnodeRank?: number;
   efficiency?: number;
   reliability?: number;
@@ -114,32 +151,32 @@ export interface XandeumNodeWithMetrics extends XandeumNode {
   website?: string;
 }
 
-export interface XendiumPNodeInfo extends Omit<ValidatorInfo, 'commission' | 'apy'> {
-  // Xendium-specific properties
+export interface XandeumPNodeInfo extends Omit<ValidatorInfo, 'commission' | 'apy'> {
+  // Xandeum-specific properties
   nodeType: 'pnode';
   rewardStructure: 'fixed' | 'dynamic';
   minStakeAmount: number;
   maxStakeAmount: number;
   lockPeriod: number; // in epochs
   earlyWithdrawPenalty: number; // percentage
-  xendiumCommission: number;
-  xendiumApy: number;
+  xandeumCommission: number;
+  xandeumApy: number;
   totalPnodeStake: number;
   pnodeRank: number;
   networkContribution: number; // percentage
   lastPayout: number; // timestamp
   nextPayoutEpoch: number;
-  // Additional Xendium metrics
+  // Additional Xandeum metrics
   efficiency: number; // 0-100
   reliability: number; // 0-100
-  xendiumScore: number; // composite score
+  xandeumScore: number; // composite score
 }
 
 // Union type for both validator types
-export type NodeInfo = ValidatorInfo | XendiumPNodeInfo;
+export type NodeInfo = ValidatorInfo | XandeumPNodeInfo;
 
 // Type guards
-export const isXendiumPNode = (node: NodeInfo): node is XendiumPNodeInfo => {
+export const isXandeumPNode = (node: NodeInfo): node is XandeumPNodeInfo => {
   return 'nodeType' in node && node.nodeType === 'pnode';
 }
 

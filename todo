@@ -1,2 +1,5 @@
-create a PnodeList similar to ValidatorList 
+create a PnodeList similar to ValidatorList
 improve PnodeCard to look similar to ValidatorCard
+transaction/account indexing feature.
+recent block, transactions and also by which validator that block get mined?
+improve staking flow UX/UI

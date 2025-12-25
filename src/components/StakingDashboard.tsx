@@ -6,7 +6,7 @@ import { RootState, AppDispatch } from "@/store";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { StakeAccountCard } from "./StakeAccountCard";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { Skeleton } from "./Skeleton";
 import { Wallet, TrendingUp, Clock, AlertCircle } from "lucide-react";
 import { getUserStakeAccounts } from "../lib/utils";
 import { Connection, PublicKey } from "@solana/web3.js";
@@ -109,8 +109,28 @@ export function StakingDashboard() {
 
   if (loading && stakeAccounts.length === 0) {
     return (
-      <div className="flex justify-center py-12">
-        <LoadingSpinner size="lg" />
+      <div className="space-y-6">
+        <div className="card">
+          <Skeleton width="w-1/3" height="h-6" />
+          <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="card">
+              <Skeleton width="w-1/2" height="h-5" />
+              <div className="mt-4 grid gap-3">
+                <Skeleton height="h-8" />
+                <Skeleton height="h-8" />
+                <Skeleton height="h-8" />
+              </div>
+            </div>
+            <div className="card">
+              <Skeleton width="w-1/2" height="h-5" />
+              <div className="mt-4 grid gap-3">
+                <Skeleton height="h-8" />
+                <Skeleton height="h-8" />
+                <Skeleton height="h-8" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

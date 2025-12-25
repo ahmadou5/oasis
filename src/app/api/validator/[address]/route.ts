@@ -1,25 +1,5 @@
-import { buildSolanaBeachURL, ENV, getSolanaBeachHeaders } from "@/config/env";
-import axios from "axios";
 import { NextResponse } from "next/server";
-
-interface SolanaBeachValidatorResponse {
-  votePubkey: string;
-  nodePubkey: string;
-  commission: number;
-  lastVote: number;
-  delinquent: boolean;
-  name: string;
-  iconUrl: string;
-  website: string;
-  details: string;
-  version: string;
-  continent: string;
-  country: string;
-  region: string;
-  city: string;
-  asn: number;
-  asnOrganization: string;
-}
+import { getStakeWizValidatorByAddress } from "@/lib/services/stakewizValidators.service";
 
 // NOTE: Based on your error log, your folder is likely named [address] (lowercase)
 // So we should type params as { address: string }
@@ -40,12 +20,17 @@ export async function GET(
       );
     }
 
-    const response = await axios.get<SolanaBeachValidatorResponse>(
-      buildSolanaBeachURL(ENV.SOLANA_BEACH.ENDPOINTS.VALIDATOR_DETAIL(address)),
-      { headers: getSolanaBeachHeaders() }
-    );
+    const validator = await getStakeWizValidatorByAddress(address);
 
-    return NextResponse.json({ response: response.data });
+    if (!validator) {
+      return NextResponse.json(
+        { error: "Validator not found" },
+        { status: 404 }
+      );
+    }
+
+    // Keep the existing response wrapper used by older code paths
+    return NextResponse.json({ response: validator });
   } catch (error: any) {
     // 1. Log the error so you can see what went wrong in your terminal
     console.error("API Error:", error.message || error);

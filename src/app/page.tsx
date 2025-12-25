@@ -5,12 +5,12 @@ import { PNodesList } from "../components/Xandeum/PNodesList";
 import { useAppModeSwitch } from "../hooks/useAppModeStore";
 
 export default function HomePage() {
-  const { isNormalMode, isXendiumMode } = useAppModeSwitch();
+  const { isNormalMode, isXandeumMode } = useAppModeSwitch();
   return (
     <div className="">
       <Hero />
       {isNormalMode && <ValidatorList />}
-      {isXendiumMode && <PNodesList />}
+      {isXandeumMode && <PNodesList />}
     </div>
   );
 }

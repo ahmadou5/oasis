@@ -60,7 +60,7 @@ export const ENV = {
     DESCRIPTION: "Decentralized Solana staking application",
   },
 
-  // Xendium Configuration
+  // Xandeum Configuration
   XENDIUM: {
     PRPC_HOST: process.env.XENDIUM_PRPC_HOST || "192.190.136.36",
     PRPC_PORT: parseInt(process.env.XENDIUM_PRPC_PORT || "50051"),
@@ -75,23 +75,95 @@ export const ENV = {
     ENABLE_ANALYTICS: !!process.env.NEXT_PUBLIC_GA_ID,
     ENABLE_SENTRY: !!process.env.SENTRY_DSN,
     ENABLE_XENDIUM_CACHE: process.env.ENABLE_XENDIUM_CACHE !== "false",
+
+    // Recent blocks: prefer Geyser gRPC (server-side) when available.
+    // Note: this is a server-side flag, not NEXT_PUBLIC.
+    ENABLE_GEYSER_RECENT_BLOCKS: process.env.ENABLE_GEYSER_RECENT_BLOCKS === "true",
   },
 } as const;
+
+// Helper function to get the appropriate RPC endpoint
+function normalizeRpcUrl(url: string | undefined): string {
+  const u = (url || "").trim();
+  if (!u) return "";
+  // Allow http(s) only. (Solana web3 uses fetch; ws(s) URLs will fail.)
+  if (!/^https?:\/\//i.test(u)) return "";
+  return u;
+}
 
 // Helper function to get the appropriate RPC endpoint
 export function getRPCEndpoint(network?: string): string {
   const targetNetwork = network || ENV.SOLANA.NETWORK;
 
-  switch (targetNetwork) {
-    case "mainnet-beta":
-      return ENV.SOLANA.RPC_ENDPOINTS.MAINNET;
-    case "testnet":
-      return ENV.SOLANA.RPC_ENDPOINTS.TESTNET;
-    case "devnet":
-      return ENV.SOLANA.RPC_ENDPOINTS.DEVNET;
-    default:
-      return ENV.SOLANA.RPC_ENDPOINT;
+  const pick =
+    targetNetwork === "mainnet-beta"
+      ? ENV.SOLANA.RPC_ENDPOINTS.MAINNET
+      : targetNetwork === "testnet"
+        ? ENV.SOLANA.RPC_ENDPOINTS.TESTNET
+        : targetNetwork === "devnet"
+          ? ENV.SOLANA.RPC_ENDPOINTS.DEVNET
+          : ENV.SOLANA.RPC_ENDPOINT;
+
+  return (
+    normalizeRpcUrl(pick) ||
+    // hard fallback
+    (targetNetwork === "testnet"
+      ? "https://api.testnet.solana.com"
+      : targetNetwork === "devnet"
+        ? "https://api.devnet.solana.com"
+        : "https://api.mainnet-beta.solana.com")
+  );
+}
+
+/**
+ * RPC failover list (best-effort). Ordered from most-preferred to least.
+ * Useful when an RPC provider intermittently fails or blocks requests.
+ */
+export function getRPCFailoverEndpoints(
+  network?: string
+): Array<{ label: string; url: string }> {
+  const targetNetwork = network || ENV.SOLANA.NETWORK;
+
+  // Prefer the network-specific endpoint first. For mainnet-beta, this is
+  // ENV.SOLANA.RPC_ENDPOINTS.MAINNET (as requested).
+  const primary =
+    targetNetwork === "mainnet-beta"
+      ? ENV.SOLANA.RPC_ENDPOINTS.MAINNET
+      : targetNetwork === "testnet"
+        ? ENV.SOLANA.RPC_ENDPOINTS.TESTNET
+        : targetNetwork === "devnet"
+          ? ENV.SOLANA.RPC_ENDPOINTS.DEVNET
+          : ENV.SOLANA.RPC_ENDPOINT;
+
+  const candidates: Array<{ label: string; url: string | undefined }> = [
+    { label: "primary", url: primary },
+    { label: "configured", url: getRPCEndpoint(targetNetwork) },
+    { label: "mainnet", url: ENV.SOLANA.RPC_ENDPOINTS.MAINNET },
+    { label: "testnet", url: ENV.SOLANA.RPC_ENDPOINTS.TESTNET },
+    { label: "devnet", url: ENV.SOLANA.RPC_ENDPOINTS.DEVNET },
+    { label: "default", url: ENV.SOLANA.RPC_ENDPOINT },
+  ];
+
+  // Network-specific public fallback.
+  if (targetNetwork === "testnet") {
+    candidates.push({ label: "solana-public", url: "https://api.testnet.solana.com" });
+  } else if (targetNetwork === "devnet") {
+    candidates.push({ label: "solana-public", url: "https://api.devnet.solana.com" });
+  } else {
+    candidates.push({ label: "solana-public", url: "https://api.mainnet-beta.solana.com" });
+    candidates.push({ label: "ankr", url: "https://rpc.ankr.com/solana" });
   }
+
+  const seen = new Set<string>();
+  const out: Array<{ label: string; url: string }> = [];
+  for (const c of candidates) {
+    const u = normalizeRpcUrl(c.url);
+    if (!u) continue;
+    if (seen.has(u)) continue;
+    seen.add(u);
+    out.push({ label: c.label, url: u });
+  }
+  return out;
 }
 
 // Helper function to get Solana Beach API headers

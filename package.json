@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
     "type-check": "tsc --noEmit"
   },
@@ -19,6 +19,7 @@
     "@solana/wallet-adapter-react-ui": "^0.9.35",
     "@solana/wallet-adapter-sollet": "^0.11.17",
     "@solana/web3.js": "^1.87.6",
+    "@metaplex-foundation/mpl-token-metadata": "^3.3.0", 
     "axios": "^1.13.2",
     "buffer": "^6.0.3",
     "clsx": "^2.0.0",
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^13.4.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",

@@ -16,6 +16,7 @@ interface NetworkMetrics {
     healthChange: number;
     storageChange: number;
   };
+  trendsReady: boolean;
 }
 
 interface StorageEfficiencyProps {
@@ -39,14 +40,17 @@ export const StorageEfficiencyCard = ({ metrics }: StorageEfficiencyProps) => {
       <div className="flex items-center gap-2 mb-4">
         <div
           className={`inline-flex items-center gap-1 ${
-            metrics.trends.storageChange >= 0
-              ? "text-green-600 dark:text-green-400"
-              : "text-red-600 dark:text-red-400"
+            !metrics.trendsReady
+              ? "text-gray-500"
+              : metrics.trends.storageChange >= 0
+                ? "text-green-600 dark:text-green-400"
+                : "text-red-600 dark:text-red-400"
           }`}
         >
           <span className="text-sm font-semibold">
-            {metrics.trends.storageChange >= 0 ? "+" : ""}
-            {Math.abs(metrics.trends.storageChange).toFixed(1)}%
+            {metrics.trendsReady
+              ? `${metrics.trends.storageChange >= 0 ? "+" : ""}${Math.abs(metrics.trends.storageChange).toFixed(1)}%`
+              : "N/A"}
           </span>
         </div>
         <span className="text-xs text-gray-500 dark:text-gray-400">change</span>

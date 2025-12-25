@@ -3,7 +3,7 @@
 import { useWalletBalance } from '@/hooks/useWalletBalance'
 import { formatSOL } from '@/utils/formatters'
 import { Wallet, RefreshCw, AlertCircle } from 'lucide-react'
-import { LoadingSpinner } from './LoadingSpinner'
+import { Skeleton } from './Skeleton'
 import clsx from 'clsx'
 
 interface WalletBalanceDisplayProps {
@@ -77,7 +77,7 @@ export function WalletBalanceDisplay({
               )}
               <div className="flex items-center gap-2">
                 {loading ? (
-                  <LoadingSpinner size="sm" />
+                  <Skeleton width="w-16" height="h-5" radius="sm" />
                 ) : error ? (
                   <div className="flex items-center gap-1 text-red-400">
                     <AlertCircle size={14} />
@@ -119,7 +119,7 @@ export function WalletBalanceDisplay({
         {showIcon && <Wallet size={iconSizes[size]} className="text-solana-blue" />}
         {showLabel && <span className="text-solana-gray-400">Balance:</span>}
         {loading ? (
-          <LoadingSpinner size="sm" />
+          <Skeleton width="w-16" height="h-5" radius="sm" />
         ) : error ? (
           <span className="text-red-400">Error</span>
         ) : (
@@ -154,7 +154,7 @@ export function WalletBalanceDisplay({
         )}
         <div className="flex items-center gap-2">
           {loading ? (
-            <LoadingSpinner size="sm" />
+            <Skeleton width="w-16" height="h-5" radius="sm" />
           ) : error ? (
             <span className="text-red-400 text-sm">Error loading balance</span>
           ) : (

@@ -45,8 +45,8 @@ export const AppModeProvider: React.FC<AppModeProviderProps> = ({
     // Auto-fetch data for the current mode on mount
     if (store.currentMode === 'normal' && store.normalValidators.length === 0) {
       store.fetchNormalValidators();
-    } else if (store.currentMode === 'xendium' && store.xendiumPNodes.length === 0) {
-      store.fetchXendiumPNodes();
+    } else if (store.currentMode === 'xandeum' && store.xandeumPNodes.length === 0) {
+      store.fetchXandeumPNodes();
     }
   }, [initialMode, store]);
 
@@ -67,8 +67,8 @@ export const AppModeProvider: React.FC<AppModeProviderProps> = ({
       // Auto-fetch data when switching modes
       if (mode === 'normal' && store.normalValidators.length === 0) {
         store.fetchNormalValidators();
-      } else if (mode === 'xendium' && store.xendiumPNodes.length === 0) {
-        store.fetchXendiumPNodes();
+      } else if (mode === 'xandeum' && store.xandeumPNodes.length === 0) {
+        store.fetchXandeumPNodes();
       }
     },
     refreshData: store.refreshCurrentMode,

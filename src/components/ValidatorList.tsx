@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 
 import { ValidatorCard } from "./ValidatorCard";
 import { ValidatorTable } from "./ValidatorTable";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { Skeleton } from "./Skeleton";
 import { StakeModal } from "./StakeModal";
 import { Grid, List, LucideRefreshCcw, RefreshCw } from "lucide-react";
 import clsx from "clsx";
@@ -107,8 +107,31 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
 
   if (loading && validators.length === 0) {
     return (
-      <div className="flex justify-center py-12">
-        <LoadingSpinner size="lg" />
+      <div className="space-y-6 py-6">
+        <div className="flex items-center justify-between">
+          <Skeleton width="w-1/3" height="h-8" />
+          <Skeleton width="w-32" height="h-10" radius="lg" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="card">
+              <div className="flex items-center gap-3">
+                <Skeleton width="w-10" height="h-10" radius="full" />
+                <div className="flex-1">
+                  <Skeleton width="w-2/3" height="h-4" />
+                  <div className="mt-2">
+                    <Skeleton width="w-1/2" height="h-3" radius="sm" />
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 grid gap-2">
+                <Skeleton height="h-3" radius="sm" />
+                <Skeleton height="h-3" radius="sm" />
+                <Skeleton width="w-5/6" height="h-3" radius="sm" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -289,7 +312,7 @@ export function ValidatorList({ showFilters = false }: ValidatorListProps) {
       {loading && validators.length > 0 && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-solana-gray-900 rounded-lg p-6 flex items-center gap-3">
-            <LoadingSpinner />
+            <Skeleton width="w-6" height="h-6" radius="full" />
             <span>Updating validators...</span>
           </div>
         </div>

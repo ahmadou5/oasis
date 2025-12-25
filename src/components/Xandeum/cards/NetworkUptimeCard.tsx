@@ -17,6 +17,7 @@ interface NetworkMetrics {
     healthChange: number;
     storageChange: number;
   };
+  trendsReady: boolean;
 }
 
 interface NetworkUptimeCardProps {
@@ -28,7 +29,7 @@ export function NetworkUptimeCard({
   metrics,
   className = "",
 }: NetworkUptimeCardProps) {
-  const isPositive = metrics.trends.onlineChange >= 0;
+  const showTrend = metrics.trendsReady;
 
   return (
     <div
@@ -55,14 +56,17 @@ export function NetworkUptimeCard({
         <div className="bg-green-500/10 rounded-xl py-1 px-4">
           <div
             className={`inline-flex items-center gap-1 ${
-              metrics.trends.onlineChange >= 0
-                ? "text-green-600 dark:text-green-400"
-                : "text-red-600 dark:text-red-400"
+              !showTrend
+                ? "text-gray-500"
+                : metrics.trends.onlineChange >= 0
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
             }`}
           >
             <span className="text-sm font-semibold">
-              {metrics.trends.onlineChange >= 0 ? "+" : ""}
-              {metrics.trends.onlineChange} nodes
+              {showTrend
+                ? `${metrics.trends.onlineChange >= 0 ? "+" : ""}${metrics.trends.onlineChange} nodes`
+                : "N/A"}
             </span>
           </div>
         </div>

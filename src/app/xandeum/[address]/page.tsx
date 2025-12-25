@@ -3,7 +3,7 @@
 import React from 'react';
 import { useParams } from 'next/navigation';
 import { usePnodes } from '@/hooks/usePnodes';
-import { LoadingSpinner } from '@/components/LoadingSpinner';
+import { Skeleton } from '@/components/Skeleton';
 import { PNodeDetailView } from '@/components/Xandeum/PNodeDetailView';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -17,8 +17,17 @@ export default function PNodeDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="w-full max-w-3xl">
+          <div className="card">
+            <Skeleton width="w-1/3" height="h-6" />
+            <div className="mt-6 grid gap-4">
+              <Skeleton height="h-32" />
+              <Skeleton height="h-24" />
+              <Skeleton height="h-24" />
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

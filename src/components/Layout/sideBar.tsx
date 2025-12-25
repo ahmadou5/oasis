@@ -4,7 +4,10 @@ import { SidebarItem } from "./SidebarItem";
 import {
   Calculator,
   Coins,
+  LucideGlobe2 as Earth,
+  Gauge,
   Home,
+  LayoutDashboard,
   LucideAppWindow,
   LucideAward,
   LucideWalletCards,
@@ -15,6 +18,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { usePathname, useRouter } from "next/navigation";
 import { useAppModeSwitch } from "../../hooks/useAppModeStore";
 import { Router } from "next/router";
+import { GrBook } from "react-icons/gr";
 
 interface SideBarProps {
   mobileMenuOpen: boolean;
@@ -27,7 +31,7 @@ interface NavItem {
   active?: boolean;
   badge?: string;
   hasDropdown?: boolean;
-  mode?: "normal" | "xendium";
+  mode?: "normal" | "xandeum";
   url: string;
 }
 
@@ -50,11 +54,26 @@ export const SideBar: React.FC<SideBarProps> = ({
       url: "/",
     },
     {
-      icon: <Server className="text-gray-700 dark:text-gray-300" />,
-      label: "Home",
-      mode: "xendium",
+      icon: <Gauge className="text-gray-700 dark:text-gray-300" />,
+      label: "Overview",
+      mode: "xandeum",
       active: true,
       url: "/",
+    },
+
+    {
+      icon: <Server className="text-gray-700 dark:text-gray-300" />,
+      label: "pNodes",
+      mode: "xandeum",
+      active: true,
+      url: "/nodes",
+    },
+    {
+      icon: <Earth className="text-gray-700 dark:text-gray-300" />,
+      label: "Network Map",
+      mode: "xandeum",
+      active: true,
+      url: "/map",
     },
     {
       icon: <LucideWalletCards className="text-gray-700 dark:text-gray-300" />,
@@ -71,15 +90,15 @@ export const SideBar: React.FC<SideBarProps> = ({
       url: "/calculator",
     },
     {
-      icon: <LucideAppWindow className="text-gray-700 dark:text-gray-300" />,
-      label: "Learn Xendium",
-      mode: "xendium",
+      icon: <GrBook className="text-gray-700 dark:text-gray-300" />,
+      label: "About Xandeum",
+      mode: "xandeum",
       active: true,
       url: "/learn",
     },
 
     {
-      icon: <LucideAppWindow className="text-gray-700 dark:text-gray-300" />,
+      icon: <GrBook className="text-gray-700 dark:text-gray-300" />,
       label: "Learn",
       mode: "normal",
       active: true,

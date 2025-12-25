@@ -17,7 +17,7 @@ const AppModeToggle: React.FC = () => {
     isLoading,
     error,
     isNormalMode,
-    isXendiumMode,
+    isXandeumMode,
   } = useAppModeSwitch();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -38,7 +38,7 @@ const AppModeToggle: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleModeSelect = (mode: "normal" | "xendium") => {
+  const handleModeSelect = (mode: "normal" | "xandeum") => {
     switchMode(mode);
     setIsOpen(false);
   };
@@ -53,12 +53,12 @@ const AppModeToggle: React.FC = () => {
       isActive: isNormalMode,
     },
     {
-      id: "xendium" as const,
-      name: "Xendium PNodes",
-      description: "Xendium protocol nodes",
+      id: "xandeum" as const,
+      name: "Xandeum PNodes",
+      description: "Xandeum protocol nodes",
       icon: Server,
       color: "green",
-      isActive: isXendiumMode,
+      isActive: isXandeumMode,
     },
   ];
 

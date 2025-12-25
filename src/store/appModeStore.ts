@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
-import { AppMode, NodeInfo, ValidatorInfo, XendiumPNodeInfo } from '../types';
+import { AppMode, NodeInfo, ValidatorInfo, XandeumPNodeInfo } from '../types';
 
 interface AppModeState {
   // Current app mode
@@ -8,18 +8,18 @@ interface AppModeState {
   
   // Data for each mode
   normalValidators: ValidatorInfo[];
-  xendiumPNodes: XendiumPNodeInfo[];
+  xandeumPNodes: XandeumPNodeInfo[];
   
   // Loading states
   loading: {
     normal: boolean;
-    xendium: boolean;
+    xandeum: boolean;
   };
   
   // Error states
   errors: {
     normal: string | null;
-    xendium: string | null;
+    xandeum: string | null;
   };
   
   // Filters and search for each mode
@@ -29,12 +29,12 @@ interface AppModeState {
       status: 'all' | 'active' | 'delinquent' | 'inactive';
       minApy: number;
       maxCommission: number;
-      country?: string;
+      country: string;
     };
-    xendium: {
+    xandeum: {
       search: string;
       rewardStructure: 'all' | 'fixed' | 'dynamic';
-      minXendiumApy: number;
+      minXandeumApy: number;
       maxLockPeriod: number;
       minEfficiency: number;
       maxCommission: number;
@@ -48,7 +48,7 @@ interface AppModeState {
       itemsPerPage: number;
       totalItems: number;
     };
-    xendium: {
+    xandeum: {
       currentPage: number;
       itemsPerPage: number;
       totalItems: number;
@@ -65,9 +65,9 @@ interface AppModeActions {
   
   // Data management
   setNormalValidators: (validators: ValidatorInfo[]) => void;
-  setXendiumPNodes: (pnodes: XendiumPNodeInfo[]) => void;
+  setXandeumPNodes: (pnodes: XandeumPNodeInfo[]) => void;
   updateValidator: (address: string, updates: Partial<ValidatorInfo>) => void;
-  updatePNode: (address: string, updates: Partial<XendiumPNodeInfo>) => void;
+  updatePNode: (address: string, updates: Partial<XandeumPNodeInfo>) => void;
   
   // Loading states
   setLoading: (mode: AppMode, loading: boolean) => void;
@@ -78,12 +78,12 @@ interface AppModeActions {
   
   // Filtering
   updateNormalFilters: (filters: Partial<AppModeState['filters']['normal']>) => void;
-  updateXendiumFilters: (filters: Partial<AppModeState['filters']['xendium']>) => void;
+  updateXandeumFilters: (filters: Partial<AppModeState['filters']['xandeum']>) => void;
   resetFilters: (mode?: AppMode) => void;
   
   // Pagination
   setNormalPagination: (page: number, itemsPerPage?: number) => void;
-  setXendiumPagination: (page: number, itemsPerPage?: number) => void;
+  setXandeumPagination: (page: number, itemsPerPage?: number) => void;
   
   // Node selection
   selectNode: (node: NodeInfo) => void;
@@ -92,7 +92,7 @@ interface AppModeActions {
   
   // Data fetching
   fetchNormalValidators: () => Promise<void>;
-  fetchXendiumPNodes: () => Promise<void>;
+  fetchXandeumPNodes: () => Promise<void>;
   refreshCurrentMode: () => Promise<void>;
   
   // Computed getters
@@ -109,12 +109,12 @@ const initialFilters = {
     status: 'all' as const,
     minApy: 0,
     maxCommission: 100,
-    country: undefined,
+    country: '',
   },
-  xendium: {
+  xandeum: {
     search: '',
     rewardStructure: 'all' as const,
-    minXendiumApy: 0,
+    minXandeumApy: 0,
     maxLockPeriod: 1000,
     minEfficiency: 0,
     maxCommission: 100,
@@ -127,7 +127,7 @@ const initialPagination = {
     itemsPerPage: 20,
     totalItems: 0,
   },
-  xendium: {
+  xandeum: {
     currentPage: 1,
     itemsPerPage: 20,
     totalItems: 0,
@@ -141,14 +141,14 @@ export const useAppModeStore = create<AppModeStore>()(
         // Initial state
         currentMode: 'normal',
         normalValidators: [],
-        xendiumPNodes: [],
+        xandeumPNodes: [],
         loading: {
           normal: false,
-          xendium: false,
+          xandeum: false,
         },
         errors: {
           normal: null,
-          xendium: null,
+          xandeum: null,
         },
         filters: initialFilters,
         pagination: initialPagination,
@@ -176,20 +176,20 @@ export const useAppModeStore = create<AppModeStore>()(
           );
         },
 
-        setXendiumPNodes: (pnodes: XendiumPNodeInfo[]) => {
+        setXandeumPNodes: (pnodes: XandeumPNodeInfo[]) => {
           set(
             (state) => ({
-              xendiumPNodes: pnodes,
+              xandeumPNodes: pnodes,
               pagination: {
                 ...state.pagination,
-                xendium: {
-                  ...state.pagination.xendium,
+                xandeum: {
+                  ...state.pagination.xandeum,
                   totalItems: pnodes.length,
                 },
               },
             }),
             false,
-            'setXendiumPNodes'
+            'setXandeumPNodes'
           );
         },
 
@@ -205,10 +205,10 @@ export const useAppModeStore = create<AppModeStore>()(
           );
         },
 
-        updatePNode: (address: string, updates: Partial<XendiumPNodeInfo>) => {
+        updatePNode: (address: string, updates: Partial<XandeumPNodeInfo>) => {
           set(
             (state) => ({
-              xendiumPNodes: state.xendiumPNodes.map((pnode) =>
+              xandeumPNodes: state.xandeumPNodes.map((pnode) =>
                 pnode.address === address ? { ...pnode, ...updates } : pnode
               ),
             }),
@@ -248,7 +248,7 @@ export const useAppModeStore = create<AppModeStore>()(
             {
               errors: {
                 normal: null,
-                xendium: null,
+                xandeum: null,
               },
             },
             false,
@@ -279,26 +279,26 @@ export const useAppModeStore = create<AppModeStore>()(
           );
         },
 
-        updateXendiumFilters: (filters) => {
+        updateXandeumFilters: (filters) => {
           set(
             (state) => ({
               filters: {
                 ...state.filters,
-                xendium: {
-                  ...state.filters.xendium,
+                xandeum: {
+                  ...state.filters.xandeum,
                   ...filters,
                 },
               },
               pagination: {
                 ...state.pagination,
-                xendium: {
-                  ...state.pagination.xendium,
+                xandeum: {
+                  ...state.pagination.xandeum,
                   currentPage: 1, // Reset to first page when filtering
                 },
               },
             }),
             false,
-            'updateXendiumFilters'
+            'updateXandeumFilters'
           );
         },
 
@@ -332,20 +332,20 @@ export const useAppModeStore = create<AppModeStore>()(
           );
         },
 
-        setXendiumPagination: (page: number, itemsPerPage?: number) => {
+        setXandeumPagination: (page: number, itemsPerPage?: number) => {
           set(
             (state) => ({
               pagination: {
                 ...state.pagination,
-                xendium: {
-                  ...state.pagination.xendium,
+                xandeum: {
+                  ...state.pagination.xandeum,
                   currentPage: page,
                   ...(itemsPerPage && { itemsPerPage }),
                 },
               },
             }),
             false,
-            'setXendiumPagination'
+            'setXandeumPagination'
           );
         },
 
@@ -403,47 +403,47 @@ export const useAppModeStore = create<AppModeStore>()(
           }
         },
 
-        fetchXendiumPNodes: async () => {
-          const { setLoading, setError, setXendiumPNodes } = get();
+        fetchXandeumPNodes: async () => {
+          const { setLoading, setError, setXandeumPNodes } = get();
           
           try {
-            setLoading('xendium', true);
-            setError('xendium', null);
+            setLoading('xandeum', true);
+            setError('xandeum', null);
             
-            // TODO: Replace with actual Xendium PNode API endpoint
-            const response = await fetch('/api/xendium/pnodes');
+            // TODO: Replace with actual Xandeum PNode API endpoint
+            const response = await fetch('/api/xandeum/pnodes');
             if (!response.ok) {
-              throw new Error('Failed to fetch Xendium PNodes');
+              throw new Error('Failed to fetch Xandeum PNodes');
             }
             
             const pnodes = await response.json();
-            setXendiumPNodes(pnodes);
+            setXandeumPNodes(pnodes);
           } catch (error) {
-            setError('xendium', error instanceof Error ? error.message : 'Unknown error');
+            setError('xandeum', error instanceof Error ? error.message : 'Unknown error');
             // For now, set empty array if API doesn't exist yet
-            setXendiumPNodes([]);
+            setXandeumPNodes([]);
           } finally {
-            setLoading('xendium', false);
+            setLoading('xandeum', false);
           }
         },
 
         refreshCurrentMode: async () => {
-          const { currentMode, fetchNormalValidators, fetchXendiumPNodes } = get();
+          const { currentMode, fetchNormalValidators, fetchXandeumPNodes } = get();
           
           if (currentMode === 'normal') {
             await fetchNormalValidators();
           } else {
-            await fetchXendiumPNodes();
+            await fetchXandeumPNodes();
           }
         },
 
         getCurrentNodes: () => {
-          const { currentMode, normalValidators, xendiumPNodes } = get();
-          return currentMode === 'normal' ? normalValidators : xendiumPNodes;
+          const { currentMode, normalValidators, xandeumPNodes } = get();
+          return currentMode === 'normal' ? normalValidators : xandeumPNodes;
         },
 
         getFilteredNodes: () => {
-          const { currentMode, normalValidators, xendiumPNodes, filters } = get();
+          const { currentMode, normalValidators, xandeumPNodes, filters } = get();
           
           if (currentMode === 'normal') {
             const { search, status, minApy, maxCommission, country } = filters.normal;
@@ -461,18 +461,18 @@ export const useAppModeStore = create<AppModeStore>()(
               return matchesSearch && matchesStatus && matchesApy && matchesCommission && matchesCountry;
             });
           } else {
-            const { search, rewardStructure, minXendiumApy, maxLockPeriod, minEfficiency, maxCommission } = filters.xendium;
+            const { search, rewardStructure, minXandeumApy, maxLockPeriod, minEfficiency, maxCommission } = filters.xandeum;
             
-            return xendiumPNodes.filter((pnode) => {
+            return xandeumPNodes.filter((pnode) => {
               const matchesSearch = !search || 
                 pnode.name.toLowerCase().includes(search.toLowerCase()) ||
                 pnode.address.toLowerCase().includes(search.toLowerCase());
               
               const matchesRewardStructure = rewardStructure === 'all' || pnode.rewardStructure === rewardStructure;
-              const matchesApy = pnode.xendiumApy >= minXendiumApy;
+              const matchesApy = pnode.xandeumApy >= minXandeumApy;
               const matchesLockPeriod = pnode.lockPeriod <= maxLockPeriod;
               const matchesEfficiency = pnode.efficiency >= minEfficiency;
-              const matchesCommission = pnode.xendiumCommission <= maxCommission;
+              const matchesCommission = pnode.xandeumCommission <= maxCommission;
               
               return matchesSearch && matchesRewardStructure && matchesApy && 
                      matchesLockPeriod && matchesEfficiency && matchesCommission;

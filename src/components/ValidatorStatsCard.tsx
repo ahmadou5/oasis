@@ -2,16 +2,33 @@
 
 import { useValidators } from '@/hooks/useValidators'
 import { TrendingUp, Users, Coins, Percent } from 'lucide-react'
-import { LoadingSpinner } from './LoadingSpinner'
+import { Skeleton } from './Skeleton'
 
 export function ValidatorStatsCard() {
   const { stats, loading, error } = useValidators()
 
   if (loading) {
     return (
-      <div className="card text-center py-8">
-        <LoadingSpinner size="lg" />
-        <p className="text-gray-500 dark:text-solana-gray-400 mt-4">Loading network statistics...</p>
+      <div className="card py-8">
+        <div className="flex items-center justify-between mb-6">
+          <Skeleton width="w-1/3" height="h-6" />
+          <Skeleton width="w-10" height="h-10" radius="full" />
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700/30"
+            >
+              <Skeleton width="w-12" height="h-12" radius="full" className="mx-auto" />
+              <div className="mt-3">
+                <Skeleton width="w-2/3" height="h-6" className="mx-auto" />
+                <Skeleton width="w-1/2" height="h-3" className="mx-auto mt-2" radius="sm" />
+                <Skeleton width="w-2/3" height="h-3" className="mx-auto mt-2" radius="sm" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }

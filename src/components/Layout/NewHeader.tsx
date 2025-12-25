@@ -79,17 +79,17 @@ export const NewHearder: React.FC<NewHeaderProps> = ({ setMobileMenuOpen }) => {
                 <input
                   type="text"
                   placeholder={`Enter ${
-                    currentMode === "xendium" ? "PNode" : "validator"
+                    currentMode === "xandeum" ? "PNode" : "validator"
                   } ${
-                    currentMode === "xendium"
+                    currentMode === "xandeum"
                       ? "address or PNode Pubkey"
                       : "name, symbol or address"
                   }
                   `}
                   className="bg-gray-100 dark:bg-black/30 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 w-48 lg:w-[460px] transition"
-                  value={currentMode === "xendium" ? pnodesSearchString : validatorSearchString}
+                  value={currentMode === "xandeum" ? pnodesSearchString : validatorSearchString}
                   onChange={(e) => dispatch(
-                    currentMode === "xendium" 
+                    currentMode === "xandeum" 
                       ? setPnodesSearchString(e.target.value)
                       : setValidatorSearchString(e.target.value)
                   )}

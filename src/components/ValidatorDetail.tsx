@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 
 import { ValidatorPerformanceChart } from "./ValidatorPerformanceChart";
 import { StakeModal } from "./StakeModal";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { Skeleton, SkeletonText } from "./Skeleton";
 
 import {
   Globe,
@@ -67,8 +67,22 @@ export function ValidatorDetail({ validatorAddress }: ValidatorDetailProps) {
 
   if (loading && !validator) {
     return (
-      <div className="flex justify-center mt-20 py-12 space-y-8">
-        <LoadingSpinner size="lg" />l
+      <div className="mt-10">
+        <div className="card">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <Skeleton width="w-1/3" height="h-7" />
+              <div className="mt-2">
+                <Skeleton width="w-1/2" height="h-4" radius="sm" />
+              </div>
+            </div>
+            <Skeleton width="w-12" height="h-12" radius="full" />
+          </div>
+          <div className="mt-6 grid gap-6">
+            <Skeleton height="h-56" />
+            <SkeletonText lines={6} />
+          </div>
+        </div>
       </div>
     );
   }

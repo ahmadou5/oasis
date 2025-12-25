@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { ValidatorWorldMap } from "./ValidatorWorldMap";
 import { ValidatorInfo } from "@/types";
 import { useValidators } from "@/hooks/useValidators";
-import { LoadingSpinner } from "./LoadingSpinner";
+import { Skeleton } from "./Skeleton";
 import { Map, List, Eye, EyeOff } from "lucide-react";
 
 /**
@@ -37,8 +37,13 @@ export const ValidatorMapExample: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <LoadingSpinner size="lg" />
+      <div className="h-96">
+        <div className="card h-full">
+          <Skeleton width="w-1/3" height="h-5" />
+          <div className="mt-4">
+            <Skeleton height="h-72" className="w-full" />
+          </div>
+        </div>
       </div>
     );
   }

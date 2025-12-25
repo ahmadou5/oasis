@@ -16,6 +16,8 @@ import {
   Shield,
   Clock,
   HardDrive,
+  Cpu,
+  Network,
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -44,6 +46,15 @@ export const NewPNodeCard: React.FC<PNodeCardProps> = ({ pnode, onSelect }) => {
   };
 
   const nodeDisplayName = pnode?.address?.split(":")[0] || "Unknown Node";
+
+  const formatBytes = (bytes: number) => {
+    if (!Number.isFinite(bytes)) return "N/A";
+    if (bytes >= 1024 ** 4) return `${(bytes / 1024 ** 4).toFixed(2)} TB`;
+    if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
+    if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(2)} MB`;
+    if (bytes >= 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+    return `${bytes} B`;
+  };
 
   return (
     <div
@@ -206,6 +217,64 @@ export const NewPNodeCard: React.FC<PNodeCardProps> = ({ pnode, onSelect }) => {
               </div>
             </div>
           </div>
+
+          {/* Live get-stats (if available) */}
+          {pnode?.pnodeStats && (
+            <div className="bg-white/50 dark:bg-gray-800/50 rounded-lg p-3">
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center gap-2">
+                  <Cpu size={16} className="text-gray-500" />
+                  <div>
+                    <div className="text-xs text-gray-500">CPU</div>
+                    <div className="font-semibold">
+                      {pnode.pnodeStats.stats.cpu_percent.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Activity size={16} className="text-gray-500" />
+                  <div className="min-w-0">
+                    <div className="text-xs text-gray-500">RAM</div>
+                    <div className="font-semibold truncate">
+                      {formatBytes(pnode.pnodeStats.stats.ram_used)} /{" "}
+                      {formatBytes(pnode.pnodeStats.stats.ram_total)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Network size={16} className="text-gray-500" />
+                  <div>
+                    <div className="text-xs text-gray-500">Streams</div>
+                    <div className="font-semibold">
+                      {pnode.pnodeStats.stats.active_streams}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <HardDrive size={16} className="text-gray-500" />
+                  <div>
+                    <div className="text-xs text-gray-500">File size</div>
+                    <div className="font-semibold">
+                      {formatBytes(pnode.pnodeStats.file_size)}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-2 flex items-center justify-between text-xs text-gray-500">
+                  <div>
+                    RX:{" "}
+                    {pnode.pnodeStats.stats.packets_received.toLocaleString()}/s
+                  </div>
+                  <div>
+                    TX: {pnode.pnodeStats.stats.packets_sent.toLocaleString()}/s
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Location */}
           {pnode?.location?.country && (

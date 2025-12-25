@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Raleway, Comic_Neue } from "next/font/google";
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 import { WalletProvider } from "@/components/WalletProvider";
 import { ReduxProvider } from "@/components/ReduxProvider";
@@ -9,10 +9,10 @@ import FluidBackground from "@/components/FluidBackground";
 import Layout from "@/components/Layout/Layout";
 import SplashScreen from "../components/Layout/SplashScreen";
 
-const raleway = Comic_Neue({
+const montserrat = Montserrat({
   subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-comic-neue",
+  weight: ["300", "400", "500", "600", "700", "800"],
+  variable: "--font-montserrat",
   display: "swap",
 });
 
@@ -51,7 +51,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${raleway.variable} font-comic-neue text-gray-900 dark:text-white min-h-screen relative overflow-x-hidden transition-colors duration-300`}
+        className={`${montserrat.variable} font-montserrat text-gray-900 dark:text-white min-h-screen relative overflow-x-hidden transition-colors duration-300`}
       >
         <ThemeProvider>
           <ReduxProvider>

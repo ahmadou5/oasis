@@ -3,16 +3,16 @@
 import React from 'react';
 import Link from 'next/link';
 import { XandeumNodeWithMetrics } from '@/types';
-import { 
-  TrendingUp, 
-  Shield, 
-  Zap, 
-  Users, 
-  Clock, 
+import {
+  Shield,
+  Users,
+  Clock,
   Award,
   ExternalLink,
   Activity,
-  DollarSign
+  Cpu,
+  HardDrive,
+  Network,
 } from 'lucide-react';
 
 interface PNodeCardProps {
@@ -108,6 +108,51 @@ export function PNodeCard({ pnode }: PNodeCardProps) {
             <div className="text-xs text-gray-600 dark:text-gray-400">Storage (GB)</div>
           </div>
         </div>
+
+        {/* System + Network (get-stats) */}
+        {pnode?.pnodeStats && (
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="flex items-center gap-2 p-2 bg-gray-50/80 dark:bg-slate-700/30 rounded-lg">
+              <Cpu className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {pnode.pnodeStats.stats.cpu_percent.toFixed(1)}%
+                </div>
+                <div className="text-[11px] text-gray-600 dark:text-gray-400">CPU</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2 bg-gray-50/80 dark:bg-slate-700/30 rounded-lg">
+              <Activity className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                  {formatStorage(pnode.pnodeStats.stats.ram_used)} / {formatStorage(pnode.pnodeStats.stats.ram_total)}
+                </div>
+                <div className="text-[11px] text-gray-600 dark:text-gray-400">RAM</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2 bg-gray-50/80 dark:bg-slate-700/30 rounded-lg">
+              <Network className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {pnode.pnodeStats.stats.active_streams}
+                </div>
+                <div className="text-[11px] text-gray-600 dark:text-gray-400">Streams</div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2 bg-gray-50/80 dark:bg-slate-700/30 rounded-lg">
+              <HardDrive className="w-4 h-4 text-gray-600 dark:text-gray-300" />
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {formatStorage(pnode.pnodeStats.file_size)}
+                </div>
+                <div className="text-[11px] text-gray-600 dark:text-gray-400">File size</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Performance Metrics */}
         <div className="space-y-3">

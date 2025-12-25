@@ -25,8 +25,8 @@ module.exports = {
         },
       },
       fontFamily: {
-        raleway: ["var(--font-raleway)", "Raleway", "sans-serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        montserrat: ["var(--font-montserrat)", "Montserrat", "system-ui", "sans-serif"],
+        sans: ["var(--font-montserrat)", "Montserrat", "system-ui", "sans-serif"],
       },
       colors: {
         solana: {

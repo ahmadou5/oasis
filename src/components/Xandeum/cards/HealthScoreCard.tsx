@@ -14,6 +14,7 @@ interface NetworkMetrics {
     healthChange: number;
     storageChange: number;
   };
+  trendsReady: boolean;
 }
 
 interface HealthScoreProps {
@@ -38,14 +39,17 @@ export const HealthScoreCard = ({ metrics }: HealthScoreProps) => {
         <div className="bg-green-500/10 rounded-xl py-1 px-3">
           <div
             className={`inline-flex items-center gap-1 ${
-              metrics.trends.healthChange >= 0
-                ? "text-green-600 dark:text-green-400"
-                : "text-red-600 dark:text-red-400"
+              !metrics.trendsReady
+                ? "text-gray-500"
+                : metrics.trends.healthChange >= 0
+                  ? "text-green-600 dark:text-green-400"
+                  : "text-red-600 dark:text-red-400"
             }`}
           >
             <span className="text-sm font-semibold">
-              {metrics.trends.healthChange >= 0 ? "+" : ""}
-              {Math.abs(metrics.trends.healthChange).toFixed(1)} points
+              {metrics.trendsReady
+                ? `${metrics.trends.healthChange >= 0 ? "+" : ""}${metrics.trends.healthChange} points`
+                : "N/A"}
             </span>
           </div>
         </div>

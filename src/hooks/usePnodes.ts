@@ -32,7 +32,7 @@ export const usePnodes = () => {
       if (params?.sortBy) searchParams.set('sortBy', params.sortBy);
       if (params?.sortOrder) searchParams.set('sortOrder', params.sortOrder);
       
-      const url = `/api/xendium/pnodes${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
+      const url = `/api/xandeum/pnodes${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
       
       const response = await fetch(url);
       const result = await response.json();
@@ -52,7 +52,7 @@ export const usePnodes = () => {
         error: null,
       });
       
-      console.log('Xendium PNodes fetched:', {
+      console.log('Xandeum PNodes fetched:', {
         count: result.metadata?.count,
         cacheHit: result.metadata?.cacheHit,
         timestamp: result.metadata?.timestamp,

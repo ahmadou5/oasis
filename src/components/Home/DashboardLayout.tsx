@@ -4,6 +4,7 @@ import React from "react";
 import SolanaPriceCard from "../SolanaPriceCard";
 import EpochCard from "../EpochCard";
 import TransactionsCard from "../TransactionsCard";
+import { RecentBlocksCard } from "../RecentBlocksCard";
 
 export default function DashboardStats() {
   return (
@@ -19,6 +20,7 @@ export default function DashboardStats() {
         {/* Right Column - Transactions (spans 2 columns on large screens) */}
         <div className="lg:col-span-2">
           <TransactionsCard />
+          <RecentBlocksCard />
         </div>
       </div>
     </div>
@@ -39,6 +41,7 @@ export function DashboardStatsAlternative() {
         {/* Right Side */}
         <div>
           <TransactionsCard />
+          <RecentBlocksCard />
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ export const useAppModeSwitch = () => {
     isLoading: loading[currentMode],
     error: errors[currentMode],
     isNormalMode: currentMode === 'normal',
-    isXendiumMode: currentMode === 'xendium',
+    isXandeumMode: currentMode === 'xandeum',
   };
 };
 
@@ -51,19 +51,19 @@ export const useNormalValidators = () => {
   };
 };
 
-// Hook for Xendium PNode data
-export const useXendiumPNodes = () => {
-  const pnodes = useAppModeStore((state) => state.xendiumPNodes);
-  const loading = useAppModeStore((state) => state.loading.xendium);
-  const error = useAppModeStore((state) => state.errors.xendium);
-  const filters = useAppModeStore((state) => state.filters.xendium);
-  const pagination = useAppModeStore((state) => state.pagination.xendium);
+// Hook for Xandeum PNode data
+export const useXandeumPNodes = () => {
+  const pnodes = useAppModeStore((state) => state.xandeumPNodes);
+  const loading = useAppModeStore((state) => state.loading.xandeum);
+  const error = useAppModeStore((state) => state.errors.xandeum);
+  const filters = useAppModeStore((state) => state.filters.xandeum);
+  const pagination = useAppModeStore((state) => state.pagination.xandeum);
   
-  const setPNodes = useAppModeStore((state) => state.setXendiumPNodes);
+  const setPNodes = useAppModeStore((state) => state.setXandeumPNodes);
   const updatePNode = useAppModeStore((state) => state.updatePNode);
-  const fetchPNodes = useAppModeStore((state) => state.fetchXendiumPNodes);
-  const updateFilters = useAppModeStore((state) => state.updateXendiumFilters);
-  const setPagination = useAppModeStore((state) => state.setXendiumPagination);
+  const fetchPNodes = useAppModeStore((state) => state.fetchXandeumPNodes);
+  const updateFilters = useAppModeStore((state) => state.updateXandeumFilters);
+  const setPagination = useAppModeStore((state) => state.setXandeumPagination);
   
   return {
     pnodes,
@@ -150,21 +150,21 @@ export const useNodeSelection = () => {
 export const useFilters = () => {
   const currentMode = useAppModeStore((state) => state.currentMode);
   const updateNormalFilters = useAppModeStore((state) => state.updateNormalFilters);
-  const updateXendiumFilters = useAppModeStore((state) => state.updateXendiumFilters);
+  const updateXandeumFilters = useAppModeStore((state) => state.updateXandeumFilters);
   const resetFilters = useAppModeStore((state) => state.resetFilters);
   
   const updateCurrentFilters = (filters: any) => {
     if (currentMode === 'normal') {
       updateNormalFilters(filters);
     } else {
-      updateXendiumFilters(filters);
+      updateXandeumFilters(filters);
     }
   };
   
   return {
     currentMode,
     updateNormalFilters,
-    updateXendiumFilters,
+    updateXandeumFilters,
     updateCurrentFilters,
     resetFilters,
   };
@@ -174,20 +174,20 @@ export const useFilters = () => {
 export const usePagination = () => {
   const currentMode = useAppModeStore((state) => state.currentMode);
   const setNormalPagination = useAppModeStore((state) => state.setNormalPagination);
-  const setXendiumPagination = useAppModeStore((state) => state.setXendiumPagination);
+  const setXandeumPagination = useAppModeStore((state) => state.setXandeumPagination);
   
   const setCurrentPagination = (page: number, itemsPerPage?: number) => {
     if (currentMode === 'normal') {
       setNormalPagination(page, itemsPerPage);
     } else {
-      setXendiumPagination(page, itemsPerPage);
+      setXandeumPagination(page, itemsPerPage);
     }
   };
   
   return {
     currentMode,
     setNormalPagination,
-    setXendiumPagination,
+    setXandeumPagination,
     setCurrentPagination,
   };
 };

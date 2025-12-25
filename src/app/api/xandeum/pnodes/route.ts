@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { ENV } from "@/config/env";
-import { NodeLocation } from "@/types";
+import { NodeLocation, XandeumNodeWithMetrics, XandeumPNodeStatsResult } from "@/types";
+import http from "node:http";
+import https from "node:https";
+
+export const runtime = "nodejs";
 
 // Types for API responses
 interface PNodeAPIResponse {
@@ -33,19 +37,6 @@ interface XandeumNode {
   storage_used: number;
   uptime: number;
   version: string;
-}
-
-interface XandeumNodeWithMetrics extends XandeumNode {
-  isOnline: boolean;
-  lastSeenDate: string;
-  storageUtilization: string;
-  uptimeHours: number;
-  uptimeDays: number;
-  storageCapacityGB: number;
-  storageUsedMB: number;
-  versionDisplayName: string;
-  healthScore: number;
-  location?: NodeLocation;
 }
 
 interface QueryParams {
@@ -205,11 +196,11 @@ async function fetchGeolocationData(ips: string[], request?: NextRequest): Promi
       const url = new URL(request.url);
       baseUrl = `${url.protocol}//${url.host}`;
     } else {
-      // Fallback for development
-      baseUrl = 'http://localhost:3002';
+      // Fallback (should rarely happen in Next.js route handlers)
+      baseUrl = ENV.BASE_URL;
     }
     
-    const response = await fetch(`${baseUrl}/api/xendium/geolocate`, {
+    const response = await fetch(`${baseUrl}/api/xandeum/geolocate`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -294,6 +285,226 @@ function setCachedData(key: string, data: any): void {
   });
 }
 
+// Simple concurrency limiter
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
+  if (items.length === 0) return [];
+  const results: R[] = new Array(items.length);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (true) {
+      const currentIndex = nextIndex++;
+      if (currentIndex >= items.length) return;
+      results[currentIndex] = await mapper(items[currentIndex], currentIndex);
+    }
+  }
+
+  const workers = Array.from(
+    { length: Math.max(1, Math.min(concurrency, items.length)) },
+    () => worker()
+  );
+  await Promise.all(workers);
+  return results;
+}
+
+function toNumberOrUndefined(v: unknown): number | undefined {
+  if (typeof v === "number" && Number.isFinite(v)) return v;
+  if (typeof v === "string" && v.trim() !== "") {
+    const n = Number(v);
+    if (Number.isFinite(n)) return n;
+  }
+  return undefined;
+}
+
+function isPNodeStatsResult(v: any): v is XandeumPNodeStatsResult {
+  return (
+    v &&
+    typeof v === "object" &&
+    v.metadata &&
+    typeof v.metadata.total_bytes === "number" &&
+    typeof v.metadata.total_pages === "number" &&
+    typeof v.metadata.last_updated === "number" &&
+    v.stats &&
+    typeof v.stats.cpu_percent === "number" &&
+    typeof v.stats.ram_used === "number" &&
+    typeof v.stats.ram_total === "number" &&
+    typeof v.stats.uptime === "number" &&
+    typeof v.stats.packets_received === "number" &&
+    typeof v.stats.packets_sent === "number" &&
+    typeof v.stats.active_streams === "number" &&
+    typeof v.file_size === "number"
+  );
+}
+
+async function postJsonNode(
+  urlStr: string,
+  body: any,
+  timeoutMs: number
+): Promise<{ status: number; json: any } | null> {
+  return new Promise((resolve) => {
+    try {
+      const url = new URL(urlStr);
+      const data = Buffer.from(JSON.stringify(body));
+      const lib = url.protocol === "https:" ? https : http;
+
+      const req = lib.request(
+        {
+          protocol: url.protocol,
+          hostname: url.hostname,
+          port: url.port,
+          path: url.pathname + url.search,
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+            "content-length": data.length,
+          },
+          timeout: timeoutMs,
+        },
+        (res) => {
+          let raw = "";
+          res.setEncoding("utf8");
+          res.on("data", (chunk) => (raw += chunk));
+          res.on("end", () => {
+            try {
+              const json = raw ? JSON.parse(raw) : null;
+              resolve({ status: res.statusCode ?? 0, json });
+            } catch {
+              resolve(null);
+            }
+          });
+        }
+      );
+
+      req.on("timeout", () => {
+        req.destroy();
+        resolve(null);
+      });
+
+      req.on("error", () => resolve(null));
+      req.write(data);
+      req.end();
+    } catch {
+      resolve(null);
+    }
+  });
+}
+
+async function fetchPNodeStatsForNode(
+  node: XandeumNode
+): Promise<XandeumPNodeStatsResult | undefined> {
+  const ip = extractIpFromAddress(node.address);
+  if (!ip) return undefined;
+
+  const rpcPort =
+    typeof node.rpc_port === "number" && Number.isFinite(node.rpc_port)
+      ? node.rpc_port
+      : undefined;
+  if (!rpcPort) return undefined;
+
+  // PNodes expose JSON-RPC at /rpc.
+  // IMPORTANT: Node/undici fetch blocks certain ports ("bad ports" list, includes 6000).
+  // So we use node:http instead of fetch to allow rpc_port=6000.
+  const url = `http://${ip}:${rpcPort}/rpc`;
+
+  try {
+    const resp = await postJsonNode(
+      url,
+      { jsonrpc: "2.0", method: "get-stats", id: 1 },
+      8_000
+    );
+
+    if (!resp || resp.status < 200 || resp.status >= 300) return undefined;
+    const payload = resp.json;
+
+    // Accept either {result: {...}} or direct {...}
+    const result = payload?.result ?? payload;
+
+    // Newer nodes return the nested shape already
+    if (isPNodeStatsResult(result)) return result;
+
+    // Observed node response shape is FLAT:
+    // {
+    //   total_bytes, total_pages, last_updated,
+    //   cpu_percent, ram_used, ram_total, uptime,
+    //   packets_received, packets_sent, active_streams,
+    //   file_size
+    // }
+    if (result && typeof result === "object") {
+      const flatTotalBytes = toNumberOrUndefined((result as any).total_bytes);
+      const flatTotalPages = toNumberOrUndefined((result as any).total_pages);
+      const flatLastUpdated = toNumberOrUndefined((result as any).last_updated);
+
+      const flatCpu = toNumberOrUndefined((result as any).cpu_percent);
+      const flatRamUsed = toNumberOrUndefined((result as any).ram_used);
+      const flatRamTotal = toNumberOrUndefined((result as any).ram_total);
+      const flatUptime = toNumberOrUndefined((result as any).uptime);
+      const flatRx = toNumberOrUndefined((result as any).packets_received);
+      const flatTx = toNumberOrUndefined((result as any).packets_sent);
+      const flatStreams = toNumberOrUndefined((result as any).active_streams);
+      const flatFileSize = toNumberOrUndefined((result as any).file_size);
+
+      // If it looks like the flat response, normalize it
+      const looksFlat =
+        flatTotalBytes !== undefined ||
+        flatCpu !== undefined ||
+        flatFileSize !== undefined;
+
+      if (looksFlat) {
+        return {
+          metadata: {
+            total_bytes: flatTotalBytes ?? 0,
+            total_pages: flatTotalPages ?? 0,
+            last_updated: flatLastUpdated ?? 0,
+          },
+          stats: {
+            cpu_percent: flatCpu ?? 0,
+            ram_used: flatRamUsed ?? 0,
+            ram_total: flatRamTotal ?? 0,
+            uptime: flatUptime ?? 0,
+            packets_received: flatRx ?? 0,
+            packets_sent: flatTx ?? 0,
+            active_streams: flatStreams ?? 0,
+          },
+          file_size: flatFileSize ?? 0,
+        };
+      }
+    }
+
+    // Be lenient: accept nested metadata/stats even if some numeric fields are strings
+    const coerced: XandeumPNodeStatsResult | undefined =
+      result &&
+      typeof result === "object" &&
+      (result as any).metadata &&
+      (result as any).stats
+        ? {
+            metadata: {
+              total_bytes: toNumberOrUndefined((result as any).metadata.total_bytes) ?? 0,
+              total_pages: toNumberOrUndefined((result as any).metadata.total_pages) ?? 0,
+              last_updated: toNumberOrUndefined((result as any).metadata.last_updated) ?? 0,
+            },
+            stats: {
+              cpu_percent: toNumberOrUndefined((result as any).stats.cpu_percent) ?? 0,
+              ram_used: toNumberOrUndefined((result as any).stats.ram_used) ?? 0,
+              ram_total: toNumberOrUndefined((result as any).stats.ram_total) ?? 0,
+              uptime: toNumberOrUndefined((result as any).stats.uptime) ?? 0,
+              packets_received: toNumberOrUndefined((result as any).stats.packets_received) ?? 0,
+              packets_sent: toNumberOrUndefined((result as any).stats.packets_sent) ?? 0,
+              active_streams: toNumberOrUndefined((result as any).stats.active_streams) ?? 0,
+            },
+            file_size: toNumberOrUndefined((result as any).file_size) ?? 0,
+          }
+        : undefined;
+
+    return coerced;
+  } catch {
+    return undefined;
+  }
+}
+
 // Retry helper
 async function withRetry<T>(
   operation: () => Promise<T>,
@@ -348,7 +559,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Generate cache key
-    const cacheKey = `pnodes:${JSON.stringify(queryParams)}`;
+    // Version cache key so changes to enrichment logic don't serve stale cached payloads
+    const cacheKey = `pnodes:v2:${JSON.stringify(queryParams)}`;
 
     // Check cache first
     const cachedData = getCachedData(cacheKey);
@@ -385,7 +597,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!pods || !(pods as any).pods || !Array.isArray((pods as any).pods)) {
-      throw new Error("Invalid response structure from Xendium service");
+      throw new Error("Invalid response structure from Xandeum service");
     }
 
     // Extract unique IP addresses from node addresses
@@ -409,16 +621,33 @@ export async function GET(request: NextRequest) {
     // Fetch geolocation data for all unique IPs
     const locationMap = await fetchGeolocationData(nodeIps, request);
 
-    // Process and enhance the raw data with computed metrics and location
+    // Fetch per-node detailed stats via JSON-RPC (get-stats)
+    // We do this before computing enhanced fields so we can include derived convenience fields.
+    const statsConcurrency = 10;
+    const statsByAddress = new Map<string, XandeumPNodeStatsResult>();
+
+    const statsResults = await mapWithConcurrency(
+      rawNodes,
+      statsConcurrency,
+      async (node) => ({ address: node.address, stats: await fetchPNodeStatsForNode(node) })
+    );
+
+    for (const r of statsResults) {
+      if (r.stats) statsByAddress.set(r.address, r.stats);
+    }
+
+    // Process and enhance the raw data with computed metrics, location, and optional get-stats payload
     const enhancedData: XandeumNodeWithMetrics[] = rawNodes.map((node: XandeumNode) => {
       const now = Date.now();
       const lastSeenMs = node.last_seen_timestamp * 1000;
       const isOnline = (now - lastSeenMs) < 300000; // Online if seen within 5 minutes
-      
+
       // Get location data for this node's IP
       const ip = extractIpFromAddress(node.address);
       const location = ip ? locationMap.get(ip) : undefined;
-      
+
+      const pnodeStats = statsByAddress.get(node.address);
+
       return {
         ...node,
         isOnline,
@@ -426,16 +655,22 @@ export async function GET(request: NextRequest) {
         storageUtilization: `${(node.storage_usage_percent * 100).toFixed(2)}%`,
         uptimeHours: Math.floor(node.uptime / 3600),
         uptimeDays: Math.floor(node.uptime / 86400),
-        storageCapacityGB: Math.round(node.storage_committed / (1024 * 1024 * 1024) * 100) / 100,
-        storageUsedMB: Math.round(node.storage_used / (1024 * 1024) * 100) / 100,
-        versionDisplayName: node.version.replace(/^0\.8\.0-trynet\./, 'v').substring(0, 20),
-        healthScore: Math.min(100, Math.round(
-          (isOnline ? 30 : 0) + // Online bonus
-          (node.is_public ? 10 : 0) + // Public node bonus  
-          Math.min(40, node.uptime / 86400) + // Uptime score (max 40 points for 40+ days)
-          Math.min(20, (1 - node.storage_usage_percent) * 20) // Storage availability (max 20 points)
-        )),
-        location
+        storageCapacityGB:
+          Math.round((node.storage_committed / (1024 * 1024 * 1024)) * 100) / 100,
+        storageUsedMB: Math.round((node.storage_used / (1024 * 1024)) * 100) / 100,
+        versionDisplayName: node.version.replace(/^0\.8\.0-trynet\./, "v").substring(0, 20),
+        healthScore: Math.min(
+          100,
+          Math.round(
+            (isOnline ? 30 : 0) + // Online bonus
+              (node.is_public ? 10 : 0) + // Public node bonus
+              Math.min(40, node.uptime / 86400) + // Uptime score (max 40 points for 40+ days)
+              Math.min(20, (1 - node.storage_usage_percent) * 20) // Storage availability (max 20 points)
+          )
+        ),
+        location,
+        pnodeStats,
+        fileSizeBytes: pnodeStats?.file_size,
       };
     });
 

@@ -5,6 +5,7 @@ import SolanaPriceCard from "./SolanaPriceCard";
 import StakeCard from "./StakeCard";
 import TransactionsCard from "./TransactionsCard";
 import EpochCard from "./EpochCard";
+import { RecentBlocksCard } from "./RecentBlocksCard";
 
 export default function DashboardCards() {
   return (
@@ -32,33 +33,43 @@ export default function DashboardCards() {
             <EpochCard />
           </div>
 
-          {/* Additional Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg">
-                  <div className="w-6 h-6 bg-white rounded" />
+          {/* Recent Blocks Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <RecentBlocksCard maxBlocks={10} />
+            </div>
+            <div className="space-y-6">
+              {/* Additional stats can go here */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-2 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg">
+                    <div className="w-6 h-6 bg-white rounded" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold">Network Health</h3>
+                    <p className="text-sm text-green-500">Excellent</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold">Network Health</h3>
-                  <p className="text-sm text-green-500">Excellent</p>
-                </div>
-              </div>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Cluster Version</span>
-                  <span className="font-medium">1.16.18</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">RPC Nodes</span>
-                  <span className="font-medium">2,847</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Uptime</span>
-                  <span className="font-medium text-green-500">99.97%</span>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Cluster Version</span>
+                    <span className="font-medium">1.16.18</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">RPC Nodes</span>
+                    <span className="font-medium">2,847</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-500">Uptime</span>
+                    <span className="font-medium text-green-500">99.97%</span>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Additional Stats Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
             <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
               <div className="flex items-center gap-3 mb-4">

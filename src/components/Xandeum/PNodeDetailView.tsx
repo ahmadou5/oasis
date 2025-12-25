@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { XandeumNodeWithMetrics } from '@/types';
-import { 
-  TrendingUp, 
-  Shield, 
-  Zap, 
+import React from "react";
+import { XandeumNodeWithMetrics } from "@/types";
+import {
+  TrendingUp,
+  Shield,
+  Zap,
   Award,
   Clock,
   DollarSign,
@@ -13,9 +13,12 @@ import {
   Globe,
   Users,
   BarChart3,
-  Calendar,
-  Target
-} from 'lucide-react';
+  Target,
+  Cpu,
+  HardDrive,
+  Network,
+  Database,
+} from "lucide-react";
 
 interface PNodeDetailViewProps {
   pnode: XandeumNodeWithMetrics;
@@ -33,19 +36,36 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
     return new Date(timestamp).toLocaleString();
   };
 
+  const formatBytes = (bytes: number) => {
+    if (!Number.isFinite(bytes)) return "N/A";
+    if (bytes >= 1024 ** 4) return `${(bytes / 1024 ** 4).toFixed(2)} TB`;
+    if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(2)} GB`;
+    if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(2)} MB`;
+    if (bytes >= 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+    return `${bytes} B`;
+  };
+
+  const formatUnixSeconds = (unixSeconds: number) => {
+    if (!Number.isFinite(unixSeconds) || unixSeconds <= 0) return "N/A";
+    return new Date(unixSeconds * 1000).toLocaleString();
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'text-green-600 bg-green-100 dark:bg-green-900/30';
-      case 'delinquent': return 'text-orange-600 bg-orange-100 dark:bg-orange-900/30';
-      default: return 'text-gray-600 bg-gray-100 dark:bg-gray-900/30';
+      case "active":
+        return "text-green-600 bg-green-100 dark:bg-green-900/30";
+      case "delinquent":
+        return "text-orange-600 bg-orange-100 dark:bg-orange-900/30";
+      default:
+        return "text-gray-600 bg-gray-100 dark:bg-gray-900/30";
     }
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 90) return 'text-green-600';
-    if (score >= 80) return 'text-blue-600';
-    if (score >= 70) return 'text-orange-600';
-    return 'text-red-600';
+    if (score >= 90) return "text-green-600";
+    if (score >= 80) return "text-blue-600";
+    if (score >= 70) return "text-orange-600";
+    return "text-red-600";
   };
 
   return (
@@ -56,36 +76,47 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                Node {pnode.address.split(':')[0]}
+                Node {pnode?.address.split(":")[0]}
               </h1>
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(pnode.isOnline ? 'active' : 'inactive')}`}>
-                {pnode.isOnline ? 'Online' : 'Offline'}
+              <span
+                className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                  pnode?.isOnline ? "active" : "inactive"
+                )}`}
+              >
+                {pnode?.isOnline ? "Online" : "Offline"}
               </span>
-              {pnode.is_public && (
+              {pnode?.is_public && (
                 <span className="px-3 py-1 rounded-full text-sm font-medium text-purple-600 bg-purple-100 dark:bg-purple-900/30">
                   Public
                 </span>
               )}
             </div>
-            
+
             <div className="space-y-2 text-gray-600 dark:text-gray-400">
               <p className="font-mono text-sm break-all">
-                <span className="font-semibold">Address:</span> {pnode.address}
+                <span className="font-semibold">Address:</span> {pnode?.address}
               </p>
               <p className="text-sm">
-                <span className="font-semibold">PubKey:</span> {pnode.pubkey.substring(0, 32)}...
+                <span className="font-semibold">PubKey:</span>{" "}
+                {pnode?.pubkey.substring(0, 32)}...
               </p>
               <p className="text-sm">
-                <span className="font-semibold">Version:</span> {pnode.version}
+                <span className="font-semibold">Version:</span> {pnode?.version}
               </p>
             </div>
           </div>
-          
+
           <div className="text-center lg:text-right">
-            <div className={`text-4xl font-bold ${getScoreColor(pnode.healthScore)} mb-2`}>
-              {pnode.healthScore}
+            <div
+              className={`text-4xl font-bold ${getScoreColor(
+                pnode?.healthScore
+              )} mb-2`}
+            >
+              {pnode?.healthScore}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">Health Score</div>
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              Health Score
+            </div>
           </div>
         </div>
       </div>
@@ -99,9 +130,11 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {(pnode.xendiumApy || 0).toFixed(2)}%
+                {(pnode?.xandeumApy || 0).toFixed(2)}%
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Annual APY</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Annual APY
+              </div>
             </div>
           </div>
         </div>
@@ -113,9 +146,11 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {formatStake(pnode.totalPnodeStake || 0)}
+                {formatStake(pnode?.totalPnodeStake || 0)}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Staked</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Total Staked
+              </div>
             </div>
           </div>
         </div>
@@ -127,9 +162,11 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                {pnode.xendiumCommission}%
+                {pnode?.xandeumCommission}%
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Commission</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Commission
+              </div>
             </div>
           </div>
         </div>
@@ -141,9 +178,11 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                #{pnode.pnodeRank || 'N/A'}
+                #{pnode?.pnodeRank || "N/A"}
               </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Network Rank</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                Network Rank
+              </div>
             </div>
           </div>
         </div>
@@ -157,7 +196,7 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             <BarChart3 className="w-5 h-5" />
             Performance Metrics
           </h3>
-          
+
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-2">
@@ -170,7 +209,7 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
                 </span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3">
-                <div 
+                <div
                   className="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${pnode.efficiency}%` }}
                 ></div>
@@ -188,7 +227,7 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
                 </span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3">
-                <div 
+                <div
                   className="bg-gradient-to-r from-green-400 to-emerald-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${pnode.reliability}%` }}
                 ></div>
@@ -206,9 +245,11 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
                 </span>
               </div>
               <div className="w-full bg-gray-200 dark:bg-slate-700 rounded-full h-3">
-                <div 
+                <div
                   className="bg-gradient-to-r from-blue-400 to-purple-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${Math.min(100, pnode.networkContribution || 0)}%` }}
+                  style={{
+                    width: `${Math.min(100, pnode.networkContribution || 0)}%`,
+                  }}
                 ></div>
               </div>
             </div>
@@ -221,22 +262,26 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
             <DollarSign className="w-5 h-5" />
             Staking Details
           </h3>
-          
+
           <div className="space-y-4">
             <div className="flex items-center justify-between py-3 border-b border-gray-200/50 dark:border-slate-700/50">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Min Stake Amount</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Min Stake Amount
+              </span>
               <span className="font-semibold text-gray-900 dark:text-white">
                 {formatStake(pnode.minStakeAmount || 0)}
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between py-3 border-b border-gray-200/50 dark:border-slate-700/50">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Max Stake Amount</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Max Stake Amount
+              </span>
               <span className="font-semibold text-gray-900 dark:text-white">
                 {formatStake(pnode.maxStakeAmount || 0)}
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between py-3 border-b border-gray-200/50 dark:border-slate-700/50">
               <span className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-2">
                 <Clock className="w-4 h-4" />
@@ -246,16 +291,20 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
                 {pnode.lockPeriod} epochs
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between py-3 border-b border-gray-200/50 dark:border-slate-700/50">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Early Withdraw Penalty</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Early Withdraw Penalty
+              </span>
               <span className="font-semibold text-red-600 dark:text-red-400">
                 {pnode.earlyWithdrawPenalty}%
               </span>
             </div>
-            
+
             <div className="flex items-center justify-between py-3">
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Reward Structure</span>
+              <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Reward Structure
+              </span>
               <span className="font-semibold text-gray-900 dark:text-white capitalize">
                 {pnode.rewardStructure}
               </span>
@@ -264,35 +313,174 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
         </div>
       </div>
 
+      {/* System / Storage / Network (get-stats) */}
+      <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-slate-700/50">
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
+          <Database className="w-5 h-5" />
+          Live Node Stats
+        </h3>
+
+        {!pnode.pnodeStats ? (
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            Live stats are unavailable for this node (it may be offline or not
+            exposing the JSON-RPC get-stats endpoint).
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* System */}
+            <div className="p-4 rounded-lg bg-gray-50/70 dark:bg-slate-700/30 border border-gray-200/40 dark:border-slate-600/30">
+              <div className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-semibold">
+                <Cpu className="w-4 h-4" />
+                System
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">CPU</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {pnode.pnodeStats.stats.cpu_percent.toFixed(1)}%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    RAM used
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {formatBytes(pnode.pnodeStats.stats.ram_used)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    RAM total
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {formatBytes(pnode.pnodeStats.stats.ram_total)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Uptime
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {pnode.pnodeStats.stats.uptime.toLocaleString()}s
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Storage */}
+            <div className="p-4 rounded-lg bg-gray-50/70 dark:bg-slate-700/30 border border-gray-200/40 dark:border-slate-600/30">
+              <div className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-semibold">
+                <HardDrive className="w-4 h-4" />
+                Storage
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    File size
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {formatBytes(pnode.pnodeStats.file_size)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Total bytes
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {formatBytes(pnode.pnodeStats.metadata.total_bytes)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Total pages
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {pnode.pnodeStats.metadata.total_pages.toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Last updated
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {formatUnixSeconds(pnode.pnodeStats.metadata.last_updated)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Network */}
+            <div className="p-4 rounded-lg bg-gray-50/70 dark:bg-slate-700/30 border border-gray-200/40 dark:border-slate-600/30">
+              <div className="flex items-center gap-2 mb-3 text-gray-900 dark:text-white font-semibold">
+                <Network className="w-4 h-4" />
+                Network
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Packets received
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {pnode.pnodeStats.stats.packets_received.toLocaleString()}/s
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Packets sent
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {pnode.pnodeStats.stats.packets_sent.toLocaleString()}/s
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Active streams
+                  </span>
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {pnode.pnodeStats.stats.active_streams}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Additional Information */}
       <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-slate-700/50">
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
           <Activity className="w-5 h-5" />
           Node Information
         </h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Last Payout</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+              Last Payout
+            </div>
             <div className="font-semibold text-gray-900 dark:text-white">
               {formatDate(pnode.lastPayout || Date.now())}
             </div>
           </div>
-          
+
           <div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Next Payout Epoch</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+              Next Payout Epoch
+            </div>
             <div className="font-semibold text-gray-900 dark:text-white">
               {pnode.nextPayoutEpoch}
             </div>
           </div>
-          
+
           <div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Data Center</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+              Data Center
+            </div>
             <div className="font-semibold text-gray-900 dark:text-white">
-              {pnode.dataCenter || 'Unknown'}
+              {pnode.dataCenter || "Unknown"}
             </div>
           </div>
-          
+
           {pnode.country && (
             <div>
               <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1 flex items-center gap-1">
@@ -304,13 +492,15 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
               </div>
             </div>
           )}
-          
+
           {pnode.website && (
             <div>
-              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Website</div>
-              <a 
-                href={pnode.website} 
-                target="_blank" 
+              <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                Website
+              </div>
+              <a
+                href={pnode.website}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-blue-600 dark:text-blue-400 hover:underline"
               >
@@ -318,9 +508,11 @@ export function PNodeDetailView({ pnode }: PNodeDetailViewProps) {
               </a>
             </div>
           )}
-          
+
           <div>
-            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Uptime</div>
+            <div className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+              Uptime
+            </div>
             <div className="font-semibold text-gray-900 dark:text-white">
               {pnode.uptime?.toFixed(2)}%
             </div>

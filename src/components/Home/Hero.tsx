@@ -16,7 +16,7 @@ import { NetworkStatsDashboard } from "../Xandeum/cards/DashMint";
 
 export function Hero() {
   const { pnodes } = usePnodes();
-  const { isNormalMode, isXendiumMode } = useAppModeSwitch();
+  const { isNormalMode, isXandeumMode } = useAppModeSwitch();
   const {
     validators,
     epochDetails,
@@ -29,14 +29,6 @@ export function Hero() {
     cacheInfo,
   } = useValidators();
   const { theme } = useTheme();
-
-  console.log("Pnodes in Hero:", pnodes);
-  const epochInfo = EpochConverter.convertEpochToTime({
-    epoch: epochDetails?.epoch || 0,
-    absoluteSlot: epochDetails?.absoluteSlot || 0,
-    slotIndex: epochDetails?.slotIndex || 0,
-    slotsInEpoch: epochDetails?.slotsInEpoch || 1,
-  });
 
   // Prepare validators data for the scroller
   const activeValidators =
@@ -77,10 +69,10 @@ export function Hero() {
 
       <div className="w-[100%] h-auto py-8 ml-auto mr-auto flex items-center justify-between">
         <div className="w-[100%] px-3 py-2">
-          {isXendiumMode ? (
-            <PNodeMap pnodes={pnodes} />
-          ) : (
+          {isNormalMode ? (
             <ValidatorMapExample />
+          ) : (
+            <PNodeMap pnodes={pnodes} />
           )}
         </div>
       </div>
