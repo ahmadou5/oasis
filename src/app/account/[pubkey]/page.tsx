@@ -7,7 +7,10 @@ import type { AccountOverview } from "@/lib/solana/accountOverview";
 import { AccountDetailsViewNew } from "@/components/Explorer/AccountDetailsViewNew";
 import { EnhancedWalletView } from "@/components/Wallet/EnhancedWalletView";
 import { EnhancedProgramView } from "@/components/Program/EnhancedProgramView";
-import { classifyAccount, type SolanaAccountType } from "@/lib/solana/accountClassifier";
+import {
+  classifyAccount,
+  type SolanaAccountType,
+} from "@/lib/solana/accountClassifier";
 import { TokenDetailsView } from "@/components/Token/TokenDetailsView";
 import { EnhancedTokenView } from "@/components/Token/EnhancedTokenView";
 import { StakeDetailsView } from "@/components/Stake/StakeDetailsView";
@@ -15,19 +18,22 @@ import type { TokenMintDetails } from "@/lib/solana/tokenDetails";
 import type { StakeAccountDetails } from "@/lib/solana/stakeDetails";
 import { fetchTokenDetails } from "@/lib/solana/tokenDetails";
 import { fetchStakeDetails } from "@/lib/solana/stakeDetails";
-import { fetchTokenMetadata, type TokenMetadata } from "@/lib/solana/tokenMetadata";
-import { 
-  Wallet, 
-  Coins, 
-  Shield, 
-  Settings, 
+import {
+  fetchTokenMetadata,
+  type TokenMetadata,
+} from "@/lib/solana/tokenMetadata";
+import {
+  Wallet,
+  Coins,
+  Shield,
+  Settings,
   Image as ImageIcon,
   Users,
   AlertCircle,
   Copy,
-  Check
+  Check,
 } from "lucide-react";
-import { resolveAddressToDomain, type SNSResolveResult } from "@/lib/solana/snsResolver";
+import { resolveAddressToDomain } from "@/lib/solana/snsResolver";
 
 // Get appropriate icon for account type
 function getAccountTypeIcon(accountType: SolanaAccountType) {
@@ -74,7 +80,9 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tokenData, setTokenData] = useState<TokenMintDetails | null>(null);
-  const [tokenMetadata, setTokenMetadata] = useState<TokenMetadata | null>(null);
+  const [tokenMetadata, setTokenMetadata] = useState<TokenMetadata | null>(
+    null
+  );
   const [stakeData, setStakeData] = useState<StakeAccountDetails | null>(null);
   const [snsDomain, setSnsDomain] = useState<string | null>(null);
   const [loadingDomain, setLoadingDomain] = useState(false);
@@ -89,11 +97,11 @@ export default function AccountPage() {
         setError(null);
 
         // Classify the account type first
-        const classification = await classifyAccount({ 
+        const classification = await classifyAccount({
           address: pubkey,
-          network: "mainnet-beta" 
+          network: "mainnet-beta",
         });
-        
+
         if (!cancelled) {
           setAccountType(classification.accountType);
         }
@@ -102,9 +110,9 @@ export default function AccountPage() {
         if (classification.accountType === "user_wallet") {
           setLoadingDomain(true);
           try {
-            const snsResult = await resolveAddressToDomain({ 
+            const snsResult = await resolveAddressToDomain({
               address: pubkey,
-              network: "mainnet-beta" 
+              network: "mainnet-beta",
             });
             if (!cancelled && snsResult.hasDomain && snsResult.domain) {
               setSnsDomain(snsResult.domain);
@@ -117,13 +125,16 @@ export default function AccountPage() {
         }
 
         // Fetch appropriate data based on account type
-        if (classification.accountType === "token_mint" || classification.accountType === "nft_mint") {
+        if (
+          classification.accountType === "token_mint" ||
+          classification.accountType === "nft_mint"
+        ) {
           // Fetch token-specific data
           const [tokenDetails, metadata] = await Promise.all([
             fetchTokenDetails({ address: pubkey, network: "mainnet-beta" }),
-            fetchTokenMetadata({ mint: pubkey, network: "mainnet-beta" })
+            fetchTokenMetadata({ mint: pubkey, network: "mainnet-beta" }),
           ]);
-          
+
           if (!cancelled) {
             setTokenData(tokenDetails);
             setTokenMetadata(metadata);
@@ -139,9 +150,9 @@ export default function AccountPage() {
           }
         } else if (classification.accountType === "stake_account") {
           // Fetch stake-specific data
-          const stakeDetails = await fetchStakeDetails({ 
-            address: pubkey, 
-            network: "mainnet-beta" 
+          const stakeDetails = await fetchStakeDetails({
+            address: pubkey,
+            network: "mainnet-beta",
           });
           if (!cancelled) {
             setStakeData(stakeDetails);
@@ -181,8 +192,16 @@ export default function AccountPage() {
   // Render appropriate view based on account type
   const renderAccountView = () => {
     // For token mints, use enhanced token view
-    if ((accountType === "token_mint" || accountType === "nft_mint") && tokenData) {
-      return <EnhancedTokenView data={tokenData} metadata={tokenMetadata || undefined} />;
+    if (
+      (accountType === "token_mint" || accountType === "nft_mint") &&
+      tokenData
+    ) {
+      return (
+        <EnhancedTokenView
+          data={tokenData}
+          metadata={tokenMetadata || undefined}
+        />
+      );
     }
 
     // For stake accounts, use fetched stake data
@@ -196,7 +215,10 @@ export default function AccountPage() {
     }
 
     // For programs, use enhanced program view
-    if ((accountType === "program_account" || accountType === "program_data") && data) {
+    if (
+      (accountType === "program_account" || accountType === "program_data") &&
+      data
+    ) {
       return <EnhancedProgramView data={data} />;
     }
 
@@ -232,17 +254,21 @@ export default function AccountPage() {
               </h1>
               {snsDomain && (
                 <div className="flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-purple-900/40 to-pink-900/40 border border-purple-700/50 rounded-lg">
-                  <span className="text-purple-300 font-semibold text-sm">{snsDomain}</span>
+                  <span className="text-purple-300 font-semibold text-sm">
+                    {snsDomain}
+                  </span>
                   <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-pulse"></div>
                 </div>
               )}
               {loadingDomain && (
                 <div className="px-3 py-1 bg-gray-800 rounded-lg">
-                  <span className="text-gray-400 text-xs">Loading domain...</span>
+                  <span className="text-gray-400 text-xs">
+                    Loading domain...
+                  </span>
                 </div>
               )}
             </div>
-            
+
             {/* Address Display */}
             <div className="flex items-center gap-2 mt-2">
               <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">
