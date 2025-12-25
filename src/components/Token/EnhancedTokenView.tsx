@@ -108,7 +108,7 @@ export function EnhancedTokenView({ data, metadata }: EnhancedTokenViewProps) {
     if (data.address) {
       loadMarketData();
     }
-  }, [data.address, displayMetadata?.coingeckoId]);
+  }, [data.address, displayMetadata]);
 
   // Fetch enhanced transactions
   useEffect(() => {
